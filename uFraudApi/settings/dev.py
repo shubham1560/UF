@@ -1,1 +1,21 @@
 from .base import *
+
+DATABASES = {
+
+    'default': {
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+        'NAME': 'uf-db-django',
+
+        'USER': 'postgres',
+
+        'PASSWORD': 'Olabola@12',
+
+        'HOST': '127.0.0.1',
+
+        'PORT': '50956',
+
+    }
+
+}
