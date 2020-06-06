@@ -4,7 +4,7 @@ DATABASES = {
 
     'default': {
 
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
 
         'NAME': 'uf-db-django',
 
@@ -14,7 +14,7 @@ DATABASES = {
 
         'HOST': '127.0.0.1',
 
-        'PORT': '50956',
+        'PORT': '5432',
 
     }
 
