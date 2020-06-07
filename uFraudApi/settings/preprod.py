@@ -1,5 +1,7 @@
 from .base import *
 
+ALLOWED_HOSTS = ['database1560.herokuapp.com']
+
 DATABASES = {
 
     'default': {
