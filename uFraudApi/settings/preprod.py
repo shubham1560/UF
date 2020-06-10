@@ -43,7 +43,7 @@ else:
 
     # Production
 
-    DEBUG = False
+    DEBUG = True
 
     DATABASES = {
 
