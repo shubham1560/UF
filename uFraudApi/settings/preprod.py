@@ -2,18 +2,19 @@ from .base import *
 
 ALLOWED_HOSTS = ['database1560.herokuapp.com', 'uf-api.herokuapp.com']
 
-CACHES = {
+
+if config('PRODUCTION') == '0':
+
+    CACHES = {
         'default': {
             'BACKEND': 'redis_cache.RedisCache',
             'LOCATION': '%s:%s' % ("ec2-52-23-127-211.compute-1.amazonaws.com", "7419"),
             'OPTIONS': {
                 'PASSWORD': "pc420dcd443a7edd61e683c8ef3e335d5f146d4ea54218667ab9297ae11ed0dca",
                 'DB': 0,
+            }
         }
     }
-}
-
-if config('PRODUCTION') == '0':
 
     DATABASES = {
 
@@ -56,5 +57,17 @@ else:
         }
 
     }
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'redis_cache.RedisCache',
+            'LOCATION': '%s:%s' % ("ec2-50-16-240-35.compute-1.amazonaws.com", "18709"),
+            'OPTIONS': {
+                'PASSWORD': "pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624",
+                'DB': 0,
+            }
+        }
+    }
+
 
 
