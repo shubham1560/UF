@@ -6,7 +6,7 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.postgresql',
 
-        'NAME': config('DB_NAME_DEV'),
+        'NAME': 'd5k6r7neqjv7cl',
 
         'USER': 'jcwhtrhlznqqri',
 
