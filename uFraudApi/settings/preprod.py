@@ -8,7 +8,7 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.postgresql',
 
-        'NAME': 'd1r2iam6t73l4b',
+        'NAME': config('DB_NAME_DEV'),
 
         'USER': 'uaofyovxrlstew',
 
