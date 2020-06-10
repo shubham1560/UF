@@ -2,11 +2,11 @@ from .base import *
 
 ALLOWED_HOSTS = ['database1560.herokuapp.com', 'uf-api.herokuapp.com']
 
-DEBUG = config('DEBUG') == 'True'
-
 if config('PRODUCTION') == '0':
 
     # Non Production
+
+    DEBUG = True
 
     CACHES = {
         'default': {
@@ -42,6 +42,8 @@ if config('PRODUCTION') == '0':
 else:
 
     # Production
+
+    DEBUG = False
 
     DATABASES = {
 
