@@ -2,25 +2,49 @@ from .base import *
 
 ALLOWED_HOSTS = ['database1560.herokuapp.com', 'uf-api.herokuapp.com']
 
-DATABASES = {
+if config('PRODUCTION') == 0:
 
-    'default': {
+    DATABASES = {
 
-        'ENGINE': 'django.db.backends.postgresql',
+        'default': {
 
-        'NAME': config('DB_NAME_DEV'),
+            'ENGINE': 'django.db.backends.postgresql',
 
-        'USER': 'uaofyovxrlstew',
+            'NAME': config('DB_NAME_DEV'),
 
-        'PASSWORD': '207fe27a60a73ea6506282e4e165932738c4e3ff151eb5587a6980a1f7490723',
+            'USER': 'uaofyovxrlstew',
 
-        'HOST': 'ec2-54-86-170-8.compute-1.amazonaws.com',
+            'PASSWORD': '207fe27a60a73ea6506282e4e165932738c4e3ff151eb5587a6980a1f7490723',
 
-        'PORT': '5432',
+            'HOST': 'ec2-54-86-170-8.compute-1.amazonaws.com',
+
+            'PORT': '5432',
+
+        }
 
     }
 
-}
+else:
+
+    DATABASES = {
+
+        'default': {
+
+            'ENGINE': 'django.db.backends.postgresql',
+
+            'NAME': config('DB_NAME_DEV'),
+
+            'USER': 'jcwhtrhlznqqri',
+
+            'PASSWORD': '61c8859c27c769819ec7b91d2f932b248d12bfd047e2e932b8be55e79a3360aa',
+
+            'HOST': 'ec2-3-222-150-253.compute-1.amazonaws.com',
+
+            'PORT': '5432',
+
+        }
+
+    }
 
 
 CACHES = {
