@@ -1,5 +1,10 @@
 from .base import *
 
+'''
+this file is for internal usage only, whenever i may have to make migrations, i can connect to it via the local app
+and be done with it
+'''
+
 DATABASES = {
 
     'default': {

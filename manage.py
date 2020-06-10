@@ -2,10 +2,14 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from decouple import config
 
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.preprod')
+    if config('LIVE') == '0':
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.dev')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.finalsetup')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

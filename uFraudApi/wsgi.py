@@ -8,10 +8,14 @@ https://docs.djangoproject.com/en/3.0/howto/deployment/wsgi/
 """
 
 import os
+from decouple import config
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.preprod')
+if config('LIVE') == '0':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.dev')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.finalsetup')
 
 application = get_wsgi_application()
 
