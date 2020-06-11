@@ -1,6 +1,6 @@
 from .base import *
 
-ALLOWED_HOSTS = ['database1560.herokuapp.com', 'uf-api.herokuapp.com']
+ALLOWED_HOSTS = ['database1560.herokuapp.com', 'uf-api.herokuapp.com', 'uf-preprod.herokuapp.com']
 
 if config('PRODUCTION') == '0':
 
