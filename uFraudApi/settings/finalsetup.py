@@ -2,6 +2,8 @@ from .base import *
 
 ALLOWED_HOSTS = ['database1560.herokuapp.com', 'uf-api.herokuapp.com', 'uf-preprod.herokuapp.com']
 
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+
 if config('PRODUCTION') == '0':
 
     # Non Production
