@@ -6,7 +6,7 @@ if config('PRODUCTION') == '0':
 
     # Non Production
 
-    DEBUG = True
+    DEBUG = config('DEBUG') == 'True'
 
     CACHES = {
         'default': {
@@ -43,7 +43,7 @@ else:
 
     # Production
 
-    DEBUG = True
+    DEBUG = config('DEBUG') == 'True'
 
     DATABASES = {
 
