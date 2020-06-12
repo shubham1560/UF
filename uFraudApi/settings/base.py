@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'sys_user.apps.SysUserConfig',
     'storages',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'auth.apps.AuthConfig'
 ]
 
 
