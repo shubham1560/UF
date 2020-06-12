@@ -4,6 +4,7 @@ botocore==1.17.0
 Django==3.0.7
 django-redis-cache==2.1.1
 django-storages==1.9.1
+djangorestframework==3.11.0
 docutils==0.15.2
 gunicorn==20.0.4
 jmespath==0.10.0
