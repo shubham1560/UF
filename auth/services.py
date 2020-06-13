@@ -3,6 +3,7 @@ import string
 import random
 from rest_framework.authtoken.models import Token
 from django.core.mail import send_mail
+from decouple import config
 
 
 def generate_id():
@@ -12,7 +13,7 @@ def generate_id():
 
 
 def send_confirmation_mail(email: str, token: str):
-    link = "http://127.0.0.1:8000/authorization/activate_account/"+token
+    link = config('URL')+"authorization/activate_account/"+token
     send_mail("account created",
               "Your account has been created"+
               "click this link: " + link,
@@ -40,7 +41,8 @@ def create_user(**validated_data) -> SysUser:
                                        user_type="RU")
     token = Token.objects.create(user=user)
     print(token)
-    send_confirmation_mail(email=validated_data['username'], token=str(token))
+    send_confirmation_mail(email=validated_data['username'],
+                           token=str(token))
 
 
 def create_google_user(**validated_data) -> SysUser:
