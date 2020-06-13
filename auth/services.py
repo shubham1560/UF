@@ -17,7 +17,7 @@ def send_confirmation_mail(email: str, token: str):
     send_mail("account created",
               "Your account has been created"+
               "click this link: " + link,
-              'avij1560@gmail.com',
+              'Urbanfrauds@urbanfrauds.com',
               [email, ],
               fail_silently=False)
 
