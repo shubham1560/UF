@@ -1,6 +1,18 @@
 from sys_user.models import SysUser
 import string
 import random
+from rest_framework.authtoken.models import Token
+from django.core.mail import send_mail
+
+
+def generate_id():
+    n = random.randint(3, 9)
+    res = res = int(''.join(random.choices(string.digits, k=n)))
+    return res
+
+
+def send_confirmation_mail(email: str):
+    send_mail("account created", "Your account has been created", 'avij1560@gmail.com', [email, ], fail_silently=False)
 
 
 def get_all_users() -> SysUser:
@@ -14,11 +26,24 @@ def get_user(id: int) -> SysUser:
 
 
 def create_user(**validated_data) -> SysUser:
-    print(validated_data)
-    res = int(''.join(random.choices(string.digits, k=100)))
-    uid = validated_data['username'].split('@')[0]+res
-    SysUser.objects.create_user(**validated_data, email=validated_data['username'], id=uid)
+    res = generate_id()
+    user = SysUser.objects.create_user(**validated_data,
+                                       email=validated_data['username'],
+                                       id=res,
+                                       is_active=False)
+    Token.objects.create(user=user)
+    send_confirmation_mail(email=validated_data['username'])
 
+
+def create_google_user(**validated_data) -> SysUser:
+    res = generate_id()
+
+    user = SysUser.objects.create_user(**validated_data,
+                                       email=validated_data['username'],
+                                       id=res,
+                                       is_active=True)
+    token, _ = Token.objects.get_or_create(user=user)
+    print(token)
 
 
 

@@ -5,7 +5,7 @@ from .models import SysUser
 
 class SysUserAdmin(UserAdmin):
     model = SysUser
-    list_display = ["email", "username", 'profile', "is_staff"]
+    list_display = ["id", "email", "username", "is_active", "is_staff", "date_joined"]
     add_fieldsets = (
         (
             None,

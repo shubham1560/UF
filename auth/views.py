@@ -4,7 +4,7 @@ from sys_user.models import SysUser
 from .serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .services import get_all_users, get_user, create_user
+from .services import get_all_users, get_user, create_user, create_google_user
 from rest_framework import serializers
 from rest_framework import status
 # Create your views here.
@@ -14,7 +14,7 @@ class UserListViewSet(APIView):
     class UserListSerializer(serializers.ModelSerializer):
         class Meta:
             model = SysUser
-            fields = ('email','profile_pic')
+            fields = ('id', 'email', 'profile_pic')
 
     def get(self, request, format=None):
         users = get_all_users()
@@ -26,7 +26,7 @@ class UserViewSet(APIView):
     class UserSerializer(serializers.ModelSerializer):
         class Meta:
             model = SysUser
-            fields = ('email', 'profile_pic')
+            fields = ('id', 'email', 'profile_pic')
 
     def get(self, request, id, format=None):
         a = get_user(id)
@@ -40,11 +40,13 @@ class CreateUserViewSet(APIView):
         password = serializers.CharField(
             style={'input_type': 'password'}
         )
+        first_name = serializers.CharField(max_length=50)
+        last_name = serializers.CharField(max_length=50)
         # id = serializers.IntegerField()
 
         class Meta:
             model = SysUser
-            fields = ('username', 'password')
+            fields = ('username', 'password', 'first_name', 'last_name')
 
     def post(self, request, format=None):
         serializer = self.CreateUserSerializer(data=request.data)
@@ -52,6 +54,27 @@ class CreateUserViewSet(APIView):
         create_user(**serializer.validated_data)
 
         return Response(status=status.HTTP_201_CREATED)
+
+
+class CreateGoogleUserViewSet(APIView):
+    class CreateGoogleUserSerializer(serializers.ModelSerializer):
+        username = serializers.EmailField()
+        profile_pic = serializers.URLField()
+        first_name = serializers.CharField()
+        last_name = serializers.CharField()
+        # id = serializers.IntegerField()
+
+        class Meta:
+            model = SysUser
+            fields = ('username', 'profile_pic', 'first_name', 'last_name',)
+
+    def post(self, request, format=None):
+        serializer = self.CreateGoogleUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        create_google_user(**serializer.validated_data)
+
+        return Response(status=status.HTTP_201_CREATED)
+
 
 
 # class UserViewSet(viewsets.ModelViewSet):
