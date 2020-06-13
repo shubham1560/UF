@@ -134,11 +134,10 @@ STATIC_URL = '/static/'
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_PASSWORD = 'olabola12'
 
-SENDGRID_API_KEY = config('SENDGRID_API_KEY')
 
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
-EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_HOST_PASSWORD = config('SENDGRID_API_KEY')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 

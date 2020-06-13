@@ -15,11 +15,12 @@ def generate_id():
 def send_confirmation_mail(email: str, token: str):
     link = config('URL')+"authorization/activate_account/"+token
     send_mail("account created",
-              "Your account has been created"+
+              "Your account has been created " +
               "click this link: " + link,
               'Urbanfrauds@urbanfrauds.com',
               [email, ],
               fail_silently=False)
+    print("mail_sent to "+email)
 
 
 def get_all_users() -> SysUser:
