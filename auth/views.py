@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from sys_user.models import SysUser
+from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .services import get_all_users, get_user, create_user, create_google_user
+from .services import get_all_users, get_user, create_user, create_google_user, activate_account
 from rest_framework import serializers
 from rest_framework import status
 # Create your views here.
@@ -75,6 +76,17 @@ class CreateGoogleUserViewSet(APIView):
 
         return Response(status=status.HTTP_201_CREATED)
 
+
+class ActivateAccountViewSet(APIView):
+    class ActivateAccountSerializer(serializers.ModelSerializer):
+        token = serializers.CharField()
+
+    class Meta:
+        model = Token
+
+    def get(self, request, token, format=None):
+        activate_account(token)
+        return Response(status=status.HTTP_200_OK)
 
 
 # class UserViewSet(viewsets.ModelViewSet):
