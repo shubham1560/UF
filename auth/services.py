@@ -45,13 +45,22 @@ def create_user(**validated_data) -> SysUser:
 
 def create_google_user(**validated_data) -> SysUser:
     res = generate_id()
-    user = SysUser.objects.create_user(**validated_data,
-                                       email=validated_data['username'],
-                                       id=res,
-                                       is_active=True,
-                                       user_type="GU")
-    token, _ = Token.objects.get_or_create(user=user)
-    print(token)
+
+    user_exist = SysUser.objects.get(email=validated_data['username'])
+
+    if user_exist:
+        token = Token.objects.get(user=user_exist)
+        print("User Exist")
+
+    else:
+        user = SysUser.objects.create_user(**validated_data,
+                                           email=validated_data['username'],
+                                           id=res,
+                                           is_active=True,
+                                           user_type="GU")
+        token, _ = Token.objects.get_or_create(user=user)
+        print("User doesn't exist")
+    return token
 
 
 def activate_account(token: str):
@@ -59,6 +68,13 @@ def activate_account(token: str):
     user.is_active = True
     user.save()
 
+
+def reset_password(token: str, **validated_data):
+    password = validated_data["password"]
+    print(password, token)
+    user = Token.objects.get(key=token).user
+    user.set_password(password)
+    user.save()
 
 
 

@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .services import get_all_users, get_user, create_user, create_google_user, activate_account
+from .services import get_all_users, get_user, create_user, create_google_user, activate_account, reset_password
 from rest_framework import serializers
 from rest_framework import status
 # Create your views here.
@@ -87,6 +87,25 @@ class ActivateAccountViewSet(APIView):
     def get(self, request, token, format=None):
         activate_account(token)
         return Response(status=status.HTTP_200_OK)
+
+
+class UserPasswordResetViewSet(APIView):
+    class UserPasswordResetSerializer(serializers.ModelSerializer):
+        password = serializers.CharField(
+            style={'input_type': 'password'}
+        )
+
+        class Meta:
+            model = SysUser
+            fields = ('password',)
+
+    def post(self, request, token, format=None):
+        serializer = self.UserPasswordResetSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # print(request.data)
+        # print(token)
+        reset_password(token=token, **serializer.validated_data)
+        return Response(status=status.HTTP_201_CREATED)
 
 
 # class UserViewSet(viewsets.ModelViewSet):
