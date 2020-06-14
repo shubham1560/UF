@@ -31,3 +31,5 @@ DATABASES = {
 # EMAIL_HOST_PASSWORD = 'olabola12'
 
 AWS_STORAGE_BUCKET_NAME = 'urbanfraud-test'
+
+CELERY_RESULT_BACKEND = 'db+postgresql://postgres:Olabola@12@localhost/uf-db-django'

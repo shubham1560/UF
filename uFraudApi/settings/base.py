@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'storages',
     'rest_framework',
     'rest_framework.authtoken',
-    'auth.apps.AuthConfig'
+    'auth.apps.AuthConfig',
+    'django_celery_results'
 ]
 
 
@@ -152,4 +153,7 @@ AWS_DEFAULT_ACL = None
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-#STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+CELERY_BROKER_URL = 'redis://h:pc420dcd443a7edd61e683c8ef3e335d5f146d4ea54218667ab9297ae11ed0dca@ec2-52-23-127-211.compute-1.amazonaws.com:7419'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
