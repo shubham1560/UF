@@ -1,3 +1,3 @@
 web: gunicorn uFraudApi.wsgi --log-file -
-worker:  celery -A uFraudApi worker -l info
+worker:  celery -A uFraudApi worker -l info -c 2
 
