@@ -7,6 +7,9 @@ AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 if config('PRODUCTION') == '0':
 
     # Non Production
+    CELERY_BROKER_URL = 'redis://h:pc420dcd443a7edd61e683c8ef3e335d5f146d4ea54218667ab9297ae11ed0dca@ec2-52-23-127-211.compute-1.amazonaws.com:7419'
+
+    CELERY_RESULT_BACKEND = 'postgres://uaofyovxrlstew:207fe27a60a73ea6506282e4e165932738c4e3ff151eb5587a6980a1f7490723@ec2-54-86-170-8.compute-1.amazonaws.com:5432/d1r2iam6t73l4b'
 
     DEBUG = config('DEBUG') == 'True'
 
@@ -46,6 +49,10 @@ else:
     # Production
 
     DEBUG = config('DEBUG') == 'True'
+
+    CELERY_BROKER_URL = 'redis://h:pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624@ec2-50-16-240-35.compute-1.amazonaws.com:18709'
+
+    CELERY_RESULT_BACKEND = 'postgres://jcwhtrhlznqqri:61c8859c27c769819ec7b91d2f932b248d12bfd047e2e932b8be55e79a3360aa@ec2-3-222-150-253.compute-1.amazonaws.com:5432/d5k6r7neqjv7cl'
 
     DATABASES = {
 

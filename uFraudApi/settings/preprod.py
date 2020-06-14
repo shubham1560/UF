@@ -4,6 +4,9 @@ this file is for internal usage only, whenever i may have to make migrations, i 
 and be done with it
 '''
 
+CELERY_BROKER_URL = 'redis://h:pc420dcd443a7edd61e683c8ef3e335d5f146d4ea54218667ab9297ae11ed0dca@ec2-52-23-127-211.compute-1.amazonaws.com:7419'
+
+
 CACHES = {
         'default': {
             'BACKEND': 'redis_cache.RedisCache',

@@ -2,6 +2,8 @@ from .base import *
 
 DEBUG = True
 
+CELERY_BROKER_URL = 'redis://h:pc420dcd443a7edd61e683c8ef3e335d5f146d4ea54218667ab9297ae11ed0dca@ec2-52-23-127-211.compute-1.amazonaws.com:7419'
+
 DATABASES = {
 
     'default': {
