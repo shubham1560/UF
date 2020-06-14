@@ -4,8 +4,10 @@ import random
 from rest_framework.authtoken.models import Token
 from django.core.mail import send_mail
 from decouple import config
-from celery import shared_task
+from celery import shared_task, Celery
 from time import sleep
+
+app = Celery()
 
 
 @shared_task
