@@ -3,9 +3,13 @@ from .settings import dev
 import os
 
 from celery import Celery
-
+from decouple import config
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.dev')
+
+if config('LIVE') == '0':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.dev')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.finalsetup')
 
 app = Celery('uFraudApi')
 
