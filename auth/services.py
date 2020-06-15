@@ -7,8 +7,6 @@ from decouple import config
 from celery import shared_task, Celery
 from time import sleep
 
-app = Celery()
-
 
 @shared_task
 def sleepy(duration):
