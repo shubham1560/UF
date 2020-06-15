@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from .settings import dev
-from .settings import preprod
+from .settings import finalsetup
 import os
 
 from celery import Celery
@@ -14,7 +14,7 @@ if config('LIVE') == '0':
     app.autodiscover_tasks(lambda: dev.INSTALLED_APPS)
 else:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.finalsetup')
-    app.autodiscover_tasks(lambda: preprod.INSTALLED_APPS)
+    app.autodiscover_tasks(lambda: finalsetup.INSTALLED_APPS)
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
