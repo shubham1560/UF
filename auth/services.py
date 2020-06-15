@@ -36,7 +36,6 @@ def send_confirmation_mail(email: str, token: str):
 
 
 def get_all_users() -> SysUser:
-    sleepy.delay(30)
     result = SysUser.objects.all()
     return result
 
