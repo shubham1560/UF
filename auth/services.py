@@ -25,6 +25,7 @@ def generate_id():
 @shared_task
 def send_confirmation_mail(email: str, token: str):
     link = config('URL')+"authorization/activate_account/"+token
+    print(config('URL'))
     send_mail("account created",
               "Your account has been created " +
               "click this link: " + link,
