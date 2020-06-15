@@ -13,6 +13,7 @@ if config('PRODUCTION') == '0':
 
     DEBUG = config('DEBUG') == 'True'
 
+    """
     CACHES = {
         'default': {
             'BACKEND': 'redis_cache.RedisCache',
@@ -23,6 +24,7 @@ if config('PRODUCTION') == '0':
             }
         }
     }
+    """
 
     DATABASES = {
 
