@@ -7,13 +7,14 @@ from celery import Celery
 from decouple import config
 # set the default Django settings module for the 'celery' program.
 
-app = Celery('uFraudApi')
 
 if config('LIVE') == '0':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.dev')
+    app = Celery('uFraudApi')
     app.autodiscover_tasks(lambda: dev.INSTALLED_APPS)
 else:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.finalsetup')
+    app = Celery('uFraudApi')
     app.autodiscover_tasks(lambda: finalsetup.INSTALLED_APPS)
 
 # Using a string here means the worker doesn't have to serialize
