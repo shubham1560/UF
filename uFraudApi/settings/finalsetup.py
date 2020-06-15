@@ -4,12 +4,12 @@ ALLOWED_HOSTS = ['database1560.herokuapp.com', 'uf-api.herokuapp.com', 'uf-prepr
 
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 
+
 if config('PRODUCTION') == '0':
 
     # Non Production
-    # CELERY_BROKER_URL = 'redis://h:pc420dcd443a7edd61e683c8ef3e335d5f146d4ea54218667ab9297ae11ed0dca@ec2-52-23-127-211.compute-1.amazonaws.com:7419'
-
-    CELERY_BROKER_URL = "redis://rediscloud:pJUD3PHSRsTf0AK6luOVUTciPS8XMwgI@redis-17645.c14.us-east-1-2.ec2.cloud.redislabs.com:17645"
+    CELERY_BROKER_URL = "redis://rediscloud:pJUD3PHSRsTf0AK6luOVUTciPS8XMwgI@redis-17645.c14.us-east-1-2.ec2.cloud." \
+                        "redislabs.com:17645"
 
     DEBUG = config('DEBUG') == 'True'
 
@@ -50,7 +50,8 @@ else:
 
     DEBUG = config('DEBUG') == 'True'
 
-    # CELERY_BROKER_URL = 'redis://h:pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624@ec2-50-16-240-35.compute-1.amazonaws.com:18709'
+    CELERY_BROKER_URL = "redis://h:pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624@ec2-50-16-240-35."\
+                        "compute-1.amazonaws.com:18709"
 
     DATABASES = {
 
