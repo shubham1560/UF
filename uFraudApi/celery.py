@@ -10,15 +10,11 @@ from decouple import config
 
 if config('LIVE') == '0':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.dev')
-    app = Celery('uFraudApi',
-                 broker="redis://rediscloud:pJUD3PHSRsTf0AK6luOVUTciPS8XMwgI@redis-17645.c14.us-east-1-2.ec2.cloud."
-                        "redislabs.com:17645")
+    app = Celery('uFraudApi')
 
 else:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.finalsetup')
-    app = Celery('uFraudApi',
-                 broker="redis://rediscloud:pJUD3PHSRsTf0AK6luOVUTciPS8XMwgI@redis-17645.c14.us-east-1-2.ec2.cloud."
-                        "redislabs.com:17645")
+    app = Celery('uFraudApi')
 
 
 # app = Celery('uFraudApi', broker="redis://h:pc420dcd443a7edd61e683c8ef3e335d5f146d4ea54218667ab9297ae11ed0dca@ec2-52-23-127-211.compute-1.amazonaws.com:7419")
