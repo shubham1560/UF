@@ -8,10 +8,10 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('get_token/', obtain_auth_token),
-    path('users', UserListViewSet.as_view()),
+    path('users/', UserListViewSet.as_view()),
     path('users/<int:id>', UserViewSet.as_view()),
-    path('create_user_sys', CreateUserViewSet.as_view()),
-    path('create_user_google', CreateGoogleUserViewSet.as_view()),
+    path('create_user_sys/', CreateUserViewSet.as_view()),
+    path('create_user_google/', CreateGoogleUserViewSet.as_view()),
     path('activate_account/<str:token>', ActivateAccountViewSet.as_view()),
     path('reset_password/<str:token>', UserPasswordResetViewSet.as_view()),
     path('', include(router.urls))

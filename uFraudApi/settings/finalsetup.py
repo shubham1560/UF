@@ -53,7 +53,7 @@ else:
 
     DEBUG = config('DEBUG') == 'True'
 
-    CELERY_BROKER_URL = 'redis://h:pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624@ec2-50-16-240-35.compute-1.amazonaws.com:18709'
+    # CELERY_BROKER_URL = 'redis://h:pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624@ec2-50-16-240-35.compute-1.amazonaws.com:18709'
 
     DATABASES = {
 
