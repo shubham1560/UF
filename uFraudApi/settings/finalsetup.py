@@ -4,6 +4,9 @@ ALLOWED_HOSTS = ['database1560.herokuapp.com', 'uf-api.herokuapp.com', 'uf-prepr
 
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 
+CELERY_BROKER_URL = "redis://rediscloud:pJUD3PHSRsTf0AK6luOVUTciPS8XMwgI@redis-17645.c14.us-east-1-2.ec2.cloud.redislabs.com:17645"
+
+
 if config('PRODUCTION') == '0':
 
     # Non Production
@@ -13,7 +16,6 @@ if config('PRODUCTION') == '0':
 
     DEBUG = config('DEBUG') == 'True'
 
-    """
     CACHES = {
         'default': {
             'BACKEND': 'redis_cache.RedisCache',
@@ -24,7 +26,6 @@ if config('PRODUCTION') == '0':
             }
         }
     }
-    """
 
     DATABASES = {
 
