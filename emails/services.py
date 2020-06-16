@@ -5,13 +5,19 @@ from decouple import config
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 
-html_message = "<b>Well the html message</b>"
-plain_message = strip_tags(html_message)
+sent_from = "Urbanfrauds@urbanfrauds.com"
 
 
 @shared_task
 def send_confirmation_mail(email: str, token: str):
     mail = Email.objects.get(title="confirmation")
     body = mail.body.format(token=token, url=config('URL'))
-    sent_from = "Urbanfrauds@urbanfrauds.com"
-    send_mail(mail.subject, plain_message, sent_from, [email, ], fail_silently=False, html_message="<b>Html</b>")
+    send_mail(mail.subject, body, sent_from, [email, ], fail_silently=False)
+
+
+@shared_task
+def promotion_mail(email:str):
+    mail = Email.objects.get(title="Promotion")
+    body = mail.body
+    email = email
+    send_mail(mail.subject, body, sent_from, [email, ], fail_silently=False)

@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from decouple import config
 from celery import shared_task, Celery
 from time import sleep
-from emails.services import send_confirmation_mail
+from emails.services import send_confirmation_mail, promotion_mail
 
 
 @shared_task
@@ -56,6 +56,7 @@ def create_user(**validated_data) -> SysUser:
     token = Token.objects.create(user=user)
     link = config('URL') + "authorization/activate_account/" + str(token)
     send_confirmation_mail.delay(email=validated_data['username'], token=str(token))
+    promotion_mail.delay(email=validated_data['username'])
     # send_confirmation_mail.delay(email=validated_data['username'],
     #                              token=str(token))
 
