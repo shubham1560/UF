@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from decouple import config
 from celery import shared_task, Celery
 from time import sleep
+from emails.services import send_confirmation_mail
 
 
 @shared_task
@@ -20,9 +21,10 @@ def generate_id():
     return res
 
 
+"""
 @shared_task
 def send_confirmation_mail(email: str, token: str):
-    link = config('URL')+"authorization/activate_account/"+token
+    
     print(config('URL'))
     send_mail("account created",
               "Your account has been created " +
@@ -31,6 +33,7 @@ def send_confirmation_mail(email: str, token: str):
               [email, ],
               fail_silently=False)
     print("mail_sent to "+email)
+"""
 
 
 def get_all_users() -> SysUser:
@@ -51,9 +54,10 @@ def create_user(**validated_data) -> SysUser:
                                        is_active=False,
                                        user_type="RU")
     token = Token.objects.create(user=user)
-    print(token)
-    send_confirmation_mail.delay(email=validated_data['username'],
-                                 token=str(token))
+    link = config('URL') + "authorization/activate_account/" + str(token)
+    send_confirmation_mail.delay(email=validated_data['username'], token=str(token))
+    # send_confirmation_mail.delay(email=validated_data['username'],
+    #                              token=str(token))
 
 
 def create_google_user(**validated_data) -> SysUser:

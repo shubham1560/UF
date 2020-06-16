@@ -5,7 +5,7 @@ from .models import Email
 
 class EmailAdmin(admin.ModelAdmin):
     model = Email
-    list_display = ["id", "description", "subject", "body", "footer", "priority"]
+    list_display = ["title", "description", "subject", "body", "footer", "priority"]
 
 
 # Register your models here.

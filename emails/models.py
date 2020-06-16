@@ -11,10 +11,10 @@ PRIORITY = [
 class Email(models.Model):
     sys_created_on = models.DateTimeField(auto_now=True)
     sys_updated_on = models.DateTimeField(auto_now_add=True)
-    description = models.CharField(max_length=1000)
+    title = models.CharField(max_length=1000)
+    description = models.CharField(max_length=200, blank=True)
     subject = models.CharField(max_length=200)
     body = models.TextField(blank=True)
     footer = models.TextField(blank=True)
     priority = models.CharField(max_length=1, choices=PRIORITY, default='1')
-    comments = models.CharField(max_length=200, blank=True)
 
