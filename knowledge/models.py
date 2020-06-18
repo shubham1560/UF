@@ -17,6 +17,9 @@ class KbKnowledgeBase(models.Model):
     description = models.CharField(max_length=1000)
     title = models.CharField(max_length=100)
 
+    class Meta:
+        verbose_name_plural = "Knowledge Bases"
+
 
 class KbCategory(models.Model):
     id = models.CharField(max_length=32, primary_key=True)
@@ -26,6 +29,9 @@ class KbCategory(models.Model):
     active = models.BooleanField(default=True)
     sys_created_on = models.DateTimeField(auto_now=True)
     sys_updated_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Knowledge Categories"
 
 
 class KbKnowledge(models.Model):
@@ -40,7 +46,7 @@ class KbKnowledge(models.Model):
     disable_suggesting = models.BooleanField(default=False)
     flagged = models.BooleanField(default=False)
     knowledge_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.CASCADE)
-    number = models.CharField(max_length=12)
+    number = models.CharField(max_length=12, unique=True)
     published_on = models.DateTimeField()
     rating = models.FloatField()
     title = models.CharField(max_length=50)
@@ -51,6 +57,9 @@ class KbKnowledge(models.Model):
     topic = models.CharField(max_length=50)
     parent_article = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child')
     workflow = models.CharField(choices=WORKFLOW_STATES, max_length=10)
+
+    class Meta:
+        verbose_name_plural = "Knowledge Articles"
 
 
 class KbFeedback(models.Model):
@@ -63,6 +72,9 @@ class KbFeedback(models.Model):
     sys_updated_on = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(SysUser, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name_plural = "Knowledge Feedbacks"
+
 
 class KbUse(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
@@ -72,3 +84,5 @@ class KbUse(models.Model):
     viewed = models.BooleanField(blank=True)
     article = models.OneToOneField(KbKnowledge, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name_plural = "Knowledge Uses"

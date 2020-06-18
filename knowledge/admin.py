@@ -32,6 +32,7 @@ admin.site.register(KbCategory, KbCategoryAdmin)
 admin.site.register(KbKnowledge, KbKnowledgeAdmin)
 admin.site.register(KbKnowledgeBase, KbKnowledgeBaseAdmin)
 admin.site.register(KbFeedback, KbFeedBackAdmin)
+admin.site.register(KbUse, KbUseAdmin)
 
 
 
