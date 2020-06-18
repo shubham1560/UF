@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'auth.apps.AuthConfig',
     'django_celery_results',
-    'emails.apps.EmailsConfig'
+    'emails.apps.EmailsConfig',
+    'knowledge.apps.KnowledgeConfig',
 ]
 
 
