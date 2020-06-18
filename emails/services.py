@@ -16,18 +16,21 @@ def send_confirmation_mail(email: str, token: str):
 
 
 @shared_task
-def promotion_mail(email:str):
+def promotion_mail(email: str):
     mail = Email.objects.get(title="Promotion")
-    body = mail.body
     email = email
-    send_mail(mail.subject, body, sent_from, [email, ], fail_silently=False)
+    send_mail(mail.subject, mail.body, sent_from, [email, ], fail_silently=False)
+
+
+@shared_task
+def promotion_mail_mass(email_list: list):
+    breakpoint()
+    mail = Email.objects.get(title="Promotion")
+    b = []
+    for email in email_list:
+        b.append((mail.subject, mail.body, sent_from, [email, ]))
+    send_mass_mail(b, fail_silently=False)
 
 
 b = ["shubhamsinha2050@gmail.com", "avij1560@gmail.com", "dpsinha1964@gmail.com", "burger1560@gmail.com",
      "needyburger@gmail.com"]
-
-a = []
-for email in b:
-    a.append(("testing", "well", sent_from, [email, ]))
-
-send_mass_mail(a, fail_silently=False)
