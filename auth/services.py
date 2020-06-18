@@ -2,38 +2,14 @@ from sys_user.models import SysUser
 import string
 import random
 from rest_framework.authtoken.models import Token
-from django.core.mail import send_mail
 from decouple import config
-from celery import shared_task, Celery
-from time import sleep
 from emails.services import send_confirmation_mail, promotion_mail
-
-
-@shared_task
-def sleepy(duration):
-    sleep(duration)
-    return None
 
 
 def generate_id():
     n = random.randint(3, 9)
     res = res = int(''.join(random.choices(string.digits, k=n)))
     return res
-
-
-"""
-@shared_task
-def send_confirmation_mail(email: str, token: str):
-    
-    print(config('URL'))
-    send_mail("account created",
-              "Your account has been created " +
-              "click this link: " + link,
-              'Urbanfrauds@urbanfrauds.com',
-              [email, ],
-              fail_silently=False)
-    print("mail_sent to "+email)
-"""
 
 
 def get_all_users() -> SysUser:
