@@ -6,12 +6,6 @@ from decouple import config
 from emails.services import send_confirmation_mail, promotion_mail
 
 
-def generate_id():
-    n = random.randint(3, 9)
-    res = res = int(''.join(random.choices(string.digits, k=n)))
-    return res
-
-
 def get_all_users() -> SysUser:
     result = SysUser.objects.all()
     return result
@@ -23,18 +17,12 @@ def get_user(id: int) -> SysUser:
 
 
 def create_user(**validated_data) -> SysUser:
-    res = generate_id()
     user = SysUser.objects.create_user(**validated_data,
                                        email=validated_data['username'],
-                                       id=res,
                                        is_active=False,
                                        user_type="RU")
     token = Token.objects.create(user=user)
-    link = config('URL') + "authorization/activate_account/" + str(token)
     send_confirmation_mail.delay(email=validated_data['username'], token=str(token))
-    promotion_mail.delay(email=validated_data['username'])
-    # send_confirmation_mail.delay(email=validated_data['username'],
-    #                              token=str(token))
 
 
 def create_google_user(**validated_data) -> SysUser:
