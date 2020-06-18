@@ -14,5 +14,6 @@ urlpatterns = [
     path('create_user_google/', CreateGoogleUserViewSet.as_view()),
     path('activate_account/<str:token>', ActivateAccountViewSet.as_view()),
     path('reset_password/<str:token>', UserPasswordResetViewSet.as_view()),
+    path('rest-auth/', include('rest_auth.urls')),
     path('', include(router.urls))
 ]
