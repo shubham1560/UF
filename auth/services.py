@@ -1,6 +1,6 @@
 from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
-from emails.services import send_confirmation_mail, promotion_mail
+from emails.services import send_confirmation_mail
 
 
 def get_all_users() -> SysUser:
