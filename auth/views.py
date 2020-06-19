@@ -8,6 +8,11 @@ from rest_framework.response import Response
 from .services import get_all_users, get_user, create_user, create_google_user, activate_account, reset_password
 from rest_framework import serializers
 from rest_framework import status
+from django.conf import settings
+from django.core.cache import cache
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 # Create your views here.
 
 
@@ -18,7 +23,12 @@ class UserListViewSet(APIView):
             fields = ('id', 'email', 'profile_pic')
 
     def get(self, request, format=None):
-        users = get_all_users()
+        # breakpoint()
+        if 'allusers' in cache:
+            users = cache.get('allusers')
+        else:
+            users = get_all_users()
+            cache.set('allusers', users, timeout=CACHE_TTL)
         serializer = self.UserListSerializer(users, many=True)
         return Response(serializer.data)
 

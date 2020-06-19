@@ -1,8 +1,5 @@
 from sys_user.models import SysUser
-import string
-import random
 from rest_framework.authtoken.models import Token
-from decouple import config
 from emails.services import send_confirmation_mail, promotion_mail
 
 
@@ -26,14 +23,10 @@ def create_user(**validated_data) -> SysUser:
 
 
 def create_google_user(**validated_data) -> SysUser:
-    res = generate_id()
-
     user_exist = SysUser.objects.get(email=validated_data['username'])
-
     if user_exist:
         token = Token.objects.get(user=user_exist)
         print("User Exist")
-
     else:
         user = SysUser.objects.create_user(**validated_data,
                                            email=validated_data['username'],
@@ -46,9 +39,12 @@ def create_google_user(**validated_data) -> SysUser:
 
 
 def activate_account(token: str):
-    user = Token.objects.get(key=token).user
+    current_token = Token.objects.get(key=token)
+    user = current_token.user
     user.is_active = True
     user.save()
+    current_token.delete()
+    Token.objects.create(user=user)
 
 
 def reset_password(token: str, **validated_data):
