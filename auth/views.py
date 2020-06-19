@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from rest_framework import viewsets
 from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer

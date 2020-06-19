@@ -1,6 +1,6 @@
 from django.urls import path, include
-
+from .views import KnowledgeArticleListView
 
 urlpatterns = [
-    path('article/', ),
+    path('articles/', KnowledgeArticleListView.as_view()),
 ]
