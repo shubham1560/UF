@@ -13,7 +13,7 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.postgresql',
 
-        'NAME': 'uf-db-django',
+        'NAME': 'postgres',
 
         'USER': 'postgres',
 
