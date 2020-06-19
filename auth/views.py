@@ -24,13 +24,13 @@ class UserListViewSet(APIView):
 
     def get(self, request, format=None):
         # breakpoint()
-        if 'allusers' in cache:
-            users = cache.get('allusers')
-        else:
-            users = get_all_users()
-            cache.set('allusers', users, timeout=CACHE_TTL)
+        # if 'allusers' in cache:
+        #    users = cache.get('allusers')
+        # else:
+        users = get_all_users()
+        # cache.set('allusers', users, timeout=CACHE_TTL)
         serializer = self.UserListSerializer(users, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserViewSet(APIView):

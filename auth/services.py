@@ -23,18 +23,11 @@ def create_user(**validated_data) -> SysUser:
 
 
 def create_google_user(**validated_data) -> SysUser:
-    user_exist = SysUser.objects.get(email=validated_data['username'])
-    if user_exist:
-        token = Token.objects.get(user=user_exist)
-        print("User Exist")
-    else:
-        user = SysUser.objects.create_user(**validated_data,
-                                           email=validated_data['username'],
-                                           id=res,
-                                           is_active=True,
-                                           user_type="GU")
-        token, _ = Token.objects.get_or_create(user=user)
-        print("User doesn't exist")
+    user = SysUser.objects.create_user(**validated_data,
+                                       email=validated_data['username'],
+                                       is_active=True,
+                                       user_type="GU")
+    token, _ = Token.objects.get_or_create(user=user)
     return token
 
 
