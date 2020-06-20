@@ -13,7 +13,7 @@ def get_user(id: int) -> SysUser:
     return result
 
 
-def create_user(**validated_data) -> SysUser:
+def create_root_user(**validated_data) -> SysUser:
     user = SysUser.objects.create_user(**validated_data,
                                        email=validated_data['username'],
                                        is_active=False,

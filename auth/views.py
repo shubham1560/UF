@@ -4,13 +4,16 @@ from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer
 from rest_framework.views import APIView
+from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
-from .services import get_all_users, get_user, create_user, create_google_user, activate_account, reset_password
+from .services import get_all_users, get_user, create_root_user, create_google_user, activate_account, reset_password
 from rest_framework import serializers
 from rest_framework import status
 from django.conf import settings
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
+import requests
+import json
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 # Create your views here.
@@ -62,7 +65,7 @@ class CreateUserViewSet(APIView):
     def post(self, request, format=None):
         serializer = self.CreateUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        create_user(**serializer.validated_data)
+        create_root_user(**serializer.validated_data)
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -80,12 +83,36 @@ class CreateGoogleUserViewSet(APIView):
             fields = ('username', 'profile_pic', 'first_name', 'last_name',)
 
     def post(self, request, format=None):
-        breakpoint()
-        serializer = self.CreateGoogleUserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        create_google_user(**serializer.validated_data)
+        #breakpoint()
+        payload = {'access_token': request.data.get("access_token")}
+        r = requests.get("https://www.googleapis.com/oauth2/v2/userinfo", params=payload)
+        data = json.loads(r.text)
 
-        return Response(status=status.HTTP_201_CREATED)
+        if 'error' in data:
+            content = {'message': 'wrong google token/ this token is already expired or you may be trying to pull of an'
+                                  ' attack'}
+            return Response(content)
+
+        try:
+            user = SysUser.objects.get(email=data['email'])
+        except SysUser.DoesNotExist:
+            user = SysUser()
+            user.username = data['email']
+            user.profile_pic = data['picture']
+            user.email = data['email']
+            user.first_name = data['given_name']
+            user.last_name = data['family_name']
+            user.user_type = "GU"
+            user.save()
+
+        token, created = Token.objects.get_or_create(user=user)
+        #serializer = self.CreateGoogleUserSerializer(data=request.data)
+        #serializer.is_valid(raise_exception=True)
+        #create_google_user(**serializer.validated_data)
+        response = {}
+        response['username'] = user.username
+        response['token'] = str(token)
+        return Response(response, status=status.HTTP_201_CREATED)
 
 
 class ActivateAccountViewSet(APIView):
