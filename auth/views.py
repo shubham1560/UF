@@ -80,6 +80,7 @@ class CreateGoogleUserViewSet(APIView):
             fields = ('username', 'profile_pic', 'first_name', 'last_name',)
 
     def post(self, request, format=None):
+        breakpoint()
         serializer = self.CreateGoogleUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         create_google_user(**serializer.validated_data)
