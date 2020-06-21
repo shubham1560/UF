@@ -33,21 +33,30 @@ class KnowledgeArticleView(APIView):
 
     def get(self, request, id, format=None):
         article = getSingleArticle(id)
-        result = self.KnowledgeArticleSerializer(article, many=False)
-        return Response(result.data, status=status.HTTP_200_OK)
+        if article:
+            response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "message": "Ok"}
+            status_code = status.HTTP_200_OK
+        else:
+            response = {"message": "the article with this id doesn't exist"}
+            status_code = status.HTTP_404_NOT_FOUND
+        return Response(response, status=status_code)
 
 
 class ArticleCommentsView(APIView):
     class ArticleCommentsSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbFeedback
-            fields = ('id', 'parent_comment', 'comments', 'user')
+            fields = ('id', 'parent_comment', 'comments', 'user', 'getLikes')
 
     def get(self, request, articleid, format=None):
         comments = getComments(articleid)
-        result = self.ArticleCommentsSerializer(comments, many=True)
-        response = {'data': result.data,
-                    'message': 'OK'}
+        if comments:
+            result = self.ArticleCommentsSerializer(comments, many=True)
+            response = {'data': result.data,
+                        'message': 'OK',
+                        "comments": True}
+        else:
+            response = {'message': "No Comments for mentioned article", "comments": False}
         return Response(response, status=status.HTTP_200_OK)
 
 

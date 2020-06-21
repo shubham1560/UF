@@ -1,4 +1,5 @@
 from .models import KbKnowledge, KbFeedback
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def BFS(comments):
@@ -29,8 +30,11 @@ def getAllArticles():
 
 
 def getSingleArticle(id):
-    article = KbKnowledge.objects.get(id=id)
-    return article
+    try:
+        article = KbKnowledge.objects.get(id=id)
+        return article
+    except ObjectDoesNotExist:
+        pass
 
 
 def getComments(articleid: str):
