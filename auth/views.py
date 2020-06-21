@@ -83,7 +83,7 @@ class CreateGoogleUserViewSet(APIView):
             fields = ('username', 'profile_pic', 'first_name', 'last_name',)
 
     def post(self, request, format=None):
-        #breakpoint()
+        breakpoint()
         payload = {'access_token': request.data.get("access_token")}
         r = requests.get("https://www.googleapis.com/oauth2/v2/userinfo", params=payload)
         data = json.loads(r.text)
@@ -109,9 +109,7 @@ class CreateGoogleUserViewSet(APIView):
         #serializer = self.CreateGoogleUserSerializer(data=request.data)
         #serializer.is_valid(raise_exception=True)
         #create_google_user(**serializer.validated_data)
-        response = {}
-        response['username'] = user.username
-        response['token'] = str(token)
+        response = {'username': user.username, 'token': str(token)}
         return Response(response, status=status.HTTP_201_CREATED)
 
 

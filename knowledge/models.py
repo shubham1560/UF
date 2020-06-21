@@ -72,8 +72,21 @@ class KbFeedback(models.Model):
     sys_updated_on = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(SysUser, on_delete=models.CASCADE)
 
+    def asdict(self):
+        return {'article': self.article,
+                'flagged': self.flagged,
+                'parent_comment': self.parent_comment,
+                'rating': self.rating,
+                'comments': self.comments,
+                }
+
     class Meta:
         verbose_name_plural = "Knowledge Feedbacks"
+
+    def __str__(self):
+        return "id: {}, comments:{},  user: {}".format(self.id,
+                                                       self.comments,
+                                                       self.user)
 
 
 class KbUse(models.Model):

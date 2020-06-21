@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from .services import getAllArticles, getSingleArticle, getComments
+import json
 
 # Create your views here.
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
@@ -20,7 +21,8 @@ class KnowledgeArticleListView(APIView):
     def get(self, request, format=None):
         articles = getAllArticles()
         result = self.KnowledgeArticleListSerializer(articles, many=True)
-        return Response(result.data, status=status.HTTP_200_OK)
+        response = {'data': result.data, 'message': "ok"}
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class KnowledgeArticleView(APIView):
@@ -42,9 +44,11 @@ class ArticleCommentsView(APIView):
             fields = ('id', 'parent_comment', 'comments', 'user')
 
     def get(self, request, articleid, format=None):
-        breakpoint()
         comments = getComments(articleid)
         result = self.ArticleCommentsSerializer(comments, many=True)
-        return Response(result.data, status=status.HTTP_200_OK)
+        response = {'data': result.data,
+                    'message': 'OK'}
+        return Response(response, status=status.HTTP_200_OK)
+
 
 
