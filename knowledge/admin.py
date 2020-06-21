@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import KbKnowledgeBase, KbCategory, KbKnowledge, KbFeedback, KbUse
+from .models import KbKnowledgeBase, KbCategory, KbKnowledge, KbFeedback, KbUse, m2m_knowledge_feedback_likes
 
 
 # Register your models here.
@@ -28,11 +28,17 @@ class KbUseAdmin(admin.ModelAdmin):
     list_display = ['id', 'article']
 
 
+class KbFeedbackLikesAdmin(admin.ModelAdmin):
+    model = m2m_knowledge_feedback_likes
+    list_display = ['id', 'comment', 'liked_by']
+
+
 admin.site.register(KbCategory, KbCategoryAdmin)
 admin.site.register(KbKnowledge, KbKnowledgeAdmin)
 admin.site.register(KbKnowledgeBase, KbKnowledgeBaseAdmin)
 admin.site.register(KbFeedback, KbFeedBackAdmin)
 admin.site.register(KbUse, KbUseAdmin)
+admin.site.register(m2m_knowledge_feedback_likes, KbFeedbackLikesAdmin)
 
 
 

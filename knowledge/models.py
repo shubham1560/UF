@@ -80,6 +80,10 @@ class KbFeedback(models.Model):
                                                        self.comments,
                                                        self.user)
 
+    def getLikes(self):
+        a = m2m_knowledge_feedback_likes.objects.filter(comment=self).count()
+        return a
+
 
 class KbUse(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
@@ -91,3 +95,17 @@ class KbUse(models.Model):
 
     class Meta:
         verbose_name_plural = "Knowledge Uses"
+
+
+class m2m_knowledge_feedback_likes(models.Model):
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+    sys_updated_on = models.DateTimeField(auto_now=True)
+    comment = models.ForeignKey(KbFeedback, on_delete=models.CASCADE)
+    liked_by = models.ForeignKey(SysUser, on_delete=models.CASCADE)
+
+    def asdict(self):
+        return {"comment": self.comment, "liked_by":self.liked_by}
+
+    class Meta:
+        verbose_name_plural = "Knowledge Feedback Likes"
+        unique_together = ['comment', 'liked_by']
