@@ -31,7 +31,6 @@ class UserListViewSet(APIView):
         #    users = cache.get('allusers')
         # else:
         users = get_all_users()
-        # cache.set('allusers', users, timeout=CACHE_TTL)
         serializer = self.UserListSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -56,7 +55,6 @@ class CreateUserViewSet(APIView):
         )
         first_name = serializers.CharField(max_length=50)
         last_name = serializers.CharField(max_length=50)
-        # id = serializers.IntegerField()
 
         class Meta:
             model = SysUser
@@ -76,7 +74,6 @@ class CreateGoogleUserViewSet(APIView):
         profile_pic = serializers.URLField()
         first_name = serializers.CharField()
         last_name = serializers.CharField()
-        # id = serializers.IntegerField()
 
         class Meta:
             model = SysUser
@@ -106,9 +103,6 @@ class CreateGoogleUserViewSet(APIView):
             user.save()
 
         token, created = Token.objects.get_or_create(user=user)
-        #serializer = self.CreateGoogleUserSerializer(data=request.data)
-        #serializer.is_valid(raise_exception=True)
-        #create_google_user(**serializer.validated_data)
         response = {'username': user.username, 'token': str(token)}
         return Response(response, status=status.HTTP_201_CREATED)
 
@@ -138,12 +132,7 @@ class UserPasswordResetViewSet(APIView):
     def post(self, request, token, format=None):
         serializer = self.UserPasswordResetSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # print(request.data)
-        # print(token)
         reset_password(token=token, **serializer.validated_data)
         return Response(status=status.HTTP_201_CREATED)
 
 
-# class UserViewSet(viewsets.ModelViewSet):
-#    queryset = SysUser.objects.all()
-#    serializer_class = UserSerializer
