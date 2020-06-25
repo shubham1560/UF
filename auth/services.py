@@ -42,10 +42,13 @@ def activate_account(token: str):
 
 def reset_password(token: str, **validated_data):
     password = validated_data["password"]
-    print(password, token)
-    user = Token.objects.get(key=token).user
+    current_token = Token.objects.get(key=token)
+    user = current_token.user
     user.set_password(password)
     user.save()
+    current_token.delete()
+    Token.objects.create(user=user)
+
 
 
 
