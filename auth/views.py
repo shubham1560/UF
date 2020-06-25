@@ -115,8 +115,12 @@ class ActivateAccountViewSet(APIView):
         model = Token
 
     def get(self, request, token, format=None):
-        activate_account(token)
-        return Response(status=status.HTTP_200_OK)
+        if activate_account(token):
+            response = {"Message": "The account has been activated, you can log in now"}
+            return Response(response, status=status.HTTP_200_OK)
+        else:
+            response = {"Message": "The url is invalid"}
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
 
 
 class UserPasswordResetViewSet(APIView):

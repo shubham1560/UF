@@ -33,12 +33,16 @@ def create_google_user(**validated_data) -> SysUser:
 
 
 def activate_account(token: str):
-    current_token = Token.objects.get(key=token)
+    try:
+        current_token = Token.objects.get(key=token)
+    except ObjectDoesNotExist:
+        return False
     user = current_token.user
     user.is_active = True
     user.save()
     current_token.delete()
     Token.objects.create(user=user)
+    return True
 
 
 def reset_password(token: str, **validated_data):
