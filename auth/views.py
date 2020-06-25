@@ -132,7 +132,12 @@ class UserPasswordResetViewSet(APIView):
     def post(self, request, token, format=None):
         serializer = self.UserPasswordResetSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        reset_password(token=token, **serializer.validated_data)
-        return Response(status=status.HTTP_201_CREATED)
+
+        if reset_password(token=token, **serializer.validated_data):
+            response = {"message": "The password has been reset, you can log in now"}
+            return Response(response, status=status.HTTP_201_CREATED)
+        else:
+            response = {"message": "The Url is invalid"}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 

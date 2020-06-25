@@ -1,6 +1,7 @@
 from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
 from emails.services import send_confirmation_mail
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def get_all_users() -> SysUser:
@@ -42,12 +43,16 @@ def activate_account(token: str):
 
 def reset_password(token: str, **validated_data):
     password = validated_data["password"]
-    current_token = Token.objects.get(key=token)
+    try:
+        current_token = Token.objects.get(key=token)
+    except ObjectDoesNotExist:
+        return False
     user = current_token.user
     user.set_password(password)
     user.save()
     current_token.delete()
     Token.objects.create(user=user)
+    return True
 
 
 
