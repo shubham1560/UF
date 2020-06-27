@@ -11,7 +11,8 @@ sent_from = "Urbanfrauds@urbanfrauds.com"
 @shared_task
 def send_confirmation_mail(email: str, token: str):
     mail = Email.objects.get(title="confirmation")
-    body = mail.body.format(token=token, url=config('URL'))
+    # body = mail.body.format(token=token, url=config('URL'))
+    body = mail.body.format(token=token, url=config('CLIENT_URL'))
     send_mail(mail.subject, body, sent_from, [email, ], fail_silently=False)
 
 
