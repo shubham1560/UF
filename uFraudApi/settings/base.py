@@ -47,8 +47,31 @@ INSTALLED_APPS = [
     'emails.apps.EmailsConfig',
     'rest_auth',
     'knowledge.apps.KnowledgeConfig',
+    'corsheaders'
 ]
 
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:4200",
+]
+
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 
 AUTH_USER_MODEL = 'sys_user.SysUser'
 
@@ -60,6 +83,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'uFraudApi.urls'
