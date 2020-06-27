@@ -1,10 +1,6 @@
-from django.shortcuts import render
-from rest_framework import viewsets
 from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer
 from rest_framework.views import APIView
-from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from .services import get_all_users, get_user, create_root_user, create_google_user, activate_account, reset_password
 from rest_framework import serializers
