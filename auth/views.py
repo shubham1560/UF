@@ -8,6 +8,7 @@ from rest_framework import serializers
 from rest_framework import status
 from django.conf import settings
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 import requests
 import json
@@ -145,8 +146,12 @@ class UserPasswordResetLink(APIView):
 
     def post(self, request, format=None):
         email = request.data.get("email")
-        if send_reset_link(email):
+        try:
+            user = SysUser.objects.get(email=email)
+            token = Token.objects.get(user=user)
+            send_reset_link(email=email, _token=str(token))
             response = {'message': 'Reset Link has been sent'}
             return Response(response, status=status.HTTP_200_OK)
-        response = {'message': "User with this email doesn't exist"}
-        return Response(response, status=status.HTTP_404_NOT_FOUND)
+        except ObjectDoesNotExist:
+            response = {'message': "User with this email doesn't exist"}
+            return Response(response, status=status.HTTP_404_NOT_FOUND)

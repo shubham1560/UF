@@ -37,12 +37,7 @@ def promotion_mail_mass(email_list: list):
 
 
 @shared_task
-def send_password_reset_link(email: str):
-    try:
-        user = SysUser.objects.get(username=email)
-        token = Token.objects.get(user=user)
-        mail = Email.objects.get(title="passwordresetlink")
-        body = mail.body.format(token=token, url=config('CLIENT_URL'))
-        send_mail(mail.subject, body, sent_from, [email, ], fail_silently=False)
-    except ObjectDoesNotExist:
-        return False
+def send_password_reset_link(email: str, token: str):
+    mail = Email.objects.get(title="passwordresetlink")
+    body = mail.body.format(token=token, url=config('CLIENT_URL'))
+    send_mail(mail.subject, body, sent_from, [email, ], fail_silently=False)

@@ -50,10 +50,8 @@ def reset_password(token: str, **validated_data):
     return True
 
 
-def send_reset_link(email: str):
-    if send_password_reset_link(email) is False:
-        return False
-    return True
+def send_reset_link(email: str, _token: str):
+    send_password_reset_link.delay(email=email, token=_token)
 
 
 
