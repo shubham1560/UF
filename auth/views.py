@@ -2,7 +2,8 @@ from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .services import get_all_users, get_user, create_root_user, create_google_user, activate_account, reset_password
+from .services import get_all_users, get_user, create_root_user, activate_account, reset_password,\
+    send_reset_link
 from rest_framework import serializers
 from rest_framework import status
 from django.conf import settings
@@ -140,3 +141,12 @@ class UserPasswordResetViewSet(APIView):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserPasswordResetLink(APIView):
+
+    def post(self, request, format=None):
+        email = request.data.get("email")
+        if send_reset_link(email):
+            response = {'message': 'Reset Link has been sent'}
+            return Response(response, status=status.HTTP_200_OK)
+        response = {'message': "User with this email doesn't exist"}
+        return Response(response, status=status.HTTP_404_NOT_FOUND)
