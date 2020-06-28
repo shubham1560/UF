@@ -154,7 +154,7 @@ class UserPasswordResetLink(APIView):
         try:
             token = Token.objects.get(user=user)
         except ObjectDoesNotExist:
-            response = {'message': "Token Invalidation"}
+            response = {'message': "Token doesn't exist for the user"}
             return Response(response, status=status.HTTP_404_NOT_FOUND)
         send_reset_link(email=email, _token=str(token))
         response = {'message': 'Reset Link has been sent'}
