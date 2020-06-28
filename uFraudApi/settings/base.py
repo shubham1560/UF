@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'emails.apps.EmailsConfig',
     'rest_auth',
     'knowledge.apps.KnowledgeConfig',
-    'corsheaders'
+    'corsheaders',
+    'logs.apps.LogsConfig',
 ]
 
 CORS_ORIGIN_WHITELIST = [

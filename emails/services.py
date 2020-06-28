@@ -2,11 +2,7 @@ from .models import Email
 from django.core.mail import send_mail, send_mass_mail
 from celery import shared_task
 from decouple import config
-from sys_user.models import SysUser
-from rest_framework.authtoken.models import Token
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.html import strip_tags
-from django.template.loader import render_to_string
+
 
 sent_from = "Urbanfrauds@urbanfrauds.com"
 

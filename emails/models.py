@@ -18,3 +18,6 @@ class Email(models.Model):
     footer = models.TextField(blank=True)
     priority = models.CharField(max_length=1, choices=PRIORITY, default='1')
 
+    def __str__(self):
+        return self.title
+
