@@ -10,7 +10,7 @@ class SysEmailLogAdmin(admin.ModelAdmin):
 
 class RequestLogAdmin(admin.ModelAdmin):
     model = RequestLog
-    list_display = ['id', 'method', 'request_body', 'response_data', 'status', 'time_elapsed']
+    list_display = ['id', 'viewset', 'method', 'request_body', 'response_data', 'status', 'time_elapsed']
 
 
 admin.site.register(SysEmailLog, SysEmailLogAdmin)

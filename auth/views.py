@@ -93,7 +93,7 @@ class CreateGoogleUserViewSet(APIView):
         if 'error' in data:
             content = {'message': 'wrong google token/ this token is already expired or you may be trying to pull of an'
                                   ' attack'}
-            return Response(content)
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
 
         try:
             user = SysUser.objects.get(email=data['email'])
