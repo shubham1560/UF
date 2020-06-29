@@ -10,7 +10,10 @@ def get_all_users() -> SysUser:
 
 
 def get_user(id: int) -> SysUser:
-    result = SysUser.objects.get(id=id)
+    try:
+        result = SysUser.objects.get(id=id)
+    except ObjectDoesNotExist:
+        result = False
     return result
 
 

@@ -8,6 +8,7 @@ from rest_framework import serializers
 from rest_framework import status
 from django.conf import settings
 from django.core.cache import cache
+from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 import requests
@@ -23,10 +24,11 @@ class UserListViewSet(APIView):
             model = SysUser
             fields = ('id', 'email', 'profile_pic')
 
+    @log_request
     def get(self, request, format=None):
         # breakpoint()
         # if 'allusers' in cache:
-        #    users = cache.get('allusers')
+        #     users = cache.get('allusers')
         # else:
         users = get_all_users()
         serializer = self.UserListSerializer(users, many=True)
@@ -39,10 +41,14 @@ class UserViewSet(APIView):
             model = SysUser
             fields = ('id', 'email', 'profile_pic')
 
+    @log_request
     def get(self, request, id, format=None):
         a = get_user(id)
-        serializer = self.UserSerializer(a, many=False)  # for a single result, many should be ommited or False
-        return Response(serializer.data)
+        if a:
+            serializer = self.UserSerializer(a, many=False)  # for a single result, many should be ommited or False
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        response = {'message': 'User with this id: '+str(id)+' does not exist in the database'}
+        return Response(data=response, status=status.HTTP_404_NOT_FOUND)
 
 
 class CreateUserViewSet(APIView):
@@ -58,12 +64,13 @@ class CreateUserViewSet(APIView):
             model = SysUser
             fields = ('username', 'password', 'first_name', 'last_name')
 
+    @log_request
     def post(self, request, format=None):
         serializer = self.CreateUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         create_root_user(**serializer.validated_data)
-
-        return Response(status=status.HTTP_201_CREATED)
+        response = {'message': 'user has been created'}
+        return Response(response, status=status.HTTP_201_CREATED)
 
 
 class CreateGoogleUserViewSet(APIView):
@@ -77,6 +84,7 @@ class CreateGoogleUserViewSet(APIView):
             model = SysUser
             fields = ('username', 'profile_pic', 'first_name', 'last_name',)
 
+    @log_request
     def post(self, request, format=None):
         payload = {'access_token': request.data.get("access_token")}
         r = requests.get("https://www.googleapis.com/oauth2/v2/userinfo", params=payload)
@@ -111,6 +119,7 @@ class ActivateAccountViewSet(APIView):
     class Meta:
         model = Token
 
+    @log_request
     def get(self, request, token, format=None):
         if activate_account(token):
             response = {"Message": "The account has been activated, you can log in now"}
@@ -130,6 +139,7 @@ class UserPasswordResetViewSet(APIView):
             model = SysUser
             fields = ('password',)
 
+    @log_request
     def post(self, request, token, format=None):
         serializer = self.UserPasswordResetSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -144,6 +154,7 @@ class UserPasswordResetViewSet(APIView):
 
 class UserPasswordResetLink(APIView):
 
+    @log_request
     def post(self, request, format=None):
         email = request.data.get("email")
         try:

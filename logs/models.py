@@ -29,3 +29,17 @@ class SysEmailLog(models.Model):
 
     class Meta:
         verbose_name_plural = "Email logs"
+
+
+class RequestLog(models.Model):
+    viewset = models.CharField(max_length=100)
+    method = models.CharField(max_length=10)
+    request_body = models.TextField(null=True)
+    request_header = models.TextField(null=True)
+    response_data = models.TextField()
+    status = models.CharField(max_length=50)
+    time_elapsed = models.DecimalField(max_digits=5, decimal_places=4)
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Request Logs"
