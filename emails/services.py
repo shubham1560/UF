@@ -3,6 +3,7 @@ from django.core.mail import send_mail, send_mass_mail
 from celery import shared_task
 from decouple import config
 from logs.services import log_mail
+from django.core.exceptions import ObjectDoesNotExist
 
 
 sent_from = "Urbanfrauds@urbanfrauds.com"
@@ -34,17 +35,48 @@ def send_confirmation_mail(email: str, token: str):
 def promotion_mail(email: str):
     mail = Email.objects.get(title="Promotion")
     email = email
-    send_mail(mail.subject, mail.body, sent_from, [email, ], fail_silently=False)
+    status = send_mail(mail.subject, mail.body, sent_from, [email, ], fail_silently=False)
+    log_details = {
+        "mail": mail,
+        "body": mail.body,
+        "recipient": email,
+        "sent_from": sent_from,
+        "type": 'SR',
+        "recipients": '',
+        "comments": 'The Promotion mail for individual user',
+        "mail_count": status,
+    }
+    if log_details['mail_count'] == 0:
+        log_details['status'] = 0
+    log_details['status'] = 1
+    log_mail(log_details)
 
 
 @shared_task
 def promotion_mail_mass(email_list: list):
     breakpoint()
-    mail = Email.objects.get(title="Promotion")
-    b = []
-    for email in email_list:
-        b.append((mail.subject, mail.body, sent_from, [email, ]))
-    send_mass_mail(b, fail_silently=False)
+    try:
+        mail = Email.objects.get(title="Promotion")
+        b = []
+        for email in email_list:
+            b.append((mail.subject, mail.body, sent_from, [email, ]))
+        status = send_mass_mail(b, fail_silently=False)
+        log_details = {
+            "mail": mail,
+            "body": mail.body,
+            "recipient": email,
+            "sent_from": sent_from,
+            "type": 'SR',
+            "recipients": email_list,
+            "comments": 'The Promotion mail for all the users is sent',
+            "mail_count": status,
+        }
+        if log_details['mail_count'] == 0:
+            log_details['status'] = 0
+        log_details['status'] = 1
+    except ObjectDoesNotExist:
+        log_details = dict(comments="Something went wrong while sending the mail, check if mail exists in the db")
+    log_mail(log_details)
 
 
 @shared_task
