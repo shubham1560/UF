@@ -183,4 +183,6 @@ CELERY_TASK_SERIALIZER = 'json'
 
 AWS_QUERYSTRING_AUTH = False
 
-DEBUG_LOG = config('DEBUG_LOG') == 'True'
+RANDOM_LOG = config('RANDOM_LOG') == 'True'
+REQUEST_LOG = config('REQUEST_LOG') == 'True'
+EMAIL_LOG = config('EMAIL_LOG') == 'True'
