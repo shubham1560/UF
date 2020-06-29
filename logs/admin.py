@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import SysEmailLog, RequestLog
-import json
+from .models import SysEmailLog, RequestLog, RandomLogs
 
 
 # Register your models here.
@@ -17,5 +16,13 @@ class RequestLogAdmin(admin.ModelAdmin):
     search_fields = ['viewset']
 
 
+class RandomLogsAdmin(admin.ModelAdmin):
+    model = RandomLogs
+    list_display = ['id', 'message', 'source']
+    list_filter = ('source', )
+    search_fields = ['message']
+
+
 admin.site.register(SysEmailLog, SysEmailLogAdmin)
 admin.site.register(RequestLog, RequestLogAdmin)
+admin.site.register(RandomLogs, RandomLogsAdmin)

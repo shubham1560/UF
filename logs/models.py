@@ -43,3 +43,12 @@ class RequestLog(models.Model):
 
     class Meta:
         verbose_name_plural = "Request Logs"
+
+
+class RandomLogs(models.Model):
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+    message = models.CharField(max_length=4000)
+    source = models.CharField(max_length=40)
+
+    class Meta:
+        verbose_name_plural = "Random Logs"
