@@ -38,7 +38,10 @@ def getSingleArticle(id):
 
 
 def getComments(articleid: str):
-    comments = KbFeedback.objects.filter(article=articleid)
-    return comments
+    try:
+        comments = KbFeedback.objects.filter(article=articleid)
+        return comments
+    except ObjectDoesNotExist:
+        pass
 
 
