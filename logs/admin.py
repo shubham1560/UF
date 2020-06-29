@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SysEmailLog, RequestLog, RandomLogs
+from .models import SysEmailLog, RequestLog, RandomLog
 
 
 # Register your models here.
@@ -17,7 +17,7 @@ class RequestLogAdmin(admin.ModelAdmin):
 
 
 class RandomLogsAdmin(admin.ModelAdmin):
-    model = RandomLogs
+    model = RandomLog
     list_display = ['id', 'message', 'source']
     list_filter = ('source', )
     search_fields = ['message']
@@ -25,4 +25,4 @@ class RandomLogsAdmin(admin.ModelAdmin):
 
 admin.site.register(SysEmailLog, SysEmailLogAdmin)
 admin.site.register(RequestLog, RequestLogAdmin)
-admin.site.register(RandomLogs, RandomLogsAdmin)
+admin.site.register(RandomLog, RandomLogsAdmin)

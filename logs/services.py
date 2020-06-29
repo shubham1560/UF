@@ -1,6 +1,7 @@
-from .models import SysEmailLog, RequestLog
+from .models import SysEmailLog, RequestLog, RandomLog
 import time
 from django.core.exceptions import FieldDoesNotExist
+from uFraudApi.settings.base import DEBUG_LOG
 
 
 def log_mail(log_details):
@@ -38,6 +39,16 @@ def log_request(func):
             pass
         return f
     return wrapper
+
+
+def log_random(message: str, source: str = 'shubham'):
+    print(DEBUG_LOG)
+    if DEBUG_LOG:
+        log = RandomLog()
+        log.message = message
+        log.source = source
+        log.save()
+
 
 
 

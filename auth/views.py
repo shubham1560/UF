@@ -17,6 +17,7 @@ from rest_framework import parsers, renderers
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.schemas import ManualSchema
+from logs.services import log_random
 
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
@@ -36,6 +37,7 @@ class UserListViewSet(APIView):
         #     users = cache.get('allusers')
         # else:
         users = get_all_users()
+        log_random(str(users), 'bhanu')
         serializer = self.UserListSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
