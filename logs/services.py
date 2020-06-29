@@ -34,8 +34,6 @@ def log_request(func):
             req_log.request_body = args[1].data
             req_log.response_data = f.data
             req_log.save()
-            print(req_log.id)
-            # f.data[0] = req_log.id
         except FieldDoesNotExist:
             pass
         return f
