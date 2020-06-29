@@ -13,6 +13,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 import requests
 import json
+from rest_framework import parsers, renderers
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.compat import coreapi, coreschema
+from rest_framework.schemas import ManualSchema
+
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 # Create your views here.
@@ -152,7 +157,7 @@ class UserPasswordResetViewSet(APIView):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserPasswordResetLink(APIView):
+class UserPasswordResetLinkViewSet(APIView):
 
     @log_request
     def post(self, request, format=None):
@@ -170,3 +175,46 @@ class UserPasswordResetLink(APIView):
         send_reset_link(email=email, _token=str(token))
         response = {'message': 'Reset Link has been sent'}
         return Response(response, status=status.HTTP_200_OK)
+
+
+class ObtainAuthTokenViewSet(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+    serializer_class = AuthTokenSerializer
+    if coreapi is not None and coreschema is not None:
+        schema = ManualSchema(
+            fields=[
+                coreapi.Field(
+                    name="username",
+                    required=True,
+                    location='form',
+                    schema=coreschema.String(
+                        title="Username",
+                        description="Valid username for authentication",
+                    ),
+                ),
+                coreapi.Field(
+                    name="password",
+                    required=True,
+                    location='form',
+                    schema=coreschema.String(
+                        title="Password",
+                        description="Valid password for authentication",
+                    ),
+                ),
+            ],
+            encoding="application/json",
+        )
+
+    @log_request
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
+
+
