@@ -30,6 +30,7 @@ DATABASES = {
 
 }
 
+
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
@@ -40,6 +41,17 @@ CACHES = {
         }
     }
 }
+
+CACHES = {
+        'default': {
+            'BACKEND': 'redis_cache.RedisCache',
+            'LOCATION': '%s:%s' % ("redis-17645.c14.us-east-1-2.ec2.cloud.redislabs.com", "17645"),
+            'OPTIONS': {
+                'PASSWORD': "pJUD3PHSRsTf0AK6luOVUTciPS8XMwgI",
+                'DB': 0,
+            }
+        }
+    }
 
 AWS_STORAGE_BUCKET_NAME = 'urbanfraud-test'
 

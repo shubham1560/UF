@@ -33,11 +33,15 @@ class UserListViewSet(APIView):
     @log_request
     def get(self, request, format=None):
         # breakpoint()
-        # if 'allusers' in cache:
-        #     users = cache.get('allusers')
-        # else:
-        users = get_all_users()
-        log_random(str(users), 'bhanu')
+
+        if 'allusers' in cache:
+            users = cache.get('allusers')
+            print("from cache")
+        else:
+            users = get_all_users()
+            print("From db")
+            log_random(str(users), 'bhanu')
+            cache.set('allusers', users)
         serializer = self.UserListSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
