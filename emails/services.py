@@ -53,10 +53,9 @@ def promotion_mail(email: str):
 
 
 @shared_task
-def promotion_mail_mass(email_list: list):
-    breakpoint()
+def promotion_mail_mass(email_list: list, title: str):
     try:
-        mail = Email.objects.get(title="Promotion")
+        mail = Email.objects.get(title=title)
         b = []
         for email in email_list:
             b.append((mail.subject, mail.body, sent_from, [email, ]))
