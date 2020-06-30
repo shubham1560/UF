@@ -12,4 +12,5 @@ class SysUser(AbstractUser):
     profile = models.ImageField(upload_to='profile_pictures', null=True, blank=True)
     profile_pic = models.URLField(null=True, blank=True)
     user_type = models.CharField(max_length=2, choices=USER_TPYE, default='RU')
+    id_name = models.CharField(max_length=100, unique=True, null=True, blank=True)
 

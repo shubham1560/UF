@@ -53,6 +53,14 @@ CACHES = {
         }
     }
 
+#
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#     }
+# }
+
+
 AWS_STORAGE_BUCKET_NAME = 'urbanfraud-test'
 
 CELERY_RESULT_BACKEND = 'db+postgresql://postgres:Olabola@12@localhost/uf-db-django'

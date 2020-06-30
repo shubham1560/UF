@@ -2,6 +2,7 @@ from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
 from emails.services import send_confirmation_mail, send_password_reset_link
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.cache import cache
 
 
 def get_all_users() -> SysUser:
@@ -9,9 +10,16 @@ def get_all_users() -> SysUser:
     return result
 
 
-def get_user(id: int) -> SysUser:
+def get_user(id_name: str) -> SysUser:
     try:
-        result = SysUser.objects.get(id=id)
+        key = 'user.'+id_name
+        if key in cache:
+            result = cache.get(key)
+            print("from cache")
+        else:
+            result = SysUser.objects.get(id_name=id_name)
+            cache.set(key, result, timeout=300)
+            print("from db")
     except ObjectDoesNotExist:
         result = False
     return result
@@ -21,7 +29,8 @@ def create_root_user(**validated_data) -> SysUser:
     user = SysUser.objects.create_user(**validated_data,
                                        email=validated_data['username'],
                                        is_active=False,
-                                       user_type="RU")
+                                       user_type="RU",
+                                       id_name='@'+validated_data['username'].split('@')[0])
     token = Token.objects.create(user=user)
     send_confirmation_mail.delay(email=validated_data['username'], token=str(token))
 

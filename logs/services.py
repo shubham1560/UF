@@ -1,7 +1,9 @@
 from .models import SysEmailLog, RequestLog, RandomLog
 import time
 from django.core.exceptions import FieldDoesNotExist
+from django.core.cache import cache
 from uFraudApi.settings.base import RANDOM_LOG, EMAIL_LOG, REQUEST_LOG
+from celery import shared_task
 
 
 def log_mail(log_details):
@@ -45,6 +47,7 @@ def log_request(func):
     return wrapper
 
 
+@shared_task
 def log_random(message: str, source: str = 'shubham'):
     print(RANDOM_LOG)
     if RANDOM_LOG:
@@ -52,6 +55,15 @@ def log_random(message: str, source: str = 'shubham'):
         log.message = message
         log.source = source
         log.save()
+
+
+def cache_working():
+    try:
+        cache.get("allusers")
+        return True
+    except FieldDoesNotExist:
+        return False
+
 
 
 

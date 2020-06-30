@@ -33,14 +33,12 @@ class UserListViewSet(APIView):
     @log_request
     def get(self, request, format=None):
         # breakpoint()
-
         if 'allusers' in cache:
             users = cache.get('allusers')
-            print("from cache")
         else:
             users = get_all_users()
             print("From db")
-            log_random(str(users), 'bhanu')
+            log_random.delay(str(users), 'bhanu')
             cache.set('allusers', users)
         serializer = self.UserListSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -97,6 +95,13 @@ class CreateGoogleUserViewSet(APIView):
 
     @log_request
     def post(self, request, format=None):
+        if request.data.get("access_token") not in cache:
+            print("executing")
+            print(request.data.get('access_token'))
+            cache.set(request.data.get("access_token"), 1, timeout=300)
+        cache.incr(request.data.get("access_token"), delta=1)
+        called = cache.get(request.data.get("access_token"))
+        print(called)
         payload = {'access_token': request.data.get("access_token")}
         r = requests.get("https://www.googleapis.com/oauth2/v2/userinfo", params=payload)
         data = json.loads(r.text)
@@ -116,6 +121,7 @@ class CreateGoogleUserViewSet(APIView):
             user.first_name = data['given_name']
             user.last_name = data['family_name']
             user.user_type = "GU"
+            user.id_name = data['email'].split('@')[0]
             user.save()
 
         token, created = Token.objects.get_or_create(user=user)
@@ -216,6 +222,11 @@ class ObtainAuthTokenViewSet(APIView):
 
     @log_request
     def post(self, request, *args, **kwargs):
+        key = 'login'+request.data.get('username')
+        if key not in cache:
+            cache.set(key, 1)
+        cache.incr(key, delta=1)
+        print(cache.get(key))
         print(request)
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
