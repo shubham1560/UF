@@ -104,7 +104,7 @@ class m2m_knowledge_feedback_likes(models.Model):
     liked_by = models.ForeignKey(SysUser, on_delete=models.CASCADE)
 
     def asdict(self):
-        return {"comment": self.comment, "liked_by":self.liked_by}
+        return {"comment": self.comment, "liked_by": self.liked_by}
 
     class Meta:
         verbose_name_plural = "Knowledge Feedback Likes"
