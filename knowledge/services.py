@@ -2,37 +2,37 @@ from .models import KbKnowledge, KbFeedback
 from django.core.exceptions import ObjectDoesNotExist
 
 
-def BFS(comments):
-    print(comments)
-    visited = [False] * len(comments)
+def nest_comment(comments):
+    # breakpoint()
     queue = []
     final = []
     counter = 0
     for i in comments:
+        i["visited"] = False
         if i["parent_comment_id"] is None:
+            counter += 1
             queue.append(i)
+            i["visited"] = True
     while queue:
         s = queue.pop(0)
         final.append(s)
+        counter += 1
         final[-1]["child"] = []
         for j in comments:
-            if j["parent_comment_id"] == s:
-                final[-1].child.append(j)
-                j.parent = s
-                queue.append(j)
-    print(final)
+            if not j["visited"]:
+                if j["parent_comment_id"] == s['id']:
+                    final[-1]["child"].append(j)
+                    j["visited"] = True
+                    queue.append(j)
     return final
-    # print(queue)
-    # print(final)
-    # return final
 
 
-def getAllArticles():
+def get_all_articles():
     articles = KbKnowledge.objects.all()
     return articles
 
 
-def getSingleArticle(id):
+def get_single_article(id):
     try:
         article = KbKnowledge.objects.get(id=id)
         return article
@@ -40,11 +40,10 @@ def getSingleArticle(id):
         pass
 
 
-def getComments(articleid: str):
-    comments = KbFeedback.objects.filter(article=articleid).values('id', 'parent_comment_id', 'comments')
+def get_comments(articleid: str):
+    comments = KbFeedback.objects.filter(article=articleid).values('id', 'parent_comment_id')
+    # comments = KbFeedback.objects.filter(article=articleid).values()
     q = list(comments)
-    a = BFS(q)
+    a = nest_comment(q)
     result = {"model": list(a)}
     return result
-
-

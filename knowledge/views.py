@@ -6,7 +6,7 @@ from rest_framework import serializers, status
 from django.conf import settings
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
-from .services import getAllArticles, getSingleArticle, getComments
+from .services import get_all_articles, get_single_article, get_comments
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -22,7 +22,7 @@ class KnowledgeArticleListView(APIView):
 
     @log_request
     def get(self, request, format=None):
-        articles = getAllArticles()
+        articles = get_all_articles()
         result = self.KnowledgeArticleListSerializer(articles, many=True)
         response = {'data': result.data, 'message': "ok"}
         return Response(response, status=status.HTTP_200_OK)
@@ -36,7 +36,7 @@ class KnowledgeArticleView(APIView):
 
     @log_request
     def get(self, request, id, format=None):
-        article = getSingleArticle(id)
+        article = get_single_article(id)
         if article:
             response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "message": "Ok"}
             status_code = status.HTTP_200_OK
@@ -58,7 +58,7 @@ class ArticleCommentsView(APIView):
     def get(self, request, articleid, format=None):
         try:
             KbKnowledge.objects.get(id=articleid)
-            comments = getComments(articleid)
+            comments = get_comments(articleid)
             if comments:
                 result = self.ArticleCommentsSerializer(comments, many=True)
                 response = {
