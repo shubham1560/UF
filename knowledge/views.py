@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 from .models import KbKnowledge, KbCategory, KbKnowledgeBase, KbFeedback, KbUse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -46,6 +47,8 @@ class KnowledgeArticleView(APIView):
 
 
 class ArticleCommentsView(APIView):
+    permission_classes = (IsAuthenticated, )
+
     class ArticleCommentsSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbFeedback
@@ -60,7 +63,7 @@ class ArticleCommentsView(APIView):
                 result = self.ArticleCommentsSerializer(comments, many=True)
                 response = {
                         'article': articleid,
-                        'data': result.data,
+                        'data': comments,
                         'message': 'OK',
                         "comments": True,
                     }

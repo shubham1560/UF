@@ -18,6 +18,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.schemas import ManualSchema
 from logs.services import log_random
+from services.cacheservice import rate_limit
 
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
@@ -95,13 +96,6 @@ class CreateGoogleUserViewSet(APIView):
 
     @log_request
     def post(self, request, format=None):
-        if request.data.get("access_token") not in cache:
-            print("executing")
-            print(request.data.get('access_token'))
-            cache.set(request.data.get("access_token"), 1, timeout=300)
-        cache.incr(request.data.get("access_token"), delta=1)
-        called = cache.get(request.data.get("access_token"))
-        print(called)
         payload = {'access_token': request.data.get("access_token")}
         r = requests.get("https://www.googleapis.com/oauth2/v2/userinfo", params=payload)
         data = json.loads(r.text)
@@ -222,12 +216,11 @@ class ObtainAuthTokenViewSet(APIView):
 
     @log_request
     def post(self, request, *args, **kwargs):
-        key = 'login'+request.data.get('username')
-        if key not in cache:
-            cache.set(key, 1)
-        cache.incr(key, delta=1)
-        print(cache.get(key))
-        print(request)
+        key = 'login.'+request.data.get('username')
+        login_attempt = rate_limit(key, timeout=60)
+        if login_attempt > 3:
+            return Response({'too many login attempts, please try again after 2 minutes'},
+                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         if serializer.is_valid(raise_exception=False):
@@ -237,4 +230,10 @@ class ObtainAuthTokenViewSet(APIView):
         else:
             return Response({'message': "Wrong Credentials for logging in"}, status=status.HTTP_404_NOT_FOUND)
 
+
+class CustomViewSet(APIView):
+
+    def get(self, request, format=None):
+        response = [{"id": 1, "children": [{"id" : 2}, {"id" : 3}]}]
+        return Response(response, status=status.HTTP_200_OK)
 
