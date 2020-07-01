@@ -80,7 +80,7 @@ class KbFeedback(models.Model):
                                                        self.comments,
                                                        self.user)
 
-    def getLikes(self):
+    def get_likes(self):
         a = m2m_knowledge_feedback_likes.objects.filter(comment=self).count()
         return a
 

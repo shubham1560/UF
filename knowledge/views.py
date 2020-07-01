@@ -49,18 +49,12 @@ class KnowledgeArticleView(APIView):
 class ArticleCommentsView(APIView):
     permission_classes = (IsAuthenticated, )
 
-    class ArticleCommentsSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = KbFeedback
-            fields = ('id', 'parent_comment', 'comments', 'user', 'getLikes')
-
     @log_request
     def get(self, request, articleid, format=None):
         try:
             KbKnowledge.objects.get(id=articleid)
             comments = get_comments(articleid)
             if comments:
-                result = self.ArticleCommentsSerializer(comments, many=True)
                 response = {
                         'article': articleid,
                         'data': comments,
