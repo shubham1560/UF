@@ -231,9 +231,3 @@ class ObtainAuthTokenViewSet(APIView):
             return Response({'message': "Wrong Credentials for logging in"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class CustomViewSet(APIView):
-
-    def get(self, request, format=None):
-        response = [{"id": 1, "children": [{"id" : 2}, {"id" : 3}]}]
-        return Response(response, status=status.HTTP_200_OK)
-

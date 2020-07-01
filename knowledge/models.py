@@ -80,10 +80,6 @@ class KbFeedback(models.Model):
                                                        self.comments,
                                                        self.user)
 
-    def get_likes(self):
-        a = m2m_knowledge_feedback_likes.objects.filter(comment=self).count()
-        return a
-
 
 class KbUse(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
@@ -91,10 +87,11 @@ class KbUse(models.Model):
     user = models.ForeignKey(SysUser, on_delete=models.CASCADE)
     useful = models.BooleanField(blank=True)
     viewed = models.BooleanField(blank=True)
-    article = models.OneToOneField(KbKnowledge, on_delete=models.CASCADE)
+    article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "Knowledge Uses"
+        unique_together = ['article', 'user']
 
 
 class m2m_knowledge_feedback_likes(models.Model):

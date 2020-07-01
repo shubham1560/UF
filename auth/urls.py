@@ -12,5 +12,4 @@ urlpatterns = [
     path('reset_password/<str:token>', UserPasswordResetViewSet.as_view()),
     path('send_password_reset_link/', UserPasswordResetLinkViewSet.as_view()),
     path('rest-auth/', include('rest_auth.urls')),
-    path('custom/', CustomViewSet.as_view()),
 ]
