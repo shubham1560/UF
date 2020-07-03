@@ -219,8 +219,8 @@ class ObtainAuthTokenViewSet(APIView):
     @log_request
     def post(self, request, *args, **kwargs):
         key = 'login.'+request.data.get('username')
-        login_attempt = rate_limit(key, timeout=60)
-        if login_attempt > 100:
+        login_attempt = rate_limit(key, timeout=2)
+        if login_attempt > 3:
             return Response({'too many login attempts, please try again after 2 minutes'},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
