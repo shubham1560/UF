@@ -26,13 +26,17 @@ def get_user(id_name: str) -> SysUser:
 
 
 def create_root_user(**validated_data) -> SysUser:
-    user = SysUser.objects.create_user(**validated_data,
-                                       email=validated_data['username'],
-                                       is_active=False,
-                                       user_type="RU",
-                                       id_name='@'+validated_data['username'].split('@')[0])
-    token = Token.objects.create(user=user)
-    send_confirmation_mail.delay(email=validated_data['username'], token=str(token))
+    try:
+        user = SysUser.objects.create_user(**validated_data,
+                                           email=validated_data['username'],
+                                           is_active=False,
+                                           user_type="RU",
+                                           id_name='@'+validated_data['username'].split('@')[0])
+        token = Token.objects.create(user=user)
+        send_confirmation_mail(email=validated_data['username'], token=str(token))
+        return True
+    except Exception as e:
+        return False
 
 
 def activate_account(token: str):

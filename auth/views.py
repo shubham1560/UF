@@ -68,7 +68,7 @@ class CreateUserViewSet(APIView):
             style={'input_type': 'password'}
         )
         first_name = serializers.CharField(max_length=50)
-        last_name = serializers.CharField(max_length=50)
+        last_name = serializers.CharField(max_length=50, required=False, allow_blank=True)
 
         class Meta:
             model = SysUser
@@ -78,9 +78,11 @@ class CreateUserViewSet(APIView):
     def post(self, request, format=None):
         serializer = self.CreateUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        create_root_user(**serializer.validated_data)
-        response = {'message': 'user has been created'}
-        return Response(response, status=status.HTTP_201_CREATED)
+        if create_root_user(**serializer.validated_data):
+            response = {'message': 'user has been created'}
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {'message': 'User Already Exists, please log in after you have activted the account'}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateGoogleUserViewSet(APIView):
@@ -218,16 +220,20 @@ class ObtainAuthTokenViewSet(APIView):
     def post(self, request, *args, **kwargs):
         key = 'login.'+request.data.get('username')
         login_attempt = rate_limit(key, timeout=60)
-        if login_attempt > 3:
+        if login_attempt > 100:
             return Response({'too many login attempts, please try again after 2 minutes'},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
-        if serializer.is_valid(raise_exception=False):
+        if serializer.is_valid(raise_exception=True):
             user = serializer.validated_data['user']
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': "Wrong Credentials for logging in"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                token = Token.objects.get(user=user)
+                return Response({'token': token.key}, status=status.HTTP_200_OK)
+            except ObjectDoesNotExist:
+                return Response({'message': "invalid login credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CustomViewSet(APIView):
+    pass

@@ -73,4 +73,8 @@ class ArticleCommentsView(APIView):
             return Response(response, status=status.HTTP_404_NOT_FOUND)
 
 
+class ArticleCommentPostView(APIView):
+    pass
+
+
 
