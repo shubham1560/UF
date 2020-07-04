@@ -172,17 +172,25 @@ class UserPasswordResetLinkViewSet(APIView):
         email = request.data.get("email")
         try:
             user = SysUser.objects.get(email=email)
+            active = user.is_active
         except ObjectDoesNotExist:
-            response = {'message': "User with this email doesn't exist"}
-            return Response(response, status=status.HTTP_404_NOT_FOUND)
+            response = {'user_exist': False, "is_active": False}
+            r_status = status.HTTP_404_NOT_FOUND
+            return Response(response, status=r_status)
         try:
             token = Token.objects.get(user=user)
         except ObjectDoesNotExist:
-            response = {'message': "Token doesn't exist for the user"}
-            return Response(response, status=status.HTTP_404_NOT_FOUND)
-        send_reset_link(email=email, _token=str(token))
-        response = {'message': 'Reset Link has been sent'}
-        return Response(response, status=status.HTTP_200_OK)
+            response = {"token_exist": False, "message": "Please check for the token creation"}
+            r_status = status.HTTP_404_NOT_FOUND
+            return Response(response, status=r_status)
+        if active:
+            send_reset_link(email=email, _token=str(token))
+            response = {'reset_link_sent': True, 'email': email}
+            r_status = status.HTTP_200_OK
+        else:
+            response = {'user_exist': True, "is_active": False}
+            r_status = status.HTTP_400_BAD_REQUEST
+        return Response(response, status=r_status)
 
 
 class ObtainAuthTokenViewSet(APIView):
@@ -241,8 +249,8 @@ class UserTokenValidViewSet(APIView):
 
     def get(self, request, token, format=None):
         try:
-            Token.objects.get(key=token)
-            return Response({"message": "user exists"}, status=status.HTTP_200_OK)
+            user = Token.objects.get(key=token).user
+            return Response({"user_exist": True, "is_active": user.is_active}, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response({"message": "No user with this link valid exists"}, status=status.HTTP_404_NOT_FOUND)
 
