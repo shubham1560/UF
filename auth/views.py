@@ -81,7 +81,7 @@ class CreateUserViewSet(APIView):
         if create_root_user(**serializer.validated_data):
             response = {'message': 'user has been created'}
             return Response(response, status=status.HTTP_201_CREATED)
-        response = {'message': 'User Already Exists, please log in after you have activted the account'}
+        response = {'message': 'User Already Exists, please log in after you have activted the account', 'ue': True}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -218,12 +218,14 @@ class ObtainAuthTokenViewSet(APIView):
 
     @log_request
     def post(self, request, *args, **kwargs):
-        key = 'login.'+request.data.get('username')
-        login_attempt = rate_limit(key, timeout=2)
-        if login_attempt > 3:
-            return Response({'too many login attempts, please try again after 2 minutes'},
-                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
+        try:
+            key = 'login.'+request.data.get('username')
+            login_attempt = rate_limit(key, timeout=2)
+            if login_attempt > 3:
+                return Response({'too many login attempts, please try again after 2 minutes'},
+                                status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        except ObjectDoesNotExist:
+            pass
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         if serializer.is_valid(raise_exception=True):
@@ -233,6 +235,16 @@ class ObtainAuthTokenViewSet(APIView):
                 return Response({'token': token.key}, status=status.HTTP_200_OK)
             except ObjectDoesNotExist:
                 return Response({'message': "invalid login credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserTokenValidViewSet(APIView):
+
+    def get(self, request, token, format=None):
+        try:
+            Token.objects.get(key=token)
+            return Response({"message": "user exists"}, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({"message": "No user with this link valid exists"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class CustomViewSet(APIView):
