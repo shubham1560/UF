@@ -89,6 +89,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django_referrer_policy.middleware.ReferrerPolicyMiddleware',
     'django_feature_policy.FeaturePolicyMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'uFraudApi.urls'
