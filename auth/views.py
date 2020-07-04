@@ -100,6 +100,7 @@ class CreateGoogleUserViewSet(APIView):
 
     @log_request
     def post(self, request, format=None):
+        breakpoint()
         payload = {'access_token': request.data.get("access_token")}
         r = requests.get("https://www.googleapis.com/oauth2/v2/userinfo", params=payload)
         data = json.loads(r.text)
