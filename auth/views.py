@@ -158,10 +158,10 @@ class UserPasswordResetViewSet(APIView):
         serializer.is_valid(raise_exception=True)
 
         if reset_password(token=token, **serializer.validated_data):
-            response = {"message": "The password has been reset, you can log in now"}
+            response = {"url_valid": True, "message": "The password has been reset, you can log in now"}
             return Response(response, status=status.HTTP_201_CREATED)
         else:
-            response = {"message": "The Url is invalid"}
+            response = {"url_valid": False, "message": "The Url is invalid"}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -180,7 +180,7 @@ class UserPasswordResetLinkViewSet(APIView):
         try:
             token = Token.objects.get(user=user)
         except ObjectDoesNotExist:
-            response = {"token_exist": False, "message": "Please check for the token creation"}
+            response = {"token_exist": False, "user_exist": True, "message": "Please check for the token creation"}
             r_status = status.HTTP_404_NOT_FOUND
             return Response(response, status=r_status)
         if active:
@@ -188,7 +188,7 @@ class UserPasswordResetLinkViewSet(APIView):
             response = {'reset_link_sent': True, 'email': email}
             r_status = status.HTTP_200_OK
         else:
-            response = {'user_exist': True, "is_active": False}
+            response = {'user_exist': True, "is_active": False, "message": "User exists but is not active"}
             r_status = status.HTTP_400_BAD_REQUEST
         return Response(response, status=r_status)
 
@@ -250,9 +250,13 @@ class UserTokenValidViewSet(APIView):
     def get(self, request, token, format=None):
         try:
             user = Token.objects.get(key=token).user
-            return Response({"user_exist": True, "is_active": user.is_active}, status=status.HTTP_200_OK)
+            if user.is_active:
+                return Response({"user_exist": True, "is_active": user.is_active}, status=status.HTTP_200_OK)
+            else:
+                return Response({"user_exist": True, "is_active": user.is_active}, status=status.HTTP_400_BAD_REQUEST)
         except ObjectDoesNotExist:
-            return Response({"message": "No user with this link valid exists"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"user_exist": False, "message": "No user with this link valid exists"},
+                            status=status.HTTP_404_NOT_FOUND)
 
 
 class CustomViewSet(APIView):
