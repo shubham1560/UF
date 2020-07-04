@@ -82,8 +82,9 @@ class CreateUserViewSet(APIView):
         if create_root_user(**serializer.validated_data):
             response = {'message': 'user has been created'}
             return Response(response, status=status.HTTP_201_CREATED)
-        response = {'message': 'User Already Exists, please log in after you have activated the account', 'ue': True}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            response = {'message': 'User Already Exists, please log in after you have activated the account', 'ue': True}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateGoogleUserViewSet(APIView):
