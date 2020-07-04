@@ -3,6 +3,7 @@ from rest_framework.authtoken.models import Token
 from emails.services import send_confirmation_mail, send_password_reset_link
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
+from logs.services import log_random
 
 
 def get_all_users() -> SysUser:
@@ -33,7 +34,11 @@ def create_root_user(**validated_data) -> SysUser:
                                            user_type="RU",
                                            id_name='@'+validated_data['username'].split('@')[0])
         token = Token.objects.create(user=user)
-        send_confirmation_mail.delay(email=validated_data['username'], token=str(token))
+        try:
+            send_confirmation_mail(email=validated_data['username'], token=str(token))
+        except ObjectDoesNotExist:
+            log_random("The mail is not reaching, check if the mail exists or not, the mailing is failing")
+            return False
         return True
     except Exception as e:
         return False
