@@ -11,6 +11,7 @@ Django==3.0.7
 django-allauth==0.42.0
 django-celery-results==1.2.1
 django-cors-headers==3.4.0
+django-feature-policy==3.4.0
 django-redis-cache==2.1.1
 django-referrer-policy==1.0
 django-rest-auth==0.9.5
