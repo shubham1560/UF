@@ -76,6 +76,7 @@ class CreateUserViewSet(APIView):
 
     @log_request
     def post(self, request, format=None):
+        # breakpoint()
         serializer = self.CreateUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         if create_root_user(**serializer.validated_data):

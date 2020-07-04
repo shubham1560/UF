@@ -38,7 +38,8 @@ class RequestLog(models.Model):
     request_header = models.TextField(null=True)
     response_data = models.TextField()
     status = models.CharField(max_length=50)
-    time_elapsed = models.DecimalField(max_digits=5, decimal_places=4)
+    time_elapsed = models.CharField(max_length=40, blank=True, null=True)
+    # time_elapsed = models.DecimalField(max_digits=5, decimal_places=4)
     sys_created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:

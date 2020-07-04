@@ -37,7 +37,7 @@ def log_request(func):
                 req_log.method = function_obj[1]
                 req_log.status = f.status_text
                 req_log.function = func
-                req_log.time_elapsed = total_time
+                req_log.time_elapsed = str(total_time)
                 req_log.request_body = args[1].data
                 req_log.response_data = f.data
                 req_log.save()
