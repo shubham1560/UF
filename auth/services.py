@@ -33,7 +33,7 @@ def create_root_user(**validated_data) -> SysUser:
                                            user_type="RU",
                                            id_name='@'+validated_data['username'].split('@')[0])
         token = Token.objects.create(user=user)
-        send_confirmation_mail(email=validated_data['username'], token=str(token))
+        send_confirmation_mail.delay(email=validated_data['username'], token=str(token))
         return True
     except Exception as e:
         return False
