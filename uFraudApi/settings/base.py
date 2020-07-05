@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'knowledge.apps.KnowledgeConfig',
     'corsheaders',
     'logs.apps.LogsConfig',
+    'attachments.apps.AttachmentsConfig',
 ]
 
 CORS_ORIGIN_WHITELIST = [
