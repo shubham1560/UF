@@ -106,3 +106,5 @@ class m2m_knowledge_feedback_likes(models.Model):
     class Meta:
         verbose_name_plural = "Knowledge Feedback Likes"
         unique_together = ['comment', 'liked_by']
+
+
