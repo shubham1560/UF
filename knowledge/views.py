@@ -18,7 +18,7 @@ class KnowledgeArticleListView(APIView):
     class KnowledgeArticleListSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledge
-            fields = ('id', 'featured_image', 'featured_image_thumbnail')
+            fields = ('id', 'title', 'featured_image_thumbnail', 'author', 'article_body')
 
     @log_request
     def get(self, request, format=None):
