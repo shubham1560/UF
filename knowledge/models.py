@@ -6,8 +6,8 @@ from django.core.files import File
 
 
 def compress(image, quality):
-    # im = Image.open(image).convert('RGB')
-    im = image
+    im = Image.open(image).convert('RGB')
+    # im = image
     im_io = BytesIO()
     im.save(im_io, 'JPEG', quality=quality)
     new_image = File(im_io, name=image.name)
@@ -49,37 +49,37 @@ class KbCategory(models.Model):
 class KbKnowledge(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
     active = models.BooleanField(default=True)
-    article_type = models.CharField(max_length=4)
+    article_type = models.CharField(max_length=4, blank=True, null=True)
     author = models.ForeignKey(SysUser,
                                on_delete=models.CASCADE,)
-    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, blank=True, null=True)
     featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
     featured_image_thumbnail = models.ImageField(upload_to="article/featured_image_thumbs/", blank=True, null=True)
-    description = models.CharField(max_length=2000)
+    description = models.CharField(max_length=2000, blank=True, null=True)
     disable_commenting = models.BooleanField(default=False)
     disable_suggesting = models.BooleanField(default=False)
     flagged = models.BooleanField(default=False)
     knowledge_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.CASCADE)
-    number = models.CharField(max_length=12, unique=True)
-    published_on = models.DateTimeField()
-    rating = models.FloatField()
-    title = models.CharField(max_length=50)
+    number = models.CharField(max_length=12, blank=True, null=True)
+    published_on = models.DateTimeField(blank=True, null=True)
+    rating = models.FloatField(blank=True, null=True)
+    title = models.CharField(max_length=50, blank=True, null=True)
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
-    view_count = models.IntegerField(default=0)
-    article_body = models.TextField()
-    topic = models.CharField(max_length=50)
+    view_count = models.IntegerField(default=0, blank=True, null=True)
+    article_body = models.TextField(blank=True, null=True)
+    topic = models.CharField(max_length=50, blank=True, null=True)
     parent_article = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child')
-    workflow = models.CharField(choices=WORKFLOW_STATES, max_length=10)
+    workflow = models.CharField(choices=WORKFLOW_STATES, max_length=10, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Knowledge Articles"
 
     def save(self, *args, **kwargs):
         im = Image.open(self.featured_image).convert('RGB')
-        h, w = im.size()
-        if h*w >1000*1000:
-            thumbnail = compress(im, quality=10)
+        h, w = im.size
+        if h*w > 1000*1000:
+            thumbnail = compress(self.featured_image, quality=1)
             self.featured_image_thumbnail = thumbnail
         else:
             self.featured_image_thumbnail = self.featured_image
