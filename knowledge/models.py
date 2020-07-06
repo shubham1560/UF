@@ -1,6 +1,18 @@
 from django.db import models
 from sys_user.models import SysUser
-# Create your models here.
+from io import BytesIO
+from PIL import Image
+from django.core.files import File
+
+
+def compress(image, quality):
+    # im = Image.open(image).convert('RGB')
+    im = image
+    im_io = BytesIO()
+    im.save(im_io, 'JPEG', quality=quality)
+    new_image = File(im_io, name=image.name)
+    return new_image
+
 
 WORKFLOW_STATES = (
         ('draft', 'Draft'),
@@ -41,6 +53,8 @@ class KbKnowledge(models.Model):
     author = models.ForeignKey(SysUser,
                                on_delete=models.CASCADE,)
     category = models.ForeignKey(KbCategory, on_delete=models.CASCADE)
+    featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
+    featured_image_thumbnail = models.ImageField(upload_to="article/featured_image_thumbs/", blank=True, null=True)
     description = models.CharField(max_length=2000)
     disable_commenting = models.BooleanField(default=False)
     disable_suggesting = models.BooleanField(default=False)
@@ -60,6 +74,16 @@ class KbKnowledge(models.Model):
 
     class Meta:
         verbose_name_plural = "Knowledge Articles"
+
+    def save(self, *args, **kwargs):
+        im = Image.open(self.featured_image).convert('RGB')
+        h, w = im.size()
+        if h*w >1000*1000:
+            thumbnail = compress(im, quality=10)
+            self.featured_image_thumbnail = thumbnail
+        else:
+            self.featured_image_thumbnail = self.featured_image
+        super().save(*args, **kwargs)
 
 
 class KbFeedback(models.Model):
