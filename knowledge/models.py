@@ -10,7 +10,7 @@ from django.core.files.base import ContentFile
 
 
 def compressImage(uploadedImage):
-    imageTemproary = Image.open(uploadedImage)
+    imageTemproary = Image.open(uploadedImage).convert('RGB')
     outputIoStream = BytesIO()
     imageTemproaryResized = imageTemproary.resize((300, 200))
     imageTemproaryResized.save(outputIoStream, format='JPEG', quality=60)
