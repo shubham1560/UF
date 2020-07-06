@@ -13,24 +13,12 @@ def compress(image, quality, name='test'):
     if h*w < 1000*1000:
         im.save(im_io, 'JPEG', quality=100)
     elif h*w < 3000*3000:
-        if quality == "compress":
-            im.save(im_io, 'JPEG', quality=60)
-        else:
-            im.save(im_io, 'JPEG', quality=10)
+        im.save(im_io, 'JPEG', quality=60)
     elif h*w < 5000*5000:
-        if quality == "compress":
-            im.save(im_io, 'JPEG', quality=40)
-        else:
-            im.save(im_io, 'JPEG', quality=5)
+        im.save(im_io, 'JPEG', quality=40)
     else:
-        if quality == "compress":
-            im.save(im_io, 'JPEG', quality=30)
-        else:
-            im.save(im_io, 'JPEG', quality=5)
-    if name == 'test':
-        new_image = File(im_io, name=image.name)
-    else:
-        new_image = File(im_io, name=(name+"_"+image.name))
+        im.save(im_io, 'JPEG', quality=30)
+    new_image = File(im_io, name=image.name)
     return new_image
 
 
@@ -45,13 +33,7 @@ class AttachedImage(models.Model):
     article = models.ForeignKey(KbKnowledge, blank=True, null=True, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        if self.article:
-            compressed = compress(self.real_image, quality='compress', name=self.article.id)
-            thumbnail = compress(self.real_image, quality='thumbnail', name=self.article.id)
-        else:
-            compressed = compress(self.real_image, quality='compress')
-            thumbnail = compress(self.real_image, quality='thumbnail')
+        compressed = compress(self.real_image, quality="compress")
         self.compressed = compressed
-        self.thumbnail = thumbnail
         super().save(*args, **kwargs)
 

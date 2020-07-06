@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'logs.apps.LogsConfig',
     'attachments.apps.AttachmentsConfig',
+    'sorl.thumbnail',
+    'image_optimizer',
 ]
 
 CORS_ORIGIN_WHITELIST = [
@@ -95,6 +97,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'uFraudApi.urls'
+
+OPTIMIZED_IMAGE_METHOD = 'pillow'
 
 TEMPLATES = [
     {
