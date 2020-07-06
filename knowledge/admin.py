@@ -5,9 +5,10 @@ from .models import KbKnowledgeBase, KbCategory, KbKnowledge, KbFeedback, KbUse,
 # Register your models here.
 class KbKnowledgeAdmin(admin.ModelAdmin):
     model = KbKnowledge
-    list_display = ['id', 'featured_image', 'featured_image_thumbnail', 'author', 'published_on', 'article_body',
+    list_display = ['id', 'featured_image', 'featured_image_thumbnail', 'author', 'published_on',
                     'sys_created_on']
     fields = ['id', 'title', 'featured_image', 'author', 'knowledge_base', 'article_body']
+    ordering = ['-sys_created_on']
 
 
 class KbKnowledgeBaseAdmin(admin.ModelAdmin):

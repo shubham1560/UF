@@ -46,3 +46,8 @@ def get_comments(articleid: str):
     a = nest_comment(q)
     result = {"model": list(a)}
     return result
+
+
+def get_paginated_articles(start: int, end: int):
+    articles = KbKnowledge.objects.all()[start:end]
+    return articles

@@ -6,7 +6,7 @@ from rest_framework import serializers, status
 from django.conf import settings
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
-from .services import get_all_articles, get_single_article, get_comments
+from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -18,13 +18,28 @@ class KnowledgeArticleListView(APIView):
     class KnowledgeArticleListSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledge
-            fields = ('id', 'title', 'featured_image_thumbnail', 'author', 'article_body')
+            fields = ('id', 'title', 'featured_image_thumbnail', 'author', 'article_body', 'getAuthor')
 
     @log_request
     def get(self, request, format=None):
         articles = get_all_articles()
         result = self.KnowledgeArticleListSerializer(articles, many=True)
         response = {'data': result.data, 'message': "ok"}
+        return Response(response, status=status.HTTP_200_OK)
+
+
+class KnowledgeArticlePaginatedListView(APIView):
+    class KnowledgeArticleListSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbKnowledge
+            fields = ('id', 'title', 'featured_image_thumbnail', 'author', 'article_body', 'getAuthor')
+
+    @log_request
+    def get(self, request, start, end, format=None):
+        articles = get_paginated_articles(start, end)
+        total_articles = KbKnowledge.objects.all().count()
+        result = self.KnowledgeArticleListSerializer(articles, many=True)
+        response = {'data': result.data, 'message': 'ok', 'total_articles': total_articles}
         return Response(response, status=status.HTTP_200_OK)
 
 

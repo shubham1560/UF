@@ -62,7 +62,7 @@ class KbCategory(models.Model):
 
 
 class KbKnowledge(models.Model):
-    id = models.CharField(max_length=100, primary_key=True)
+    id = models.CharField(max_length=300, primary_key=True)
     active = models.BooleanField(default=True)
     article_type = models.CharField(max_length=4, blank=True, null=True)
     author = models.ForeignKey(SysUser,
@@ -78,7 +78,7 @@ class KbKnowledge(models.Model):
     number = models.CharField(max_length=12, blank=True, null=True)
     published_on = models.DateTimeField(blank=True, null=True)
     rating = models.FloatField(blank=True, null=True)
-    title = models.CharField(max_length=50, blank=True, null=True)
+    title = models.CharField(max_length=300, blank=True, null=True)
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
     view_count = models.IntegerField(default=0, blank=True, null=True)
@@ -89,6 +89,13 @@ class KbKnowledge(models.Model):
 
     class Meta:
         verbose_name_plural = "Knowledge Articles"
+
+    def getAuthor(self):
+        return {
+            'first_name': self.author.first_name,
+            "id": self.author.id_name,
+            'last_name': self.author.last_name,
+        }
 
     def save(self, *args, **kwargs):
         # im = Image.open(self.featured_image).convert('RGB')
