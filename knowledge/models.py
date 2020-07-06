@@ -1,9 +1,23 @@
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from sys_user.models import SysUser
 from io import BytesIO
 from PIL import Image
 from django.core.files import File
 from image_optimizer.utils import image_optimizer
+import sys
+from django.core.files.base import ContentFile
+
+
+def compressImage(uploadedImage):
+    imageTemproary = Image.open(uploadedImage)
+    outputIoStream = BytesIO()
+    imageTemproaryResized = imageTemproary.resize((300, 200))
+    imageTemproaryResized.save(outputIoStream, format='JPEG', quality=60)
+    outputIoStream.seek(0)
+    uploadedImage = InMemoryUploadedFile(outputIoStream, 'ImageField', "%s.jpg" % uploadedImage.name.split('.')[0],
+                                         'image/jpeg', sys.getsizeof(outputIoStream), None)
+    return uploadedImage
 
 
 def compress(image, quality):
@@ -84,9 +98,18 @@ class KbKnowledge(models.Model):
         #     self.featured_image_thumbnail = thumbnail
         # else:
         #     self.featured_image_thumbnail = self.featured_image
-        self.featured_image_thumbnail = image_optimizer(self.featured_image,
-                                                        output_size=(300, 200),
-                                                        resize_method='cover')
+        # breakpoint()
+        # im1 = Image.open(self.featured_image).convert('RGB').copy()
+        # im_io = BytesIO()
+        # im1.save(im_io, 'JPEG', quality=80)
+        # new_image = File(im_io, name=self.featured_image.name)
+        # im2 = im1.copy()
+        # self.featured_image_thumbnail = image_optimizer(new_image,
+        #                                                 output_size=(300, 200),
+        #                                                 resize_method='cover')
+        # breakpoint()
+        self.featured_image_thumbnail = compressImage(self.featured_image)
+        # self.featured_image = new_image
         super().save(*args, **kwargs)
 
 
