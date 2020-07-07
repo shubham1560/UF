@@ -32,7 +32,7 @@ class KnowledgeArticlePaginatedListView(APIView):
     class KnowledgeArticleListSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledge
-            fields = ('id', 'title', 'featured_image_thumbnail', 'author', 'article_body', 'getAuthor')
+            fields = ('id', 'title', 'featured_image_thumbnail', 'description', 'getAuthor')
 
     @log_request
     def get(self, request, start, end, format=None):

@@ -70,7 +70,7 @@ class KbKnowledge(models.Model):
     category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, blank=True, null=True)
     featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
     featured_image_thumbnail = models.ImageField(upload_to="article/featured_image_thumbs/", blank=True, null=True)
-    description = models.CharField(max_length=2000, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     disable_commenting = models.BooleanField(default=False)
     disable_suggesting = models.BooleanField(default=False)
     flagged = models.BooleanField(default=False)
@@ -164,5 +164,16 @@ class m2m_knowledge_feedback_likes(models.Model):
     class Meta:
         verbose_name_plural = "Knowledge Feedback Likes"
         unique_together = ['comment', 'liked_by']
+
+
+class BookmarkUserArticle(models.Model):
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+    sys_updated_on = models.DateTimeField(auto_now=True)
+    article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)
+    user = models.ForeignKey(SysUser, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Bookmarks User Articles"
+        unique_together = ['article', 'user']
 
 
