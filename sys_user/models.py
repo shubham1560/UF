@@ -25,6 +25,7 @@ def compressImage(uploadedImage):
                                          'image/jpeg', sys.getsizeof(outputIoStream), None)
     return uploadedImage
 
+
 class SysUser(AbstractUser):
 
     USER_TPYE = [
@@ -32,9 +33,9 @@ class SysUser(AbstractUser):
         ('RU', 'ROOT'),
     ]
 
-    profile = models.ImageField(upload_to=upload_path, null=True, blank=True)
+    profile = models.ImageField(upload_to="profile_pics", null=True, blank=True)
     profile_pic = models.URLField(null=True, blank=True)
-    header_image = models.ImageField(upload_to=upload_path_compress, null=True, blank=True)
+    header_image = models.ImageField(upload_to="profile_pics_compressed", null=True, blank=True)
     user_type = models.CharField(max_length=2, choices=USER_TPYE, default='RU')
     id_name = models.CharField(max_length=100, unique=True, null=True, blank=True)
 
@@ -56,9 +57,7 @@ class SysUser(AbstractUser):
         #                                                 output_size=(300, 200),
         #                                                 resize_method='cover')
         # breakpoint()
-        try:
+        if self.profile:
             self.header_image = compressImage(self.profile)
-        except FileNotFoundError:
-            pass
         # self.featured_image = new_image
         super().save(*args, **kwargs)
