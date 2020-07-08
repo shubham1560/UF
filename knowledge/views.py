@@ -62,7 +62,7 @@ class KnowledgeArticleView(APIView):
 
 
 class ArticleCommentsView(APIView):
-    #permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, )
 
     @log_request
     def get(self, request, articleid, format=None):

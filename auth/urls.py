@@ -1,6 +1,7 @@
 from django.urls import path, include
 from .views import UserViewSet, UserListViewSet, CreateUserViewSet, CreateGoogleUserViewSet, ActivateAccountViewSet, \
-    UserPasswordResetViewSet, UserPasswordResetLinkViewSet, ObtainAuthTokenViewSet, CustomViewSet, UserTokenValidViewSet
+    UserPasswordResetViewSet, UserPasswordResetLinkViewSet, ObtainAuthTokenViewSet, \
+    UserTokenValidViewSet,GetUserDetailFromTokenViewSet
 
 urlpatterns = [
     path('get_token/', ObtainAuthTokenViewSet.as_view()),
@@ -13,5 +14,5 @@ urlpatterns = [
     path('send_password_reset_link/', UserPasswordResetLinkViewSet.as_view()),
     path('rest-auth/', include('rest_auth.urls')),
     path('token_valid/<str:token>/', UserTokenValidViewSet.as_view()),
-    path('test-pf', CustomViewSet.as_view()),
+    path('token_get_user/', GetUserDetailFromTokenViewSet.as_view()),
 ]
