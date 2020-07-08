@@ -2,7 +2,7 @@ from .models import SysUser
 from rest_framework.views import APIView
 from rest_framework import serializers, status
 from rest_framework.response import Response
-from .services import remove_user
+# from .services import remove_user
 
 
 class GetUserDetailViewSet(APIView):
@@ -25,5 +25,4 @@ class GetUserDetailViewSet(APIView):
         response = {'user': serializer.data}
         # user = get_user_from_token(token)
         return Response(response, status=status.HTTP_200_OK)
-
 

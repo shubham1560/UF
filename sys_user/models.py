@@ -56,6 +56,9 @@ class SysUser(AbstractUser):
         #                                                 output_size=(300, 200),
         #                                                 resize_method='cover')
         # breakpoint()
-        self.header_image = compressImage(self.profile)
+        try:
+            self.header_image = compressImage(self.profile)
+        except FileNotFoundError:
+            pass
         # self.featured_image = new_image
         super().save(*args, **kwargs)
