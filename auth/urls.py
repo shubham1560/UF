@@ -1,7 +1,7 @@
 from django.urls import path, include
 from .views import UserViewSet, UserListViewSet, CreateUserViewSet, CreateGoogleUserViewSet, ActivateAccountViewSet, \
     UserPasswordResetViewSet, UserPasswordResetLinkViewSet, ObtainAuthTokenViewSet, \
-    UserTokenValidViewSet,GetUserDetailFromTokenViewSet
+    UserTokenValidViewSet, GetUserDetailFromTokenViewSet
 
 urlpatterns = [
     path('get_token/', ObtainAuthTokenViewSet.as_view()),
