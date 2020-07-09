@@ -12,17 +12,13 @@ class GetUserDetailViewSet(APIView):
             fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image')
 
     def get(self, request, format=None):
-        # breakpoint()
-        # print(reques  t.user.first_name)
+        serializer = self.GetUserDetailFromTokenSerializer(request.user, many=False)
+        response = {'user': serializer.data}
+        return Response(response, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
         if request.data["delete"]:
-            # remove_user(request.user)
             request.user.delete()
             response = {"message": "User Deleted Successfully"}
             return Response(response, status=status.HTTP_200_OK)
-
-        serializer = self.GetUserDetailFromTokenSerializer(request.user, many=False)
-        # response = {"user_model": list(request.user.first_name)}
-        response = {'user': serializer.data}
-        # user = get_user_from_token(token)
-        return Response(response, status=status.HTTP_200_OK)
 
