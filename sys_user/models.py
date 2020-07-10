@@ -25,6 +25,7 @@ def compressImage(uploadedImage):
                                          'image/jpeg', sys.getsizeof(outputIoStream), None)
     return uploadedImage
 
+
 class SysUser(AbstractUser):
 
     USER_TPYE = [
