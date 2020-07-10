@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'attachments.apps.AttachmentsConfig',
     'sorl.thumbnail',
     'image_optimizer',
+    'agile_development.apps.AgileDevelopmentConfig',
 ]
 
 CORS_ORIGIN_WHITELIST = [

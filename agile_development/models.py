@@ -39,11 +39,11 @@ SPRINT_STATES = (
 )
 
 PRIORITY = (
-    (1, '1 - Critical'),
-    (2, '2 - High'),
-    (3, '3 - Moderate'),
-    (4, '4 - Low'),
-    (5, '5 - Planning')
+    ('1', '1 - Critical'),
+    ('2', '2 - High'),
+    ('3', '3 - Moderate'),
+    ('4', '4 - Low'),
+    ('5', '5 - Planning')
 )
 
 TASK_TYPE = (
@@ -54,8 +54,7 @@ TASK_TYPE = (
 
 
 class Feature(models.Model):
-    priority = models.CharField(choices=PRIORITY, blank=True, null=True)
-    state = models.CharField(choices=STATES, max_length=50, blank=True, null=True)
+    priority = models.CharField(choices=PRIORITY, blank=True, null=True, max_length=30)
     short_description = models.CharField(max_length=300, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     work_notes = models.TextField(blank=True, null=True)
@@ -67,14 +66,17 @@ class Feature(models.Model):
 
 
 class Defect(Feature):
+    state = models.CharField(choices=STATES, max_length=50, blank=True, null=True)
     feature_type = models.CharField(choices=FEATURE_TYPE, max_length=5, default='D')
 
 
 class Enhancement(Feature):
+    state = models.CharField(choices=STATES, max_length=50, blank=True, null=True)
     feature_type = models.CharField(choices=FEATURE_TYPE, max_length=5, default='EN')
 
 
 class Epic(Feature):
+    state = models.CharField(choices=STATES, max_length=50, blank=True, null=True)
     feature_type = models.CharField(choices=FEATURE_TYPE, max_length=5, default='EP')
 
 
@@ -101,25 +103,47 @@ class Theme(models.Model):
     description = models.TextField(blank=True, null=True)
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='updated_by', limit_choices_to={'is_staff': True})
+
+    def save(self, *args, **kwargs):
+        # breakpoint()
+        super().save(*args, **kwargs)
 
 
-class Story(Feature):
+class Story(models.Model):
+    priority = models.CharField(choices=PRIORITY, blank=True, null=True, max_length=30)
+    short_description = models.CharField(max_length=300, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    work_notes = models.TextField(blank=True, null=True)
+    additional_comments = models.TextField(blank=True, null=True)
+    assigned_to = models.ForeignKey(SysUser, on_delete=models.CASCADE, limit_choices_to={'is_staff': True}, blank=True,
+                                    null=True)
+    assignment_group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+    sys_updated_on = models.DateTimeField(auto_now=True)
     points = models.IntegerField(default=5, blank=True, null=True)
     blocked = models.BooleanField(default=False, blank=True, null=True)
     reason_of_blockage = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(choices=STORY_STATES, max_length=50, blank=True, null=True)
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE, blank=True, null=True)
-    defect = models.ForeignKey(Defect, on_delete=models.CASCADE, blank=True, null=True)
-    enhancement = models.ForeignKey(Enhancement, on_delete=models.CASCADE, blank=True, null=True)
-    epic = models.ForeignKey(Epic, on_delete=models.CASCADE, blank=True, null=True)
+    defect = models.ForeignKey(Defect, on_delete=models.CASCADE, blank=True, null=True, related_name='defects')
+    enhancement = models.ForeignKey(Enhancement, on_delete=models.CASCADE, blank=True, null=True,
+                                    related_name='enhancements')
+    epic = models.ForeignKey(Epic, on_delete=models.CASCADE, blank=True, null=True, related_name='epics')
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, blank=True, null=True)
-    sys_created_on = models.DateTimeField(auto_now_add=True)
-    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='story_created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='story_updated_by', limit_choices_to={'is_staff': True})
 
 
 class StoryDependency(models.Model):
     dependent_story = models.ForeignKey(Story, on_delete=models.CASCADE, blank=True, null=True)
-    prerequisite_story = models.ForeignKey(Story, on_delete=models.CASCADE, blank=True, null=True)
+    prerequisite_story = models.ForeignKey(Story, on_delete=models.CASCADE, blank=True, null=True,
+                                           related_name='prerequisite')
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
 
