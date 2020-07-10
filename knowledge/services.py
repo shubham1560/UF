@@ -1,4 +1,4 @@
-from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes
+from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -51,3 +51,9 @@ def get_comments(articleid: str):
 def get_paginated_articles(start: int, end: int):
     articles = KbKnowledge.objects.all()[start:end]
     return articles
+
+
+def get_bookmarked_articles(user) -> BookmarkUserArticle:
+    bookmarked_articles = BookmarkUserArticle.objects.filter(user=user)
+    return bookmarked_articles
+

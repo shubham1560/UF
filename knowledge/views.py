@@ -1,12 +1,13 @@
 from rest_framework.permissions import IsAuthenticated
-from .models import KbKnowledge, KbCategory, KbKnowledgeBase, KbFeedback, KbUse
+from .models import KbKnowledge, BookmarkUserArticle
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from django.conf import settings
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
-from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles
+from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
+    get_bookmarked_articles
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -90,6 +91,22 @@ class ArticleCommentsView(APIView):
 
 class ArticleCommentPostView(APIView):
     pass
+
+
+class GetBookmarkedArticleViewSet(APIView):
+    class BookmarkedArticleListSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = BookmarkUserArticle
+            fields = ('id', 'article', 'user', 'get_article')
+
+    @log_request
+    def get(self, request, format=None):
+        # breakpoint()
+        articles = get_bookmarked_articles(request.user)
+        result = self.BookmarkedArticleListSerializer(articles, many=True)
+        response = {"bookmarked_articles": result.data}
+        return Response(response, status=status.HTTP_200_OK)
+
 
 
 

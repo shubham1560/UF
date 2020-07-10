@@ -176,4 +176,13 @@ class BookmarkUserArticle(models.Model):
         verbose_name_plural = "Bookmarks User Articles"
         unique_together = ['article', 'user']
 
+    def get_article(self):
+        return {
+            'id': self.article.id,
+            'title': self.article.title,
+            'description': self.article.description,
+            'author': self.article.getAuthor(),
+
+        }
+
 
