@@ -79,6 +79,9 @@ class Epic(Feature):
     state = models.CharField(choices=STATES, max_length=50, blank=True, null=True)
     feature_type = models.CharField(choices=FEATURE_TYPE, max_length=5, default='EP')
 
+    def __str__(self):
+        return self.short_description
+
 
 class Sprint(models.Model):
     priority = models.CharField(choices=PRIORITY, max_length=1, blank=True, null=True)
@@ -112,9 +115,14 @@ class Theme(models.Model):
         # breakpoint()
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return self.short_description
+
 
 class Story(models.Model):
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, blank=True, null=True)
     priority = models.CharField(choices=PRIORITY, blank=True, null=True, max_length=30)
+    state = models.CharField(choices=STORY_STATES, max_length=50, blank=True, null=True)
     short_description = models.CharField(max_length=300, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     work_notes = models.TextField(blank=True, null=True)
@@ -127,8 +135,6 @@ class Story(models.Model):
     points = models.IntegerField(default=5, blank=True, null=True)
     blocked = models.BooleanField(default=False, blank=True, null=True)
     reason_of_blockage = models.CharField(max_length=100, blank=True, null=True)
-    state = models.CharField(choices=STORY_STATES, max_length=50, blank=True, null=True)
-    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, blank=True, null=True)
     defect = models.ForeignKey(Defect, on_delete=models.CASCADE, blank=True, null=True, related_name='defects')
     enhancement = models.ForeignKey(Enhancement, on_delete=models.CASCADE, blank=True, null=True,
                                     related_name='enhancements')
