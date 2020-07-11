@@ -37,3 +37,4 @@ class AttachedImage(models.Model):
         self.compressed = compressed
         super().save(*args, **kwargs)
 
+

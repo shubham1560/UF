@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
-    get_bookmarked_articles
+    get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -37,11 +37,16 @@ class KnowledgeArticlePaginatedListView(APIView):
 
     @log_request
     def get(self, request, start, end, format=None):
-        articles = get_paginated_articles(start, end)
+        # breakpoint()
         total_articles = KbKnowledge.objects.all().count()
-        result = self.KnowledgeArticleListSerializer(articles, many=True)
-        response = {'data': result.data, 'message': 'ok', 'total_articles': total_articles}
-        return Response(response, status=status.HTTP_200_OK)
+        if request.user.is_anonymous:
+            articles = get_paginated_articles(start, end)
+            result = self.KnowledgeArticleListSerializer(articles, many=True)
+            response = {'data': result.data, 'message': 'ok', 'total_articles': total_articles}
+            return Response(response, status=status.HTTP_200_OK)
+        else:
+            articles = get_articles_for_logged_in_user_with_bookmark(start, end, request.user)
+            return Response({"message": "Ok", "data": articles["data"], 'total_articles': total_articles})
 
 
 class KnowledgeArticleView(APIView):
@@ -102,11 +107,21 @@ class GetBookmarkedArticleViewSet(APIView):
     @log_request
     def get(self, request, format=None):
         # breakpoint()
+        count = BookmarkUserArticle.objects.filter(user=request.user).count()
         articles = get_bookmarked_articles(request.user)
         result = self.BookmarkedArticleListSerializer(articles, many=True)
-        response = {"bookmarked_articles": result.data}
+        response = {"bookmarked_articles": result.data, "articles_count": count}
         return Response(response, status=status.HTTP_200_OK)
 
 
+class BookmarkArticlesViewSet(APIView):
+
+    def post(self, request, format=None):
+        article_id = request.data['article_id']
+        if bookmark_the_article(request.user, article_id):
+            response = {"bookmarked": True}
+        else:
+            response = {'bookmarked': False}
+        return Response(response, status=status.HTTP_201_CREATED)
 
 
