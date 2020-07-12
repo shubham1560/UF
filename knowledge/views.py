@@ -53,7 +53,7 @@ class KnowledgeArticleView(APIView):
     class KnowledgeArticleSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledge
-            fields = ('id', 'title', 'article_body')
+            fields = ('id', 'title', 'article_body', "getAuthor", "get_category", "get_knowledge_base")
 
     @log_request
     def get(self, request, id, format=None):

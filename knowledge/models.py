@@ -6,6 +6,7 @@ from PIL import Image
 from django.core.files import File
 from image_optimizer.utils import image_optimizer
 import sys
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 
 
@@ -67,7 +68,7 @@ class KbKnowledge(models.Model):
     article_type = models.CharField(max_length=4, blank=True, null=True)
     author = models.ForeignKey(SysUser,
                                on_delete=models.CASCADE,)
-    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, blank=True, null=True)
+    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, blank=True, null=True, default='random')
     featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
     featured_image_thumbnail = models.ImageField(upload_to="article/featured_image_thumbs/", blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -91,11 +92,42 @@ class KbKnowledge(models.Model):
         verbose_name_plural = "Knowledge Articles"
 
     def getAuthor(self):
-        return {
-            'first_name': self.author.first_name,
-            "id": self.author.id_name,
-            'last_name': self.author.last_name,
-        }
+        try:
+            return {
+                'author_exist': True,
+                'first_name': self.author.first_name,
+                "id": self.author.id_name,
+                'last_name': self.author.last_name,
+            }
+        except ObjectDoesNotExist:
+            return {
+                'author_exist': False
+            }
+
+    def get_category(self):
+        try:
+            return {
+                'category_exist': True,
+                'category_label': self.category.label,
+                'id': self.category.id
+            }
+        except ObjectDoesNotExist:
+            return{
+                'category_exist': False,
+            }
+
+    def get_knowledge_base(self):
+        try:
+            return {
+                'knowledge_base_exist': True,
+                'knowledge_base': self.knowledge_base.title,
+                'description': self.knowledge_base.description,
+                'id': self.knowledge_base.id,
+            }
+        except ObjectDoesNotExist:
+            return {
+                'knowledge_base_exist': False,
+            }
 
     def save(self, *args, **kwargs):
         # im = Image.open(self.featured_image).convert('RGB')
@@ -115,7 +147,8 @@ class KbKnowledge(models.Model):
         #                                                 output_size=(300, 200),
         #                                                 resize_method='cover')
         # breakpoint()
-        self.featured_image_thumbnail = compressImage(self.featured_image)
+        if self.featured_image:
+            self.featured_image_thumbnail = compressImage(self.featured_image)
         # self.featured_image = new_image
         super().save(*args, **kwargs)
 

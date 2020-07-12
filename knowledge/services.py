@@ -1,4 +1,5 @@
-from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle
+from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle,\
+    KbCategory, KbKnowledgeBase
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from sys_user.models import SysUser
 from decouple import config
@@ -49,12 +50,37 @@ def bookmark_status(articles, user):
         if article["featured_image_thumbnail"]:
             article["featured_image_thumbnail"] = str(config('S3URL'))+article["featured_image_thumbnail"]
         article["bookmarked"] = False
-        author = SysUser.objects.get(id=article["author_id"])
-        article["getAuthor"] = {
-            'first_name': author.first_name,
-            "id": author.id_name,
-            'last_name': author.last_name,
-        }
+
+
+
+        try:
+            category = KbCategory.objects.get(id=article["category"])
+            article["get_category"] = {
+                'category_label': category.label,
+                'id': category.id
+            }
+        except ObjectDoesNotExist:
+            pass
+
+        try:
+            knowledge_base = KbKnowledgeBase.objects.get(id=article["knowledge_base"])
+            article["get_knowledge_base"] = {
+                'knowledge_base': knowledge_base.title,
+                'description': knowledge_base.description,
+                'id': knowledge_base.id,
+            }
+        except ObjectDoesNotExist:
+            pass
+
+        try:
+            author = SysUser.objects.get(id=article["author_id"])
+            article["getAuthor"] = {
+                'first_name': author.first_name,
+                "id": author.id_name,
+                'last_name': author.last_name,
+            }
+        except ObjectDoesNotExist:
+            pass
         if if_bookmarked_by_user(article["id"], user):
             article["bookmarked"] = True
         fin_articles.append(article)
@@ -83,7 +109,7 @@ def get_comments(articleid: str):
 
 
 def get_paginated_articles(start: int, end: int):
-    articles = KbKnowledge.objects.all()[start:end]
+    articles = KbKnowledge.objects.all().order_by('-sys_created_on')[start:end]
     # a = list(articles)
     # user = SysUser.objects.get(id=225)
     # bookmark_status(a, user)
@@ -96,7 +122,9 @@ def get_articles_for_logged_in_user_with_bookmark(start: int, end: int, user):
                                                 'title',
                                                 'featured_image_thumbnail',
                                                 'description',
-                                                'author_id')[start:end]
+                                                'author_id',
+                                                'category',
+                                                'knowledge_base').order_by('-sys_created_on')[start:end]
     a = list(articles)
     bookmark_status(a, user)
     result = {"data": list(a)}
