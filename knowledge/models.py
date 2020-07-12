@@ -68,7 +68,7 @@ class KbKnowledge(models.Model):
     article_type = models.CharField(max_length=4, blank=True, null=True)
     author = models.ForeignKey(SysUser,
                                on_delete=models.CASCADE,)
-    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, blank=True, null=True, default='random')
+    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, default='random')
     featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
     featured_image_thumbnail = models.ImageField(upload_to="article/featured_image_thumbs/", blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -158,7 +158,7 @@ class KbFeedback(models.Model):
     flagged = models.BooleanField(default=False)
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     rating = models.IntegerField(default=0)
-    comments = models.CharField(max_length=100)
+    comments = models.TextField()
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(SysUser, on_delete=models.CASCADE)

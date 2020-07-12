@@ -100,7 +100,7 @@ def get_single_article(id):
 
 
 def get_comments(articleid: str):
-    comments = KbFeedback.objects.filter(article=articleid).values('id', 'parent_comment_id', 'flagged')
+    comments = KbFeedback.objects.filter(article=articleid).values('id', 'parent_comment_id', 'flagged', 'comments')
     # comments = KbFeedback.objects.filter(article=articleid).values()
     q = list(comments)
     a = nest_comment(q)
