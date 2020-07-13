@@ -5,7 +5,14 @@ from .models import Enhancement, Feature, Theme, Story, Epic, Defect, Sprint, St
 
 class EnhancementAdmin(admin.ModelAdmin):
     model = Enhancement
-    list_display = ['id', 'short_description', 'priority', 'state']
+    list_display = ['id', 'short_description', 'priority', 'state', 'sys_created_by', 'sys_created_on']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
+
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(EpicAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
         ordering = ['sys_updated_on']
@@ -13,7 +20,14 @@ class EnhancementAdmin(admin.ModelAdmin):
 
 class EpicAdmin(admin.ModelAdmin):
     model = Epic
-    list_display = ['id', 'short_description', 'priority', 'state']
+    list_display = ['id', 'short_description', 'priority', 'state', 'sys_created_by', 'sys_created_on']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
+
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(EpicAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
         ordering = ['sys_updated_on']
@@ -21,7 +35,14 @@ class EpicAdmin(admin.ModelAdmin):
 
 class DefectAdmin(admin.ModelAdmin):
     model = Defect
-    list_display = ['id', 'short_description', 'priority', 'state']
+    list_display = ['id', 'short_description', 'priority', 'state', 'sys_created_by', 'sys_created_on']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
+
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(DefectAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
         ordering = ['sys_updated_on']
@@ -29,6 +50,14 @@ class DefectAdmin(admin.ModelAdmin):
 
 class FeatureAdmin(admin.ModelAdmin):
     model = Feature
+    list_display = ['id', 'short_description', 'priority', 'state', 'sys_created_by', 'sys_created_on']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
+
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(FeatureAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
         ordering = ['sys_updated_on']
@@ -36,18 +65,15 @@ class FeatureAdmin(admin.ModelAdmin):
 
 class ThemeAdmin(admin.ModelAdmin):
     model = Theme
-    list_display = ['id', 'theme', 'short_description', 'description', 'sys_created_by', 'sys_updated_by']
-    fields = ['theme', 'short_description', 'description', 'sys_created_by', 'sys_updated_by']
+    list_display = ['id', 'theme', 'short_description', 'sys_created_by', 'sys_created_on']
+    fields = ['theme', 'short_description', 'description']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(ThemeAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields["sys_created_by"].initial = request.user
-        try:
-            if obj.id:
-                obj.sys_updated_by = request.user
-        except AttributeError:
-            pass
-        return form
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(ThemeAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
         ordering = ['sys_updated_on']
@@ -56,23 +82,25 @@ class ThemeAdmin(admin.ModelAdmin):
 class StoryAdmin(admin.ModelAdmin):
     model = Story
     list_display = ['id', 'short_description', 'epic', 'state']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
-    class Meta:
-        verbose_name_plural = "Stories"
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(StoryAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields["sys_created_by"].initial = request.user
-        try:
-            if obj.id:
-                obj.sys_updated_by = request.user
-        except AttributeError:
-            pass
-        return form
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(StoryAdmin, self).save_model(request, obj, form, change)
 
 
 class SprintAdmin(admin.ModelAdmin):
     model = Sprint
+    list_display = ['id', 'short_description', 'priority', 'sys_created_by', 'sys_created_on']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
+
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(SprintAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
         ordering = ['sys_updated_on']
@@ -80,14 +108,29 @@ class SprintAdmin(admin.ModelAdmin):
 
 class StoryDependencyAdmin(admin.ModelAdmin):
     model = StoryDependency
+    list_display = ['id', 'dependent_story', 'prerequisite_story', 'sys_created_by', 'sys_created_on']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
+
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(StoryDependencyAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
-        verbose_name_plural = "Story Dependencies"
         ordering = ['sys_updated_on']
 
 
 class ScrumTaskAdmin(admin.ModelAdmin):
     model = ScrumTask
+    list_display = ['id', 'short_description', 'state', 'sys_created_by', 'sys_created_on']
+    exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
+
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(ScrumTaskAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
         ordering = ['sys_updated_on']

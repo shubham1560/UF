@@ -63,6 +63,13 @@ class Feature(models.Model):
     assignment_group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='feature_created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='feature_updated_by', limit_choices_to={'is_staff': True})
+
+    def __str__(self):
+        return self.short_description
 
 
 class Defect(Feature):
@@ -79,25 +86,29 @@ class Epic(Feature):
     state = models.CharField(choices=STATES, max_length=50, blank=True, null=True)
     feature_type = models.CharField(choices=FEATURE_TYPE, max_length=5, default='EP')
 
-    def __str__(self):
-        return self.short_description
-
 
 class Sprint(models.Model):
+    short_description = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     priority = models.CharField(choices=PRIORITY, max_length=1, blank=True, null=True)
     state = models.CharField(choices=SPRINT_STATES, max_length=50, blank=True, null=True)
-    short_description = models.CharField(max_length=200, blank=True, null=True)
+    additional_comments = models.TextField(blank=True, null=True)
     assigned_to = models.ForeignKey(SysUser, on_delete=models.CASCADE, limit_choices_to={'is_staff': True}, blank=True, null=True)
     assignment_group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
     work_notes = models.TextField(blank=True, null=True)
-    additional_comments = models.TextField(blank=True, null=True)
     planned_start_date = models.DateField(blank=True, null=True)
     planned_end_date = models.DateField(blank=True, null=True)
     actual_start_date = models.DateField(blank=True, null=True)
     actual_end_date = models.DateField(blank=True, null=True)
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='sprint_created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='sprint_updated_by', limit_choices_to={'is_staff': True})
+
+    def __str__(self):
+        self.short_description
 
 
 class Theme(models.Model):
@@ -145,6 +156,12 @@ class Story(models.Model):
     sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
                                        related_name='story_updated_by', limit_choices_to={'is_staff': True})
 
+    class Meta:
+        verbose_name_plural = "Stories"
+
+    def __str__(self):
+        return self.short_description
+
 
 class StoryDependency(models.Model):
     dependent_story = models.ForeignKey(Story, on_delete=models.CASCADE, blank=True, null=True)
@@ -152,26 +169,44 @@ class StoryDependency(models.Model):
                                            related_name='prerequisite')
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='dependency_created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='dependency_updated_by', limit_choices_to={'is_staff': True})
+
+    class Meta:
+        verbose_name_plural = "Story Dependencies"
 
 
 class ScrumTask(models.Model):
-    start_date = models.DateField( blank=True, null=True)
-    end_date = models.DateField( blank=True, null=True)
-    remaining_hours = models.CharField(max_length=40, blank=True, null=True)
-    percent_complete = models.IntegerField( blank=True, null=True)
+    short_description = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     state = models.CharField(choices=STATES, max_length=50, blank=True, null=True)
     type = models.CharField(choices=TASK_TYPE, max_length=50,  blank=True, null=True)
+    close_notes = models.TextField(blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    remaining_hours = models.CharField(max_length=40, blank=True, null=True)
+    percent_complete = models.IntegerField( blank=True, null=True)
     blocked = models.BooleanField(default=False)
     blocked_reason = models.CharField(max_length=300, blank=True, null=True)
-    short_description = models.CharField(max_length=200, blank=True, null=True)
-    description = models.TextField( blank=True, null=True)
     assigned_to = models.ForeignKey(SysUser, on_delete=models.CASCADE, limit_choices_to={'is_staff': True},  blank=True, null=True)
     assignment_group = models.ForeignKey(Group, on_delete=models.CASCADE,  blank=True, null=True)
     story = models.ForeignKey(Story, on_delete=models.CASCADE, blank=True, null=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
-    close_notes = models.TextField( blank=True, null=True)
+
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='task_created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='task_updated_by', limit_choices_to={'is_staff': True})
+
+    class Meta:
+        verbose_name_plural = "Tasks"
+
+    def __str__(self):
+        return self.short_description
 
 
 
