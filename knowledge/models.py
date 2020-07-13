@@ -40,56 +40,79 @@ WORKFLOW_STATES = (
 
 
 class KbKnowledgeBase(models.Model):
-    id = models.CharField(max_length=32, primary_key=True)
+    id = models.CharField(max_length=100, primary_key=True)
     active = models.BooleanField(default=True)
     description = models.CharField(max_length=1000)
     title = models.CharField(max_length=100)
+    sys_created_on = models.DateTimeField(auto_now=True, blank=True, null=True)
+    sys_updated_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='knowledge_base_created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='knowledge_base_updated_by', limit_choices_to={'is_staff': True})
 
     class Meta:
         verbose_name_plural = "Knowledge Bases"
 
+    def __str__(self):
+        return self.title
+
 
 class KbCategory(models.Model):
-    id = models.CharField(max_length=32, primary_key=True)
-    parent_category = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE)
-    parent_kb_base = models.ForeignKey(KbKnowledgeBase, blank=False, null=False, on_delete=models.CASCADE)
+    id = models.CharField(max_length=100, primary_key=True)
     label = models.CharField(max_length=20)
+    parent_kb_base = models.ForeignKey(KbKnowledgeBase, blank=False, null=False, on_delete=models.CASCADE)
+    parent_category = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
     sys_created_on = models.DateTimeField(auto_now=True)
     sys_updated_on = models.DateTimeField(auto_now_add=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='category_created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='category_updated_by', limit_choices_to={'is_staff': True})
 
     class Meta:
         verbose_name_plural = "Knowledge Categories"
 
+    def __str__(self):
+        return self.label
+
 
 class KbKnowledge(models.Model):
     id = models.CharField(max_length=300, primary_key=True)
-    active = models.BooleanField(default=True)
-    article_type = models.CharField(max_length=4, blank=True, null=True)
+    title = models.CharField(max_length=300, blank=True, null=True)
+    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, default='random')
+    knowledge_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, null=True)
+    featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
+    article_body = models.TextField(blank=True, null=True)
     author = models.ForeignKey(SysUser,
                                on_delete=models.CASCADE,)
-    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, default='random')
-    featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
     featured_image_thumbnail = models.ImageField(upload_to="article/featured_image_thumbs/", blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+    article_type = models.CharField(max_length=4, blank=True, null=True)
     disable_commenting = models.BooleanField(default=False)
     disable_suggesting = models.BooleanField(default=False)
     flagged = models.BooleanField(default=False)
-    knowledge_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.CASCADE)
     number = models.CharField(max_length=12, blank=True, null=True)
     published_on = models.DateTimeField(blank=True, null=True)
     rating = models.FloatField(blank=True, null=True)
-    title = models.CharField(max_length=300, blank=True, null=True)
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
     view_count = models.IntegerField(default=0, blank=True, null=True)
-    article_body = models.TextField(blank=True, null=True)
     topic = models.CharField(max_length=50, blank=True, null=True)
     parent_article = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child')
     workflow = models.CharField(choices=WORKFLOW_STATES, max_length=10, blank=True, null=True)
+    sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='article_created_by', limit_choices_to={'is_staff': True})
+    sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name='article_updated_by', limit_choices_to={'is_staff': True})
 
     class Meta:
         verbose_name_plural = "Knowledge Articles"
+
+    def __str__(self):
+        return self.title
 
     def getAuthor(self):
         try:

@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import KbKnowledgeBase, KbCategory, KbKnowledge, KbFeedback, KbUse,\
     m2m_knowledge_feedback_likes,BookmarkUserArticle
+import binascii, os
+import random
 
 
 # Register your models here.
@@ -10,16 +12,60 @@ class KbKnowledgeAdmin(admin.ModelAdmin):
                     'sys_created_on']
     fields = ['id', 'title', 'description', 'featured_image', 'author', 'knowledge_base', 'category', 'article_body']
     ordering = ['-sys_created_on']
+    exclude = ['sys_created_by', 'sys_updated_by']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(KbKnowledgeAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields["id"].initial = "random"+str(random.randrange(10000, 100000))
+        return form
+
+    def save_model(self, request, obj, form, change):
+        obj.sys_created_by = request.user
+        if obj.id is None or 'random' in obj.id:
+            obj.id = obj.title.lower().replace(" ", "-") + binascii.hexlify(os.urandom(4)).decode()
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(KbKnowledgeAdmin, self).save_model(request, obj, form, change)
 
 
 class KbKnowledgeBaseAdmin(admin.ModelAdmin):
     model = KbKnowledgeBase
-    list_display = ['id']
+    list_display = ['id', 'sys_created_by', 'sys_created_on', 'sys_updated_by']
+    exclude = ['sys_created_by', 'sys_updated_by']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(KbKnowledgeBaseAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields["id"].initial = "random"+str(random.randrange(10000, 100000))
+        return form
+
+    def save_model(self, request, obj, form, change):
+        # breakpoint()
+        obj.sys_created_by = request.user
+        if obj.id is None or "random" in obj.id:
+            obj.id = obj.title.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(KbKnowledgeBaseAdmin, self).save_model(request, obj, form, change)
 
 
 class KbCategoryAdmin(admin.ModelAdmin):
     model = KbCategory
-    list_display = ['id']
+    list_display = ['id', 'parent_kb_base', 'parent_category', 'sys_created_by', 'sys_created_on']
+    exclude = ['sys_created_by', 'sys_updated_by']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(KbCategoryAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields["id"].initial = "random"+str(random.randrange(10000, 100000))
+        return form
+
+    def save_model(self, request, obj, form, change):
+        # breakpoint()
+        obj.sys_created_by = request.user
+        if obj.id is None or "random" in obj.id:
+            obj.id = obj.label.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
+        if obj.id:
+            obj.sys_updated_by = request.user
+        super(KbCategoryAdmin, self).save_model(request, obj, form, change)
 
 
 class KbFeedBackAdmin(admin.ModelAdmin):
