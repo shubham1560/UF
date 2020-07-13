@@ -7,6 +7,7 @@ from django.core.files import File
 from image_optimizer.utils import image_optimizer
 import sys
 from django.core.exceptions import ObjectDoesNotExist
+from decouple import config
 from django.core.files.base import ContentFile
 
 
@@ -118,9 +119,12 @@ class KbKnowledge(models.Model):
         try:
             return {
                 'author_exist': True,
-                'first_name': self.author.first_name,
-                "id": self.author.id_name,
-                'last_name': self.author.last_name,
+                'first_name': self.author.first_name or '',
+                "id": self.author.id_name or '',
+                'last_name': self.author.last_name or '',
+                'header_image': config('S3URL')+str(self.author.header_image) or '',
+                'google_pic': self.author.profile_pic or '',
+                'about': self.author.about or '',
             }
         except ObjectDoesNotExist:
             return {

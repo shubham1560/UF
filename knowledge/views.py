@@ -60,7 +60,9 @@ class KnowledgeArticleView(APIView):
                       "getAuthor",
                       "get_category",
                       "get_knowledge_base",
-                      'featured_image')
+                      'featured_image',
+                      'featured_image_thumbnail'
+                      )
 
     @log_request
     def get(self, request, id, format=None):

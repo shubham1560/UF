@@ -38,6 +38,7 @@ class SysUser(AbstractUser):
     header_image = models.ImageField(upload_to=upload_path_compress, null=True, blank=True)
     user_type = models.CharField(max_length=2, choices=USER_TPYE, default='RU')
     id_name = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    about = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # im = Image.open(self.featured_image).convert('RGB')
