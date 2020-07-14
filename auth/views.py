@@ -196,6 +196,11 @@ class UserPasswordResetLinkViewSet(APIView):
 
 
 class ObtainAuthTokenViewSet(APIView):
+    """
+    this has been re written to make the user to stop after 3 failed login attempts using
+    cache
+    """
+
     throttle_classes = ()
     permission_classes = ()
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
@@ -229,6 +234,9 @@ class ObtainAuthTokenViewSet(APIView):
     @log_request
     def post(self, request, *args, **kwargs):
         try:
+            """
+            logic for rate limiting the user on login attempt
+            """
             key = 'login.'+request.data.get('username')
             login_attempt = rate_limit(key, timeout=2)
             if login_attempt > 3:
@@ -250,6 +258,14 @@ class ObtainAuthTokenViewSet(APIView):
 class UserTokenValidViewSet(APIView):
 
     def get(self, request, token, format=None):
+
+        """
+        :param request: gets the request
+        :param token: token is passed from the url to check the validity
+        :param format: None
+        :return: Response if the user exists or not and is exist, whether he is active or not
+        """
+
         try:
             user = Token.objects.get(key=token).user
             if user.is_active:
@@ -268,9 +284,6 @@ class GetUserDetailFromTokenViewSet(APIView):
             fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image')
 
     def get(self, request, format=None):
-        # print(request.user.first_name)
         serializer = self.GetUserDetailFromTokenSerializer(request.user, many=False)
-        # response = {"user_model": list(request.user.first_name)}
         response = {'user': serializer.data}
-        # user = get_user_from_token(token)
         return Response(response, status=status.HTTP_200_OK)

@@ -41,43 +41,35 @@ def if_bookmarked_by_user(article_id, user):
 
 
 def bookmark_status(articles, user):
-    # breakpoint()
     fin_articles = []
-    type(articles)
-
-    counter = 0
     for article in articles:
         if article["featured_image_thumbnail"]:
             article["featured_image_thumbnail"] = str(config('S3URL'))+article["featured_image_thumbnail"]
         article["bookmarked"] = False
 
-
-
+        a = KbKnowledge.objects.select_related('author', 'category', 'knowledge_base').get(id=article['id'])
         try:
-            category = KbCategory.objects.get(id=article["category"])
             article["get_category"] = {
-                'category_label': category.label,
-                'id': category.id
+                'category_label': a.category.label,
+                'id': a.category.id
             }
         except ObjectDoesNotExist:
             pass
 
         try:
-            knowledge_base = KbKnowledgeBase.objects.get(id=article["knowledge_base"])
             article["get_knowledge_base"] = {
-                'knowledge_base': knowledge_base.title,
-                'description': knowledge_base.description,
-                'id': knowledge_base.id,
+                'knowledge_base': a.knowledge_base.title,
+                'description': a.knowledge_base.description,
+                'id': a.knowledge_base.id,
             }
         except ObjectDoesNotExist:
             pass
 
         try:
-            author = SysUser.objects.get(id=article["author_id"])
             article["getAuthor"] = {
-                'first_name': author.first_name,
-                "id": author.id_name,
-                'last_name': author.last_name,
+                'first_name': a.author.first_name,
+                "id": a.author.id_name,
+                'last_name': a.author.last_name,
             }
         except ObjectDoesNotExist:
             pass
@@ -118,13 +110,16 @@ def get_paginated_articles(start: int, end: int):
 
 
 def get_articles_for_logged_in_user_with_bookmark(start: int, end: int, user):
+    # breakpoint()
     articles = KbKnowledge.objects.all().values('id',
                                                 'title',
                                                 'featured_image_thumbnail',
                                                 'description',
                                                 'author_id',
                                                 'category',
-                                                'knowledge_base').order_by('-sys_created_on')[start:end]
+                                                'knowledge_base'
+                                                ).order_by('-sys_created_on')[start:end]
+
     a = list(articles)
     bookmark_status(a, user)
     result = {"data": list(a)}
