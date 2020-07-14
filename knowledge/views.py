@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from .models import KbKnowledge, BookmarkUserArticle
+from .models import KbKnowledge, BookmarkUserArticle, KbFeedback
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -76,7 +76,7 @@ class KnowledgeArticleView(APIView):
         return Response(response, status=status_code)
 
 
-class ArticleCommentsView(APIView):
+class ArticleNestedCommentsView(APIView):
     permission_classes = (IsAuthenticated, )
 
     @log_request
@@ -133,4 +133,17 @@ class BookmarkArticlesViewSet(APIView):
             response = {'bookmarked': False}
         return Response(response, status=status.HTTP_201_CREATED)
 
+
+class ArticleCommentsView(APIView):
+    class ArticleCommentsViewSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbFeedback
+            fields = ('id', 'comments', 'parent_comment', 'get_user')
+
+    def get(self, request, articleid, format=None):
+        comments = KbFeedback.objects.filter(article=KbKnowledge.objects.get(id=articleid))
+        count = comments.count()
+        result = self.ArticleCommentsViewSerializer(comments, many=True)
+        response = {'count': count, 'comments': result.data}
+        return Response(response, status=status.HTTP_200_OK)
 

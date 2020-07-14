@@ -113,7 +113,7 @@ class KbKnowledge(models.Model):
         verbose_name_plural = "Knowledge Articles"
 
     def __str__(self):
-        return self.title
+        return self.id
 
     def getAuthor(self):
         try:
@@ -183,7 +183,7 @@ class KbKnowledge(models.Model):
 class KbFeedback(models.Model):
     article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)
     flagged = models.BooleanField(default=False)
-    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children')
     rating = models.IntegerField(default=0)
     comments = models.TextField()
     sys_created_on = models.DateTimeField(auto_now_add=True)
@@ -193,10 +193,18 @@ class KbFeedback(models.Model):
     class Meta:
         verbose_name_plural = "Knowledge Feedbacks"
 
+    def get_user(self):
+        return {
+            'first_name': self.user.first_name or '',
+            "id": self.user.id_name or '',
+            'last_name': self.user.last_name or '',
+            'header_image': config('S3URL') + str(self.user.header_image) or '',
+            'google_pic': self.user.profile_pic or '',
+            'about': self.user.about or '',
+        }
+
     def __str__(self):
-        return "id: {}, comments:{},  user: {}".format(self.id,
-                                                       self.comments,
-                                                       self.user)
+        return self.comments
 
 
 class KbUse(models.Model):

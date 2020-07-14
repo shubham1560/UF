@@ -70,7 +70,7 @@ class KbCategoryAdmin(admin.ModelAdmin):
 
 class KbFeedBackAdmin(admin.ModelAdmin):
     model = KbFeedback
-    list_display = ['id']
+    list_display = ['id', 'comments', 'article']
 
 
 class KbUseAdmin(admin.ModelAdmin):
