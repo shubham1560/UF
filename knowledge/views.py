@@ -164,6 +164,7 @@ class KbUseExistingView(APIView):
     """
 
     def get(self, request, article_id, format=None):
+        response = {"message": "anonymous user's data can't be fetched"}
         if not request.user.is_anonymous:
             # if if_bookmarked_and_found_useful_by_user(request.user, article_id):
             #     response = {"bookmarked": True}
