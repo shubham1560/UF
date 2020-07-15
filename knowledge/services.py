@@ -1,7 +1,8 @@
 from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle,\
-    KbCategory, KbKnowledgeBase
+     KbUse
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from sys_user.models import SysUser
+from django.db.models import F
 from decouple import config
 
 
@@ -102,15 +103,10 @@ def get_comments(articleid: str):
 
 def get_paginated_articles(start: int, end: int):
     articles = KbKnowledge.objects.all().order_by('-sys_created_on')[start:end]
-    # a = list(articles)
-    # user = SysUser.objects.get(id=225)
-    # bookmark_status(a, user)
-    # result = {"model": list(a)}
     return articles
 
 
 def get_articles_for_logged_in_user_with_bookmark(start: int, end: int, user):
-    # breakpoint()
     articles = KbKnowledge.objects.all().values('id',
                                                 'title',
                                                 'featured_image_thumbnail',
@@ -143,5 +139,57 @@ def bookmark_the_article(user, article_id):
         a.article = article
         a.save()
         return True
+
+
+def if_bookmarked_and_found_useful_by_user(user, article_id):
+    article = KbKnowledge.objects.get(id=article_id)
+    exist = BookmarkUserArticle.objects.filter(user=user, article=article)
+    useful = KbUse.objects.get(article=article, user=user)
+    if exist.count() == 1:
+        return {"bookmarked": True, "found_useful": useful.useful}
+    else:
+        return {"bookmarked": False, "found_useful": useful.useful}
+
+
+def kb_use(request):
+    """
+    Only concerned with the view
+    """
+    if request.data['useful'] == 'no_response':
+        if request.user.is_anonymous:
+            KbKnowledge.objects.filter(id=request.data['article']).update(view_count=F('view_count')+1)
+            return "viewed by anonymous user"
+        else:
+            article = KbKnowledge.objects.get(id=request.data['article'])
+            view = KbUse.objects.get_or_create(
+                user=request.user,
+                article=article,
+                viewed=True,
+            )
+            return "viewed by logged in user"
+    elif not request.user.is_anonymous:
+        """
+            Only when the user responds whether useful or not
+        """
+        if request.data['useful'] == 'true':
+            article = KbKnowledge.objects.get(id=request.data['article'])
+            view = KbUse.objects.get(
+                user=request.user,
+                article=article,
+            )
+            view.useful = True
+            view.save()
+            return "found useful by logged in user"
+        elif request.data['useful'] == 'false':
+            article = KbKnowledge.objects.get(id=request.data['article'])
+            view = KbUse.objects.get(
+                user=request.user,
+                article=article,
+            )
+            view.useful = False
+            view.save()
+            return "didn't find it useful"
+    else:
+        return "non logged in user can't comment on the usefulness of the data"
 
 

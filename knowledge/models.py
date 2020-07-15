@@ -101,6 +101,7 @@ class KbKnowledge(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
     view_count = models.IntegerField(default=0, blank=True, null=True)
+    view_count_logged_in = models.IntegerField(default=0, blank=True, null=True)
     topic = models.CharField(max_length=50, blank=True, null=True)
     parent_article = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='child')
     workflow = models.CharField(choices=WORKFLOW_STATES, max_length=10, blank=True, null=True)
@@ -211,8 +212,8 @@ class KbUse(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(SysUser, on_delete=models.CASCADE)
-    useful = models.BooleanField(blank=True)
-    viewed = models.BooleanField(blank=True)
+    useful = models.BooleanField(blank=True, null=True)
+    viewed = models.BooleanField(blank=True, null=True)
     article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)
 
     class Meta:

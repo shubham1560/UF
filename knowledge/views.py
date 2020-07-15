@@ -7,7 +7,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
-    get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark
+    get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
+    if_bookmarked_and_found_useful_by_user
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -147,3 +148,26 @@ class ArticleCommentsView(APIView):
         response = {'count': count, 'comments': result.data}
         return Response(response, status=status.HTTP_200_OK)
 
+
+class KnowledgeUseView(APIView):
+
+    def post(self, request, format=None):
+        # breakpoint()
+        use = kb_use(request)
+        response = {"message": use}
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
+class KbUseExistingView(APIView):
+    """
+    To get the nitial state of the used and viewed
+    """
+
+    def get(self, request, article_id, format=None):
+        if not request.user.is_anonymous:
+            # if if_bookmarked_and_found_useful_by_user(request.user, article_id):
+            #     response = {"bookmarked": True}
+            # else:
+            #     response = {'bookmarked': False}
+            response = if_bookmarked_and_found_useful_by_user(request.user, article_id)
+        return Response(response, status=status.HTTP_200_OK)

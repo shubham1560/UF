@@ -8,8 +8,8 @@ import random
 # Register your models here.
 class KbKnowledgeAdmin(admin.ModelAdmin):
     model = KbKnowledge
-    list_display = ['id', 'featured_image', 'featured_image_thumbnail', 'author', 'published_on',
-                    'sys_created_on']
+    list_display = ['id', 'author', 'published_on',
+                    'sys_created_on', 'view_count', 'view_count_logged_in']
     fields = ['id', 'title', 'description', 'featured_image', 'author', 'knowledge_base', 'category', 'article_body']
     ordering = ['-sys_created_on']
     exclude = ['sys_created_by', 'sys_updated_by']
@@ -75,7 +75,7 @@ class KbFeedBackAdmin(admin.ModelAdmin):
 
 class KbUseAdmin(admin.ModelAdmin):
     model = KbUse
-    list_display = ['id', 'article']
+    list_display = ['id', 'article', 'user', 'useful', 'viewed']
 
 
 class KbFeedbackLikesAdmin(admin.ModelAdmin):
