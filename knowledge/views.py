@@ -8,7 +8,7 @@ from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
-    if_bookmarked_and_found_useful_by_user
+    if_bookmarked_and_found_useful_by_user, add_feedback
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -172,3 +172,11 @@ class KbUseExistingView(APIView):
             #     response = {'bookmarked': False}
             response = if_bookmarked_and_found_useful_by_user(request.user, article_id)
         return Response(response, status=status.HTTP_200_OK)
+
+
+class ArticleFeedbackView(APIView):
+
+    def post(self, request, article_id,  format=None):
+        result = add_feedback(request, article_id)
+        response = {"feedback added": result}
+        return Response(response, status=status.HTTP_201_CREATED)

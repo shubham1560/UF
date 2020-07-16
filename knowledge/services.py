@@ -200,3 +200,14 @@ def kb_use(request):
         return "non logged in user can't comment on the usefulness of the data"
 
 
+def add_feedback(request, article_id):
+    # breakpoint()
+    try:
+        KbUse.objects.update_or_create(
+            article=KbKnowledge.objects.get(id=article_id),
+            user=request.user,
+            defaults={'feedback': request.data['feedback']}
+        )
+        return True
+    except ObjectDoesNotExist:
+        return False
