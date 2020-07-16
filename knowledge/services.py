@@ -160,12 +160,19 @@ def kb_use(request):
             KbKnowledge.objects.filter(id=request.data['article']).update(view_count=F('view_count')+1)
             return "viewed by anonymous user"
         else:
-            article = KbKnowledge.objects.get(id=request.data['article'])
-            view = KbUse.objects.get_or_create(
+            article = KbKnowledge.objects.filter(id=request.data['article'])
+            a = KbUse.objects.filter(
                 user=request.user,
-                article=article,
-                viewed=True,
-            )
+                article=article[0],
+                viewed=True
+            ).count()
+            if a == 0:
+                article.update(view_count_logged_in=F('view_count_logged_in') + 1)
+                view = KbUse.objects.get_or_create(
+                    user=request.user,
+                    article=article[0],
+                    viewed=True,
+                )
             return "viewed by logged in user"
     elif not request.user.is_anonymous:
         """

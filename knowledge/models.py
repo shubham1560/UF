@@ -215,6 +215,7 @@ class KbUse(models.Model):
     useful = models.BooleanField(blank=True, null=True)
     viewed = models.BooleanField(blank=True, null=True)
     article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)
+    feedback = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Knowledge Uses"
