@@ -32,7 +32,7 @@ class EditUserDetailViewSet(APIView):
         user = request.user
         user.first_name = request.data['first_name']
         user.last_name = request.data['last_name']
-        user.profile = request.data['profile']
+        # user.profile = request.data['profile']
         user.about = request.data['about']
         user.save()
         return Response({"message": "changed"}, status=status.HTTP_200_OK)
