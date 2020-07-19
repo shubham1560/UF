@@ -18,7 +18,7 @@ def upload_path_compress(instance, filename):
 def compressImage(uploadedImage):
     imageTemproary = Image.open(uploadedImage).convert('RGB')
     outputIoStream = BytesIO()
-    imageTemproaryResized = imageTemproary.resize((200, 300))
+    imageTemproaryResized = imageTemproary.resize((200, 250))
     imageTemproaryResized.save(outputIoStream, format='JPEG', quality=60)
     outputIoStream.seek(0)
     uploadedImage = InMemoryUploadedFile(outputIoStream, 'ImageField', "%s.jpg" % uploadedImage.name.split('.')[0],
