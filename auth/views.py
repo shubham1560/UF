@@ -86,7 +86,12 @@ class CreateUserViewSet(APIView):
             response = {'message': 'user has been created'}
             return Response(response, status=status.HTTP_201_CREATED)
         else:
-            response = {'message': 'User Already Exists, please log in after you have activated the account', 'ue': True}
+            user = SysUser.objects.get(email=request.data['username'])
+            if user.is_active:
+                response = {'message': 'User Already Exists, please log in to the account!', 'ue': True}
+            else:
+                response = {"message": 'Please activate the account, the mail had been sent when you first registered!',
+                            'ue': True}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -216,13 +221,14 @@ class UserPasswordResetLinkViewSet(APIView):
             user = SysUser.objects.get(email=email)
             active = user.is_active
         except ObjectDoesNotExist:
-            response = {'user_exist': False, "is_active": False}
+            response = {'user_exist': False, "is_active": False, 'token_exist': False}
             r_status = status.HTTP_404_NOT_FOUND
             return Response(response, status=r_status)
         try:
             token = Token.objects.get(user=user)
         except ObjectDoesNotExist:
-            response = {"token_exist": False, "user_exist": True, "message": "Please check for the token creation"}
+            response = {"token_exist": False, "is_active": True, "user_exist": True,
+                        "message": "Please check for the token creation"}
             r_status = status.HTTP_404_NOT_FOUND
             return Response(response, status=r_status)
         if active:
@@ -230,7 +236,8 @@ class UserPasswordResetLinkViewSet(APIView):
             response = {'reset_link_sent': True, 'email': email}
             r_status = status.HTTP_200_OK
         else:
-            response = {'user_exist': True, "is_active": False, "message": "User exists but is not active"}
+            response = {'user_exist': True, "is_active": False, "token_exist": True,
+                        "message": "User exists but is not active"}
             r_status = status.HTTP_400_BAD_REQUEST
         return Response(response, status=r_status)
 
@@ -309,9 +316,11 @@ class UserTokenValidViewSet(APIView):
         try:
             user = Token.objects.get(key=token).user
             if user.is_active:
-                return Response({"user_exist": True, "is_active": user.is_active}, status=status.HTTP_200_OK)
+                return Response({"user_exist": True, "is_active": user.is_active, 'username': user.username}
+                                , status=status.HTTP_200_OK)
             else:
-                return Response({"user_exist": True, "is_active": user.is_active}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"user_exist": True, "is_active": user.is_active, 'username': user.username},
+                                status=status.HTTP_400_BAD_REQUEST)
         except ObjectDoesNotExist:
             return Response({"user_exist": False, "message": "No user with this link valid exists"},
                             status=status.HTTP_404_NOT_FOUND)

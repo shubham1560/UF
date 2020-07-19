@@ -13,7 +13,9 @@ class SysUserAdmin(UserAdmin):
                     "date_joined",
                     "user_type",
                     "profile",
-                    "header_image"]
+                    "header_image",
+                    "profile_pic"]
+    # list_editable = ('is_active',)
     add_fieldsets = (
         (
             None,
