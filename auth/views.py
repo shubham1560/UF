@@ -1,3 +1,5 @@
+from django.http import JsonResponse
+
 from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
@@ -19,6 +21,7 @@ from rest_framework.compat import coreapi, coreschema
 from rest_framework.schemas import ManualSchema
 from logs.services import log_random
 from services.cacheservice import rate_limit
+import facebook
 
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
@@ -111,6 +114,7 @@ class CreateGoogleUserViewSet(APIView):
 
         try:
             user = SysUser.objects.get(email=data['email'])
+            new_user = False
         except SysUser.DoesNotExist:
             user = SysUser()
             user.username = data['email']
@@ -121,9 +125,45 @@ class CreateGoogleUserViewSet(APIView):
             user.user_type = "GU"
             user.id_name = data['email'].split('@')[0]
             user.save()
-
+            new_user = True
         token, created = Token.objects.get_or_create(user=user)
-        response = {'username': user.username, 'token': str(token)}
+        response = {'username': user.username, 'token': str(token), 'new_user': new_user}
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
+class FacebookUserViewSet(APIView):
+
+    @log_request
+    def post(self, request, format=None):
+        try:
+            access_token = request.data.get("access_token")
+            graph = facebook.GraphAPI(access_token=access_token)
+            user_info = graph.get_object(id='me', fields='first_name, middle_name, last_name,email, picture.type(large)')
+            print(user_info)
+        except facebook.GraphAPIError:
+            return JsonResponse({'error': 'Invalid data'}, safe=False)
+        try:
+            user = SysUser.objects.get(email=user_info.get('email'))
+            new_user = False
+        except SysUser.DoesNotExist:
+            password = SysUser.objects.make_random_password()
+            user = SysUser(
+                first_name=user_info.get('first_name'),
+                last_name=user_info.get('last_name'),
+                email=user_info.get('email')
+                      or '{0} without email'.format(user_info.get('last_name')),
+                facebook_id=user_info.get('id'),
+                profile_pic=user_info.get('picture')['data']['url'],
+                username=user_info.get('email'),
+                is_active=1,
+                user_type='FU',
+                id_name=user_info.get('email').split('@')[0]
+            )
+            user.set_password(password)
+            user.save()
+            new_user = True
+        token, created = Token.objects.get_or_create(user=user)
+        response = {'username': user.email, 'token': str(token), 'new_user': new_user}
         return Response(response, status=status.HTTP_201_CREATED)
 
 

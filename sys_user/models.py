@@ -31,6 +31,7 @@ class SysUser(AbstractUser):
     USER_TPYE = [
         ('GU', 'GOOGLE'),
         ('RU', 'ROOT'),
+        ('FU', 'FACEBOOK'),
     ]
 
     profile = models.ImageField(upload_to=upload_path, null=True, blank=True)
@@ -39,6 +40,7 @@ class SysUser(AbstractUser):
     user_type = models.CharField(max_length=2, choices=USER_TPYE, default='RU')
     id_name = models.CharField(max_length=100, unique=True, null=True, blank=True)
     about = models.TextField(null=True, blank=True)
+    facebook_id = models.CharField(null=True, blank=True, max_length=100)
 
     def save(self, *args, **kwargs):
         # im = Image.open(self.featured_image).convert('RGB')
