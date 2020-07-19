@@ -22,6 +22,8 @@ from rest_framework.schemas import ManualSchema
 from logs.services import log_random
 from services.cacheservice import rate_limit
 import facebook
+from django.contrib.auth import authenticate
+
 
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
@@ -278,28 +280,55 @@ class ObtainAuthTokenViewSet(APIView):
             encoding="application/json",
         )
 
-    @log_request
+    # @log_request
     def post(self, request, *args, **kwargs):
+        # breakpoint()
         try:
             """
             logic for rate limiting the user on login attempt
             """
+            timeout = 2
             key = 'login.'+request.data.get('username')
-            login_attempt = rate_limit(key, timeout=2)
+            login_attempt = rate_limit(key, timeout=timeout)
             if login_attempt > 3:
-                return Response({'too many login attempts, please try again after 2 minutes'},
+                return Response({'message': 'Too many login attempts, please try again after '+str(timeout)+' minutes'},
                                 status=status.HTTP_405_METHOD_NOT_ALLOWED)
         except ObjectDoesNotExist:
             pass
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.validated_data['user']
+        user = authenticate(request=None,
+                            username=request.data['username'], password=request.data['password'])
+        if user:
             try:
                 token = Token.objects.get(user=user)
                 return Response({'token': token.key}, status=status.HTTP_200_OK)
             except ObjectDoesNotExist:
-                return Response({'message': "invalid login credentials"}, status=status.HTTP_400_BAD_REQUEST)
+                pass
+        else:
+            try:
+                user = SysUser.objects.get(username=request.data['username'])
+                response = {'message': 'Incorrect Password'}
+            except ObjectDoesNotExist:
+                response = {'message': "The user with this email address doesn't exist"}
+
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        #
+        # if serializer.is_valid(raise_exception=True):
+        #     user = serializer.validated_data['user']
+        #     try:
+        #         token = Token.objects.get(user=user)
+        #         return Response({'token': token.key}, status=status.HTTP_200_OK)
+        #     except ObjectDoesNotExist:
+        #         pass
+        #         # try:
+        #         #     user = SysUser.objects.get(username=request.data['username'])
+        #         #     response = {'message': 'Incorrect Password'}
+        #         # except ObjectDoesNotExist:
+        #         #     response = {'message': "The user with this email address doesn't exist"}
+        #         #
+        #         # return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserTokenValidViewSet(APIView):
