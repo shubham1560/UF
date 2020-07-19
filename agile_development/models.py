@@ -52,6 +52,9 @@ TASK_TYPE = (
     ('testing', 'Testing'),
 )
 
+def upload_path(instance, filename):
+    return '/'.join(['story_images', str(instance.id), filename])
+
 
 class Feature(models.Model):
     priority = models.CharField(choices=PRIORITY, blank=True, null=True, max_length=30)
@@ -136,6 +139,11 @@ class Story(models.Model):
     state = models.CharField(choices=STORY_STATES, max_length=50, blank=True, null=True)
     short_description = models.CharField(max_length=300, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    attached_image1 = models.ImageField(null=True, blank=True, upload_to=upload_path)
+    attached_image2 = models.ImageField(null=True, blank=True, upload_to=upload_path)
+    attached_image3 = models.ImageField(null=True, blank=True, upload_to=upload_path)
+    attached_image4 = models.ImageField(null=True, blank=True, upload_to=upload_path)
+    attached_image5 = models.ImageField(null=True, blank=True, upload_to=upload_path)
     work_notes = models.TextField(blank=True, null=True)
     additional_comments = models.TextField(blank=True, null=True)
     assigned_to = models.ForeignKey(SysUser, on_delete=models.CASCADE, limit_choices_to={'is_staff': True}, blank=True,
