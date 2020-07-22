@@ -359,7 +359,7 @@ class GetUserDetailFromTokenViewSet(APIView):
     class GetUserDetailFromTokenSerializer(serializers.ModelSerializer):
         class Meta:
             model = SysUser
-            fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image')
+            fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image', 'email')
 
     def get(self, request, format=None):
         serializer = self.GetUserDetailFromTokenSerializer(request.user, many=False)
