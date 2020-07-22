@@ -1,9 +1,10 @@
 from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle,\
-     KbUse
+     KbUse, KbKnowledgeBase
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from sys_user.models import SysUser
 from django.db.models import F
 from decouple import config
+import binascii, os
 
 
 def nest_comment(comments):
@@ -211,3 +212,21 @@ def add_feedback(request, article_id):
         return True
     except ObjectDoesNotExist:
         return False
+
+
+def add_article(request, articleid=0):
+    uid = request.data["title"].lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
+    if articleid == 0:
+        a = KbKnowledge()
+        a.id = uid
+    else:
+        a = KbKnowledge.objects.get(id=articleid)
+    a.title = request.data["title"]
+    a.article_body = request.data["article_body"]
+    a.featured_image = request.data["featured_image"]
+    a.description = request.data["description"]
+    a.author = request.user
+    a.workflow = "draft"
+    a.knowledge_base = KbKnowledgeBase.objects.get(id="testing")
+    a.save()
+    print(request)

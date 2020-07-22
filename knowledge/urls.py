@@ -5,9 +5,11 @@ from .views import KnowledgeArticleListView, KnowledgeArticleView,\
     KnowledgeArticlePaginatedListView, \
     GetBookmarkedArticleViewSet, BookmarkArticlesViewSet, \
     ArticleCommentsView, KnowledgeUseView, KbUseExistingView, \
-    ArticleFeedbackView
+    ArticleFeedbackView, NewArticleInsertView, UpdateArticleInsertView
 
 urlpatterns = [
+    path('articles/new/', NewArticleInsertView.as_view()),
+    path('articles/update/<str:articleid>/', UpdateArticleInsertView.as_view()),
     path('articles/', KnowledgeArticleListView.as_view()),
     path('articles/<str:id>/', KnowledgeArticleView.as_view()),
     path('articles/<str:articleid>/comments/', ArticleNestedCommentsView.as_view()),
@@ -19,4 +21,5 @@ urlpatterns = [
     path('knowledge_view/', KnowledgeUseView.as_view()),
     path('knowledge_view/<str:article_id>/', KbUseExistingView.as_view()),
     path('articles/<str:article_id>/feedback/', ArticleFeedbackView.as_view()),
+
 ]

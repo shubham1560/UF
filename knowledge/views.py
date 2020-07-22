@@ -8,7 +8,7 @@ from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
-    if_bookmarked_and_found_useful_by_user, add_feedback
+    if_bookmarked_and_found_useful_by_user, add_feedback, add_article
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -180,3 +180,18 @@ class ArticleFeedbackView(APIView):
         result = add_feedback(request, article_id)
         response = {"feedback added": result}
         return Response(response, status=status.HTTP_201_CREATED)
+
+
+class NewArticleInsertView(APIView):
+
+    def post(self, request, format=None):
+        result = add_article(request)
+        return Response("well", status=status.HTTP_201_CREATED)
+
+
+class UpdateArticleInsertView(APIView):
+
+    def post(self, request, articleid, format=None):
+        # breakpoint()
+        result = add_article(request, articleid)
+        return Response("Updated", status=status.HTTP_201_CREATED)

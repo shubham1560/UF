@@ -1,30 +1,21 @@
 from django.shortcuts import render
 from .models import AttachedImage
-# from rest_framework.views import APIView,
-from rest_framework import viewsets
-from rest_framework import serializers
-from django.http import HttpResponse
+from rest_framework.views import APIView, status
+from rest_framework.response import Response
 
 
-# Create your views here.
-class AttachedImageViewSet(viewsets.ModelViewSet):
-    class AttachedImageSerializer(serializers.HyperlinkedModelSerializer):
-        class Meta:
-            model = AttachedImage
-            fields = ['id', 'article', 'real_image']
-
-    queryset = AttachedImage.objects.all()
-    serializers = AttachedImageSerializer
-
-    class AttachedImageSerializer(serializers.ModelSerializer):
-
-        class Meta:
-            model = AttachedImage
-            fields = ('id', 'real_image', 'article')
+class AttachedImageViewSet(APIView):
 
     def post(self, request, format=None):
+        # breakpoint()
         image = request.data["image"]
-        upImage = AttachedImage.objects.create(real_image=image)
-        return HttpResponse({"message": upImage.real_image})
+        attachment = AttachedImage()
+        attachment.real_image = image
+        attachment.save()
+        # up_image = AttachedImage.objects.create(real_image=image)
+        response = {"image_url": str(attachment.real_image.url), "compressed_image_url": str(attachment.compressed.url)}
+        # response = {"message": "image uploaded"}
+        return Response(response, status=status.HTTP_201_CREATED)
+
 
 

@@ -158,26 +158,8 @@ class KbKnowledge(models.Model):
             }
 
     def save(self, *args, **kwargs):
-        # im = Image.open(self.featured_image).convert('RGB')
-        # h, w = im.size
-        # if h*w > 1000*1000:
-        #     thumbnail = compress(self.featured_image, quality=1)
-        #     self.featured_image_thumbnail = thumbnail
-        # else:
-        #     self.featured_image_thumbnail = self.featured_image
-        # breakpoint()
-        # im1 = Image.open(self.featured_image).convert('RGB').copy()
-        # im_io = BytesIO()
-        # im1.save(im_io, 'JPEG', quality=80)
-        # new_image = File(im_io, name=self.featured_image.name)
-        # im2 = im1.copy()
-        # self.featured_image_thumbnail = image_optimizer(new_image,
-        #                                                 output_size=(300, 200),
-        #                                                 resize_method='cover')
-        # breakpoint()
         if self.featured_image:
             self.featured_image_thumbnail = compressImage(self.featured_image)
-        # self.featured_image = new_image
         super().save(*args, **kwargs)
 
 
