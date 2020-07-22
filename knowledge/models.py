@@ -45,8 +45,10 @@ class KbKnowledgeBase(models.Model):
     active = models.BooleanField(default=True)
     description = models.CharField(max_length=1000)
     title = models.CharField(max_length=100)
-    sys_created_on = models.DateTimeField(auto_now=True, blank=True, null=True)
-    sys_updated_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    real_image = models.ImageField(upload_to="knowledge_base/real_images/", null=True, blank=True)
+    compressed_image = models.ImageField(upload_to="knowledge_base/compressed_images/", null=True, blank=True)
+    sys_updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
                                        related_name='knowledge_base_created_by', limit_choices_to={'is_staff': True})
     sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
@@ -58,6 +60,11 @@ class KbKnowledgeBase(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if self.real_image:
+            self.compressed_image = compressImage(self.real_image)
+        super().save(*args, **kwargs)
+
 
 class KbCategory(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
@@ -65,8 +72,10 @@ class KbCategory(models.Model):
     parent_kb_base = models.ForeignKey(KbKnowledgeBase, blank=False, null=False, on_delete=models.CASCADE)
     parent_category = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
-    sys_created_on = models.DateTimeField(auto_now=True)
-    sys_updated_on = models.DateTimeField(auto_now_add=True)
+    real_image = models.ImageField(upload_to="knowledge_base/real_images/", null=True, blank=True)
+    compressed_image = models.ImageField(upload_to="knowledge_base/compressed_images/", null=True, blank=True)
+    sys_updated_on = models.DateTimeField(auto_now=True, null=True, blank=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
                                        related_name='category_created_by', limit_choices_to={'is_staff': True})
     sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
@@ -77,6 +86,11 @@ class KbCategory(models.Model):
 
     def __str__(self):
         return self.label
+
+    def save(self, *args, **kwargs):
+        if self.real_image:
+            self.compressed_image = compressImage(self.real_image)
+        super().save(*args, **kwargs)
 
 
 class KbKnowledge(models.Model):

@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from .models import KbKnowledge, BookmarkUserArticle, KbFeedback
+from .models import KbKnowledge, BookmarkUserArticle, KbFeedback, KbKnowledgeBase
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -195,3 +195,18 @@ class UpdateArticleInsertView(APIView):
         # breakpoint()
         result = add_article(request, articleid)
         return Response("Updated", status=status.HTTP_201_CREATED)
+
+
+class GetKnowledgeBaseView(APIView):
+
+    class KnowledgeBaseViewSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbKnowledgeBase
+            fields = ('id', 'description', 'title', 'real_image', 'compressed_image')
+
+    def get(self, request, format=None):
+        bases = KbKnowledgeBase.objects.filter(active=True)
+        result = self.KnowledgeBaseViewSerializer(bases, many=True)
+        return Response({"bases": result.data}, status=status.HTTP_200_OK)
+
+

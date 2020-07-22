@@ -30,7 +30,7 @@ class KbKnowledgeAdmin(admin.ModelAdmin):
 
 class KbKnowledgeBaseAdmin(admin.ModelAdmin):
     model = KbKnowledgeBase
-    list_display = ['id', 'sys_created_by', 'sys_created_on', 'sys_updated_by']
+    list_display = ['id', 'sys_created_by', 'real_image', 'compressed_image', 'sys_created_on', 'sys_updated_by']
     exclude = ['sys_created_by', 'sys_updated_by']
 
     def get_form(self, request, obj=None, **kwargs):

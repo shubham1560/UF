@@ -121,6 +121,11 @@ class CreateGoogleUserViewSet(APIView):
 
         try:
             user = SysUser.objects.get(email=data['email'])
+            if user.is_active:
+                pass
+            else:
+                user.is_active = True
+                user.save()
             new_user = False
         except SysUser.DoesNotExist:
             user = SysUser()
