@@ -6,7 +6,7 @@ from .views import KnowledgeArticleListView, KnowledgeArticleView,\
     GetBookmarkedArticleViewSet, BookmarkArticlesViewSet, \
     ArticleCommentsView, KnowledgeUseView, KbUseExistingView, \
     ArticleFeedbackView, NewArticleInsertView, UpdateArticleInsertView, \
-    GetKnowledgeBaseView
+    GetKnowledgeBaseView, GetKnowledgeCategory
 
 urlpatterns = [
     path('articles/new/', NewArticleInsertView.as_view()),
@@ -23,4 +23,5 @@ urlpatterns = [
     path('knowledge_view/<str:article_id>/', KbUseExistingView.as_view()),
     path('articles/<str:article_id>/feedback/', ArticleFeedbackView.as_view()),
     path('knowledge_base/get_knowledge_bases/', GetKnowledgeBaseView.as_view()),
+    path('<str:kb_base>/categories/<str:kb_category>/', GetKnowledgeCategory.as_view()),
 ]

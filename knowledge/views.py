@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from .models import KbKnowledge, BookmarkUserArticle, KbFeedback, KbKnowledgeBase
+from .models import KbKnowledge, BookmarkUserArticle, KbFeedback, KbKnowledgeBase, KbCategory
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -209,4 +209,29 @@ class GetKnowledgeBaseView(APIView):
         result = self.KnowledgeBaseViewSerializer(bases, many=True)
         return Response({"bases": result.data}, status=status.HTTP_200_OK)
 
+
+class GetKnowledgeCategory(APIView):
+    class KnowledgeCategoryViewSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbCategory
+            fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image')
+
+    def get(self, request, kb_base, kb_category, format=None):
+        # breakpoint()
+        if kb_category != "root":
+            try:
+                category = KbCategory.objects.get(id=kb_category)
+                categories = KbCategory.objects.filter(parent_category=category)
+            except ObjectDoesNotExist:
+                categories = []
+        # categories = KbCategory.parent_of_category()
+        # pass
+        else:
+            try:
+                kb = KbKnowledgeBase.objects.get(id=kb_base)
+                categories = KbCategory.objects.filter(active=True, parent_category=None, parent_kb_base=kb)
+            except ObjectDoesNotExist:
+                categories = []
+        result = self.KnowledgeCategoryViewSerializer(categories, many=True)
+        return Response({"categories": result.data}, status=status.HTTP_200_OK)
 

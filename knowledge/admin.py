@@ -13,6 +13,7 @@ class KbKnowledgeAdmin(admin.ModelAdmin):
     fields = ['id', 'title', 'description', 'featured_image', 'author', 'knowledge_base', 'category', 'article_body']
     ordering = ['-sys_created_on']
     exclude = ['sys_created_by', 'sys_updated_by']
+    list_filter = ('knowledge_base', 'workflow', 'category')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(KbKnowledgeAdmin, self).get_form(request, obj, **kwargs)
@@ -32,6 +33,8 @@ class KbKnowledgeBaseAdmin(admin.ModelAdmin):
     model = KbKnowledgeBase
     list_display = ['id', 'sys_created_by', 'real_image', 'compressed_image', 'sys_created_on', 'sys_updated_by']
     exclude = ['sys_created_by', 'sys_updated_by']
+    empty_value_display = '-empty-'
+    list_filter = ('active', 'sys_created_on')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(KbKnowledgeBaseAdmin, self).get_form(request, obj, **kwargs)
@@ -52,6 +55,9 @@ class KbCategoryAdmin(admin.ModelAdmin):
     model = KbCategory
     list_display = ['id', 'parent_kb_base', 'parent_category', 'sys_created_by', 'sys_created_on']
     exclude = ['sys_created_by', 'sys_updated_by']
+
+    empty_value_display = '-empty-'
+    list_filter = ('active', 'parent_kb_base', 'parent_category')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(KbCategoryAdmin, self).get_form(request, obj, **kwargs)

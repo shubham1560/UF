@@ -14,7 +14,7 @@ from django.core.files.base import ContentFile
 def compressImage(uploadedImage):
     imageTemproary = Image.open(uploadedImage).convert('RGB')
     outputIoStream = BytesIO()
-    imageTemproaryResized = imageTemproary.resize((300, 200))
+    imageTemproaryResized = imageTemproary.resize((200, 200))
     imageTemproaryResized.save(outputIoStream, format='JPEG', quality=60)
     outputIoStream.seek(0)
     uploadedImage = InMemoryUploadedFile(outputIoStream, 'ImageField', "%s.jpg" % uploadedImage.name.split('.')[0],
@@ -45,6 +45,7 @@ class KbKnowledgeBase(models.Model):
     active = models.BooleanField(default=True)
     description = models.CharField(max_length=1000)
     title = models.CharField(max_length=100)
+    order = models.IntegerField(null=True, blank=True)
     real_image = models.ImageField(upload_to="knowledge_base/real_images/", null=True, blank=True)
     compressed_image = models.ImageField(upload_to="knowledge_base/compressed_images/", null=True, blank=True)
     sys_updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
@@ -68,9 +69,13 @@ class KbKnowledgeBase(models.Model):
 
 class KbCategory(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
-    label = models.CharField(max_length=20)
+    label = models.CharField(max_length=100)
     parent_kb_base = models.ForeignKey(KbKnowledgeBase, blank=False, null=False, on_delete=models.CASCADE)
-    parent_category = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE)
+    parent_category = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE,
+                                        related_name="parent_of_category")
+    order = models.IntegerField(null=True, blank=True)
+    course = models.BooleanField(default=False, null=True, blank=True)
+    section = models.BooleanField(default=False, null=True, blank=True)
     active = models.BooleanField(default=True)
     real_image = models.ImageField(upload_to="knowledge_base/real_images/", null=True, blank=True)
     compressed_image = models.ImageField(upload_to="knowledge_base/compressed_images/", null=True, blank=True)
@@ -103,6 +108,7 @@ class KbKnowledge(models.Model):
     article_body = models.TextField(blank=True, null=True)
     author = models.ForeignKey(SysUser,
                                on_delete=models.CASCADE,)
+    order = models.IntegerField(null=True, blank=True)
     featured_image_thumbnail = models.ImageField(upload_to="article/featured_image_thumbs/", blank=True, null=True)
     active = models.BooleanField(default=True)
     article_type = models.CharField(max_length=4, blank=True, null=True)
