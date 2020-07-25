@@ -232,17 +232,38 @@ def add_article(request, articleid=0):
     print(request)
 
 
-def get_course_section_and_articles(category):
-    course = KbCategory.objects.get(id=category)
-    sections = course.parent_of_category.all().values("id", "label", "order")
-    results = list(sections)
-    for result in results:
-        result["articles"] = []
-    for section in sections:
-        children = KbCategory.objects.get(id=section["id"]).article_category.all().values("id", "title", 'category')
-        for child in children:
-            for section in sections:
-                if section["id"] == child["category"]:
-                    section["articles"].append(child)
+def get_course_section_and_articles(category, request):
+    anonymous = request.user.is_anonymous
+    if not anonymous:
+        views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
+    try:
+        course = KbCategory.objects.get(id=category)
+        sections = course.parent_of_category.all().values("id", "label", "order").order_by('order')
+        results = list(sections)
+        for result in results:
+            result["articles"] = []
+        for section in sections:
+            children = KbCategory.objects.get(id=section["id"]).article_category.all().values("id",
+                                                                                              "title",
+                                                                                              'category'
+                                                                                              ).order_by('order')
+            for child in children:
+                for section in sections:
+                    if section["id"] == child["category"]:
+                        if not anonymous:
+                            child["viewed"] = False
+                            for view in views:
+                                if child["id"] == view["article"]:
+                                    child["viewed"] = True
+                        section["articles"].append(child)
+    except ObjectDoesNotExist:
+        return False
+        # breakpoint()
+    return sections, course.label
+
+
+# def get_course_section_and_articles_for_logged_in_user(category, request):
     # breakpoint()
-    return sections
+    # sections, course = get_course_section_and_articles(category)
+    # views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
+    # return sections, course

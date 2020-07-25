@@ -9,6 +9,7 @@ from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles
+
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -240,6 +241,7 @@ class GetKnowledgeCategory(APIView):
 class GetCourseSectionAndArticles(APIView):
 
     def get(self, request, category, format=None):
-        result = get_course_section_and_articles(category)
-        return Response(result, status=status.HTTP_200_OK)
+        result, course = get_course_section_and_articles(category, request)
+        response = {"sections": result, "course": course}
+        return Response(response, status=status.HTTP_200_OK)
 

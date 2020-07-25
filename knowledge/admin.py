@@ -8,10 +8,11 @@ import random
 # Register your models here.
 class KbKnowledgeAdmin(admin.ModelAdmin):
     model = KbKnowledge
-    list_display = ['id', 'author', 'published_on',
+    list_display = ['id', 'author', 'order',
                     'sys_created_on', 'view_count', 'view_count_logged_in']
     fields = ['id', 'title', 'description', 'featured_image', 'author', 'knowledge_base', 'category', 'article_body']
     ordering = ['-sys_created_on']
+    list_editable = ('order', )
     exclude = ['sys_created_by', 'sys_updated_by']
     list_filter = ('knowledge_base', 'workflow', 'category')
 
