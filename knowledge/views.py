@@ -8,7 +8,7 @@ from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
-    if_bookmarked_and_found_useful_by_user, add_feedback, add_article
+    if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles
 from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -202,10 +202,10 @@ class GetKnowledgeBaseView(APIView):
     class KnowledgeBaseViewSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledgeBase
-            fields = ('id', 'description', 'title', 'real_image', 'compressed_image')
+            fields = ('id', 'description', 'title', 'real_image', 'compressed_image', 'order')
 
     def get(self, request, format=None):
-        bases = KbKnowledgeBase.objects.filter(active=True)
+        bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
         result = self.KnowledgeBaseViewSerializer(bases, many=True)
         return Response({"bases": result.data}, status=status.HTTP_200_OK)
 
@@ -214,14 +214,15 @@ class GetKnowledgeCategory(APIView):
     class KnowledgeCategoryViewSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbCategory
-            fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image')
+            fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image', "course",
+                      "section", "order")
 
     def get(self, request, kb_base, kb_category, format=None):
         # breakpoint()
         if kb_category != "root":
             try:
                 category = KbCategory.objects.get(id=kb_category)
-                categories = KbCategory.objects.filter(parent_category=category)
+                categories = KbCategory.objects.filter(parent_category=category).order_by('order')
             except ObjectDoesNotExist:
                 categories = []
         # categories = KbCategory.parent_of_category()
@@ -229,9 +230,16 @@ class GetKnowledgeCategory(APIView):
         else:
             try:
                 kb = KbKnowledgeBase.objects.get(id=kb_base)
-                categories = KbCategory.objects.filter(active=True, parent_category=None, parent_kb_base=kb)
+                categories = KbCategory.objects.filter(active=True, parent_category=None, parent_kb_base=kb).order_by('order')
             except ObjectDoesNotExist:
                 categories = []
         result = self.KnowledgeCategoryViewSerializer(categories, many=True)
         return Response({"categories": result.data}, status=status.HTTP_200_OK)
+
+
+class GetCourseSectionAndArticles(APIView):
+
+    def get(self, request, category, format=None):
+        result = get_course_section_and_articles(category)
+        return Response(result, status=status.HTTP_200_OK)
 

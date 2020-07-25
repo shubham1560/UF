@@ -1,5 +1,5 @@
 from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle,\
-     KbUse, KbKnowledgeBase
+     KbUse, KbKnowledgeBase, KbCategory
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from sys_user.models import SysUser
 from django.db.models import F
@@ -230,3 +230,19 @@ def add_article(request, articleid=0):
     a.knowledge_base = KbKnowledgeBase.objects.get(id="testing")
     a.save()
     print(request)
+
+
+def get_course_section_and_articles(category):
+    course = KbCategory.objects.get(id=category)
+    sections = course.parent_of_category.all().values("id", "label", "order")
+    results = list(sections)
+    for result in results:
+        result["articles"] = []
+    for section in sections:
+        children = KbCategory.objects.get(id=section["id"]).article_category.all().values("id", "title", 'category')
+        for child in children:
+            for section in sections:
+                if section["id"] == child["category"]:
+                    section["articles"].append(child)
+    # breakpoint()
+    return sections

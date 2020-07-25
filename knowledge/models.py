@@ -90,7 +90,7 @@ class KbCategory(models.Model):
         verbose_name_plural = "Knowledge Categories"
 
     def __str__(self):
-        return self.label
+        return "parent: {self.parent_category}, child: {self.label}".format(self=self)
 
     def save(self, *args, **kwargs):
         if self.real_image:
@@ -101,8 +101,8 @@ class KbCategory(models.Model):
 class KbKnowledge(models.Model):
     id = models.CharField(max_length=300, primary_key=True)
     title = models.CharField(max_length=300, blank=True, null=True)
-    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, default='random')
-    knowledge_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.CASCADE)
+    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, default='random', related_name="article_category")
+    knowledge_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.CASCADE, related_name="article_kb_base")
     description = models.TextField(blank=True, null=True)
     featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
     article_body = models.TextField(blank=True, null=True)
