@@ -267,3 +267,23 @@ def get_course_section_and_articles(category, request):
     # sections, course = get_course_section_and_articles(category)
     # views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
     # return sections, course
+
+def adding_recursive_category(category: KbCategory, label_array, id_array):
+    # breakpoint()
+    label_array.append(category.label)
+    id_array.append(category.id)
+    if not category.parent_category:
+        return
+    # breakpoint()
+    if category.parent_category:
+        parent = KbCategory.objects.get(id=category.parent_category.id)
+        adding_recursive_category(parent, label_array, id_array)
+
+
+def get_breadcrumb_category(category):
+    crumb_label = []
+    crumb_id = []
+    adding_recursive_category(category, crumb_label, crumb_id)
+    crumb_id.reverse()
+    crumb_label.reverse()
+    return crumb_label, crumb_id

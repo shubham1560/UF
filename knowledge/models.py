@@ -73,6 +73,7 @@ class KbCategory(models.Model):
     parent_kb_base = models.ForeignKey(KbKnowledgeBase, blank=False, null=False, on_delete=models.CASCADE)
     parent_category = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE,
                                         related_name="parent_of_category")
+    description = models.TextField(null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
     course = models.BooleanField(default=False, null=True, blank=True)
     section = models.BooleanField(default=False, null=True, blank=True)
@@ -90,7 +91,7 @@ class KbCategory(models.Model):
         verbose_name_plural = "Knowledge Categories"
 
     def __str__(self):
-        return "parent: {self.parent_category}, child: {self.label}".format(self=self)
+        return "parent: {self.parent_category}, current: {self.label}".format(self=self)
 
     def save(self, *args, **kwargs):
         if self.real_image:
