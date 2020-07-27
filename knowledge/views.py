@@ -5,17 +5,17 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from django.conf import settings
 from django.core.cache import cache
-from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from uFraudApi.settings.base import CACHE_KEY
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
     get_breadcrumb_category
-
-from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 CACHE_TTL = getattr(settings, 'CACHE_TTL', 0)
+
+cache_key = CACHE_KEY
 
 
 class KnowledgeArticleListView(APIView):
@@ -24,7 +24,7 @@ class KnowledgeArticleListView(APIView):
             model = KbKnowledge
             fields = ('id', 'title', 'featured_image_thumbnail', 'author', 'article_body', 'getAuthor')
 
-    @log_request
+    # @log_request
     def get(self, request, format=None):
         articles = get_all_articles()
         result = self.KnowledgeArticleListSerializer(articles, many=True)
@@ -39,7 +39,7 @@ class KnowledgeArticlePaginatedListView(APIView):
             fields = ('id', 'title', 'featured_image_thumbnail', 'description', 'getAuthor',
                       'get_category', 'get_knowledge_base')
 
-    @log_request
+    # @log_request
     def get(self, request, start, end, format=None):
         # breakpoint()
         total_articles = KbKnowledge.objects.all().count()
@@ -67,9 +67,9 @@ class KnowledgeArticleView(APIView):
                       'featured_image_thumbnail'
                       )
 
-    @log_request
+    # @log_request
     def get(self, request, id, format=None):
-        key = "singlearticle"+id
+        key = cache_key+"."+"singlearticle"+id
         if key in cache:
             result = cache.get(key)
         else:
@@ -88,7 +88,7 @@ class KnowledgeArticleView(APIView):
 class ArticleNestedCommentsView(APIView):
     permission_classes = (IsAuthenticated, )
 
-    @log_request
+    # @log_request
     def get(self, request, articleid, format=None):
         try:
             KbKnowledge.objects.get(id=articleid)
@@ -122,7 +122,7 @@ class GetBookmarkedArticleViewSet(APIView):
             model = BookmarkUserArticle
             fields = ('id', 'article', 'user', 'get_article')
 
-    @log_request
+    # @log_request
     def get(self, request, format=None):
         # breakpoint()
         count = BookmarkUserArticle.objects.filter(user=request.user).count()
@@ -209,12 +209,13 @@ class GetKnowledgeBaseView(APIView):
 
     # @log_request
     def get(self, request, format=None):
-        if 'kb_bases' in cache:
-            bases = cache.get('kb_bases')
+        key = cache_key+"."+"kb_bases"
+        if key in cache:
+            bases = cache.get(key)
             print("from cache")
         else:
             bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
-            cache.set('kb_bases', bases, timeout=None)
+            cache.set(key, bases, timeout=None)
             print("from db")
         result = self.KnowledgeBaseViewSerializer(bases, many=True)
         return Response({"bases": result.data}, status=status.HTTP_200_OK)
@@ -229,7 +230,7 @@ class GetKnowledgeCategory(APIView):
 
     def get(self, request, kb_base, kb_category, format=None):
         # breakpoint()
-        key = kb_base+"."+kb_category
+        key = cache_key+"."+kb_base+"."+kb_category
         if key in cache:
             categories = cache.get(key)
         else:
@@ -263,7 +264,7 @@ class GetCourseSectionAndArticles(APIView):
 class GetBreadCrumbView(APIView):
 
     def get(self, request, categoryId, format=None):
-        key = "crumb"+categoryId
+        key = cache_key+"."+"crumb"+categoryId
         if key in cache:
             result = cache.get(key)
         else:

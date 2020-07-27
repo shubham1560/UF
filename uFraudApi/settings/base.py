@@ -211,3 +211,5 @@ AWS_QUERYSTRING_AUTH = False
 RANDOM_LOG = config('RANDOM_LOG') == 'True'
 REQUEST_LOG = config('REQUEST_LOG') == 'True'
 EMAIL_LOG = config('EMAIL_LOG') == 'True'
+
+CACHE_KEY = config('CACHE_KEY')

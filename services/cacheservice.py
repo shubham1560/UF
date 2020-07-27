@@ -1,4 +1,5 @@
 from django.core.cache import cache
+from decouple import config
 
 
 def rate_limit(key, timeout=5):
@@ -10,3 +11,8 @@ def rate_limit(key, timeout=5):
 
 def clear_all():
     cache.clear()
+
+
+def cache_enable():
+    # print("enable cache running")
+    return True
