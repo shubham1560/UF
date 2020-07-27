@@ -6,3 +6,7 @@ def rate_limit(key, timeout=5):
         cache.set(key, 0, timeout=60*timeout)
     cache.incr(key, delta=1)
     return cache.get(key)
+
+
+def clear_all():
+    cache.clear()

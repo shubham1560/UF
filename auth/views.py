@@ -292,7 +292,7 @@ class ObtainAuthTokenViewSet(APIView):
             """
             logic for rate limiting the user on login attempt
             """
-            timeout = 2
+            timeout = 5
             key = 'login.'+request.data.get('username')
             login_attempt = rate_limit(key, timeout=timeout)
             if login_attempt > 3:

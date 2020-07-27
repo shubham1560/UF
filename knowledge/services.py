@@ -284,6 +284,9 @@ def get_breadcrumb_category(category):
     crumb_label = []
     crumb_id = []
     adding_recursive_category(category, crumb_label, crumb_id)
+    # breakpoint()
     crumb_id.reverse()
     crumb_label.reverse()
-    return crumb_label, crumb_id
+    result = {"crumb_id": crumb_id, "crumb_label": crumb_label}
+    # breakpoint()
+    return result

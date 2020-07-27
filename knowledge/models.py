@@ -8,6 +8,7 @@ from image_optimizer.utils import image_optimizer
 import sys
 from django.core.exceptions import ObjectDoesNotExist
 from decouple import config
+from django.core.cache import cache
 from django.core.files.base import ContentFile
 
 
@@ -62,6 +63,7 @@ class KbKnowledgeBase(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        cache.delete("kb_bases")
         if self.real_image:
             self.compressed_image = compressImage(self.real_image)
         super().save(*args, **kwargs)
@@ -94,6 +96,7 @@ class KbCategory(models.Model):
         return "parent: {self.parent_category}, current: {self.label}".format(self=self)
 
     def save(self, *args, **kwargs):
+        cache.clear()
         if self.real_image:
             self.compressed_image = compressImage(self.real_image)
         super().save(*args, **kwargs)
@@ -179,6 +182,7 @@ class KbKnowledge(models.Model):
             }
 
     def save(self, *args, **kwargs):
+        cache.clear()
         if self.featured_image:
             self.featured_image_thumbnail = compressImage(self.featured_image)
         super().save(*args, **kwargs)

@@ -15,7 +15,7 @@ from logs.services import log_request
 from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
-CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
+CACHE_TTL = getattr(settings, 'CACHE_TTL', 0)
 
 
 class KnowledgeArticleListView(APIView):
@@ -69,14 +69,20 @@ class KnowledgeArticleView(APIView):
 
     @log_request
     def get(self, request, id, format=None):
-        article = get_single_article(id)
-        if article:
-            response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "message": "Ok"}
-            status_code = status.HTTP_200_OK
+        key = "singlearticle"+id
+        if key in cache:
+            result = cache.get(key)
         else:
-            response = {"message": "the article with this id doesn't exist"}
-            status_code = status.HTTP_404_NOT_FOUND
-        return Response(response, status=status_code)
+            article = get_single_article(id)
+            if article:
+                response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "message": "Ok"}
+                status_code = status.HTTP_200_OK
+            else:
+                response = {"message": "the article with this id doesn't exist"}
+                status_code = status.HTTP_404_NOT_FOUND
+            result = {"response": response, "status": status_code}
+            cache.set(key, result, timeout=None)
+        return Response(result["response"], status=result["status"])
 
 
 class ArticleNestedCommentsView(APIView):
@@ -154,7 +160,6 @@ class ArticleCommentsView(APIView):
 class KnowledgeUseView(APIView):
 
     def post(self, request, format=None):
-        # breakpoint()
         use = kb_use(request)
         response = {"message": use}
         return Response(response, status=status.HTTP_201_CREATED)
@@ -168,10 +173,6 @@ class KbUseExistingView(APIView):
     def get(self, request, article_id, format=None):
         response = {"message": "anonymous user's data can't be fetched"}
         if not request.user.is_anonymous:
-            # if if_bookmarked_and_found_useful_by_user(request.user, article_id):
-            #     response = {"bookmarked": True}
-            # else:
-            #     response = {'bookmarked': False}
             response = if_bookmarked_and_found_useful_by_user(request.user, article_id)
         return Response(response, status=status.HTTP_200_OK)
 
@@ -206,8 +207,15 @@ class GetKnowledgeBaseView(APIView):
             model = KbKnowledgeBase
             fields = ('id', 'description', 'title', 'real_image', 'compressed_image', 'order')
 
+    # @log_request
     def get(self, request, format=None):
-        bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
+        if 'kb_bases' in cache:
+            bases = cache.get('kb_bases')
+            print("from cache")
+        else:
+            bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
+            cache.set('kb_bases', bases, timeout=None)
+            print("from db")
         result = self.KnowledgeBaseViewSerializer(bases, many=True)
         return Response({"bases": result.data}, status=status.HTTP_200_OK)
 
@@ -221,20 +229,25 @@ class GetKnowledgeCategory(APIView):
 
     def get(self, request, kb_base, kb_category, format=None):
         # breakpoint()
-        if kb_category != "root":
-            try:
-                category = KbCategory.objects.get(id=kb_category)
-                categories = KbCategory.objects.filter(parent_category=category).order_by('order')
-            except ObjectDoesNotExist:
-                categories = []
-        # categories = KbCategory.parent_of_category()
-        # pass
+        key = kb_base+"."+kb_category
+        if key in cache:
+            categories = cache.get(key)
         else:
-            try:
-                kb = KbKnowledgeBase.objects.get(id=kb_base)
-                categories = KbCategory.objects.filter(active=True, parent_category=None, parent_kb_base=kb).order_by('order')
-            except ObjectDoesNotExist:
-                categories = []
+            if kb_category != "root":
+                try:
+                    category = KbCategory.objects.get(id=kb_category)
+                    categories = KbCategory.objects.filter(parent_category=category).order_by('order')
+                except ObjectDoesNotExist:
+                    categories = []
+            # categories = KbCategory.parent_of_category()
+            # pass
+            else:
+                try:
+                    kb = KbKnowledgeBase.objects.get(id=kb_base)
+                    categories = KbCategory.objects.filter(active=True, parent_category=None, parent_kb_base=kb).order_by('order')
+                except ObjectDoesNotExist:
+                    categories = []
+            cache.set(key, categories, timeout=None)
         result = self.KnowledgeCategoryViewSerializer(categories, many=True)
         return Response({"categories": result.data}, status=status.HTTP_200_OK)
 
@@ -250,8 +263,13 @@ class GetCourseSectionAndArticles(APIView):
 class GetBreadCrumbView(APIView):
 
     def get(self, request, categoryId, format=None):
-        category = KbCategory.objects.get(id=categoryId)
-        labels, ids = get_breadcrumb_category(category)
-        return Response({"labels": labels, "id": ids} , status=status.HTTP_200_OK)
+        key = "crumb"+categoryId
+        if key in cache:
+            result = cache.get(key)
+        else:
+            category = KbCategory.objects.get(id=categoryId)
+            result = get_breadcrumb_category(category)
+            cache.set(key, result, timeout=None)
+        return Response({"labels": result["crumb_label"], "id": result["crumb_id"]}, status=status.HTTP_200_OK)
 
 
