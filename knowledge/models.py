@@ -218,8 +218,8 @@ class KbFeedback(models.Model):
 class KbUse(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(SysUser, on_delete=models.CASCADE)
-    course = models.ForeignKey(KbFeedback,
+    user = models.ForeignKey(SysUser, on_delete=models.CASCADE, related_name='user_activity')
+    course = models.ForeignKey(KbCategory,
                                null=True,
                                blank=True,
                                related_name='course_kb_category',
@@ -227,7 +227,7 @@ class KbUse(models.Model):
     percentage_completed = models.IntegerField(null=True, blank=True)
     useful = models.BooleanField(blank=True, null=True)
     viewed = models.BooleanField(blank=True, null=True)
-    article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)
+    article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE, null=True, blank=True)
     feedback = models.TextField(null=True, blank=True)
 
     class Meta:
@@ -253,7 +253,7 @@ class BookmarkUserArticle(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
     article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)
-    user = models.ForeignKey(SysUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(SysUser, on_delete=models.CASCADE, related_name='user_bookmark')
 
     class Meta:
         verbose_name_plural = "Bookmarks User Articles"

@@ -290,3 +290,16 @@ def get_breadcrumb_category(category):
     result = {"crumb_id": crumb_id, "crumb_label": crumb_label}
     # breakpoint()
     return result
+
+
+def set_progress_course_kbuse(request):
+    progress = request.data['progress']
+    try:
+        course = KbCategory.objects.get(id=request.data['course'])
+        use, boolean = KbUse.objects.get_or_create(course=course, user=request.user)
+        use.percentage_completed = progress
+        use.save()
+        return True
+    except ObjectDoesNotExist:
+        return False
+    # pass

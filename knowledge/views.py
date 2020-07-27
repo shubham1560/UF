@@ -9,7 +9,7 @@ from uFraudApi.settings.base import CACHE_KEY
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
-    get_breadcrumb_category
+    get_breadcrumb_category, set_progress_course_kbuse
 from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
@@ -274,3 +274,15 @@ class GetBreadCrumbView(APIView):
         return Response({"labels": result["crumb_label"], "id": result["crumb_id"]}, status=status.HTTP_200_OK)
 
 
+class SetCourseProgress(APIView):
+
+    def post(self, request, format=None):
+        # breakpoint()
+        if 100 >= int(request.data['progress']) >= 0:
+            if not request.user.is_anonymous:
+                result = set_progress_course_kbuse(request)
+            else:
+                result = "anonymous not allowed"
+        else:
+            result = "arrey bhai bhai bhai bhai, ye kahaan aa gye aap"
+        return Response({"progress_saved": result}, status=status.HTTP_200_OK)
