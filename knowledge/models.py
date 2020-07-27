@@ -219,6 +219,12 @@ class KbUse(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(SysUser, on_delete=models.CASCADE)
+    course = models.ForeignKey(KbFeedback,
+                               null=True,
+                               blank=True,
+                               related_name='course_kb_category',
+                               on_delete=models.CASCADE)
+    percentage_completed = models.IntegerField(null=True, blank=True)
     useful = models.BooleanField(blank=True, null=True)
     viewed = models.BooleanField(blank=True, null=True)
     article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)

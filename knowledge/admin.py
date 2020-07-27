@@ -54,7 +54,12 @@ class KbKnowledgeBaseAdmin(admin.ModelAdmin):
 
 class KbCategoryAdmin(admin.ModelAdmin):
     model = KbCategory
-    list_display = ['id', 'parent_kb_base', 'parent_category', 'sys_created_by', 'sys_created_on']
+    list_display = ['id',
+                    'parent_kb_base',
+                    'parent_category',
+                    'sys_created_by',
+                    'sys_created_on'
+                    ]
     exclude = ['sys_created_by', 'sys_updated_by']
 
     empty_value_display = '-empty-'
@@ -82,7 +87,7 @@ class KbFeedBackAdmin(admin.ModelAdmin):
 
 class KbUseAdmin(admin.ModelAdmin):
     model = KbUse
-    list_display = ['id', 'article', 'user', 'useful', 'viewed']
+    list_display = ['id', 'article','course', 'user', 'percentage_completed',  'useful', 'viewed']
 
 
 class KbFeedbackLikesAdmin(admin.ModelAdmin):
