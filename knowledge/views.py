@@ -125,8 +125,11 @@ class GetBookmarkedArticleViewSet(APIView):
     # @log_request
     def get(self, request, format=None):
         # breakpoint()
-        count = BookmarkUserArticle.objects.filter(user=request.user).count()
+        # count = BookmarkUserArticle.objects.filter(user=request.user).count()
         articles = get_bookmarked_articles(request.user)
+        articles = request.user.user_bookmark.select_related('article').all()
+        print(articles[0].article)
+        count = articles.count()
         result = self.BookmarkedArticleListSerializer(articles, many=True)
         response = {"bookmarked_articles": result.data, "articles_count": count}
         return Response(response, status=status.HTTP_200_OK)

@@ -302,4 +302,3 @@ def set_progress_course_kbuse(request):
         return True
     except ObjectDoesNotExist:
         return False
-    # pass

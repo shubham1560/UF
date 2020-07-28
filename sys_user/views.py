@@ -2,7 +2,7 @@ from .models import SysUser
 from rest_framework.views import APIView
 from rest_framework import serializers, status
 from rest_framework.response import Response
-# from .services import remove_user
+from .services import get_user_activity
 from rest_framework.authtoken.models import Token
 
 
@@ -50,3 +50,11 @@ class EditImageOnlyViewSet(APIView):
         user.profile = request.data['profile']
         user.save()
         return Response({"message": "changed the image mofo"}, status=status.HTTP_200_OK)
+
+
+class GetUserActivity(APIView):
+
+    def get(self, request, format=None):
+        result = get_user_activity(request)
+        # breakpoint()
+        return Response(result, status=status.HTTP_200_OK)
