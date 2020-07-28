@@ -123,6 +123,11 @@ def get_articles_for_logged_in_user_with_bookmark(start: int, end: int, user):
     return result
 
 
+# def get_user_bookmarked_articles_for_activity_tab(start, end):
+#     result = get_articles_for_logged_in_user_with_bookmark(start, end)
+
+
+
 def get_bookmarked_articles(user) -> BookmarkUserArticle:
     bookmarked_articles = BookmarkUserArticle.objects.filter(user=user)
     return bookmarked_articles
