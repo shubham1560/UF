@@ -4,6 +4,20 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from .services import get_user_activity
 from rest_framework.authtoken.models import Token
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import sys
+
+def compressImage(uploadedImage):
+    imageTemproary = Image.open(uploadedImage).convert('RGB')
+    outputIoStream = BytesIO()
+    imageTemproaryResized = imageTemproary.resize((200, 200))
+    imageTemproaryResized.save(outputIoStream, format='JPEG', quality=60)
+    outputIoStream.seek(0)
+    uploadedImage = InMemoryUploadedFile(outputIoStream, 'ImageField', "%s.jpg" % uploadedImage.name.split('.')[0],
+                                         'image/jpeg', sys.getsizeof(outputIoStream), None)
+    return uploadedImage
 
 
 class GetUserDetailViewSet(APIView):
@@ -47,7 +61,7 @@ class EditImageOnlyViewSet(APIView):
     def post(self, request, format=None):
         # breakpoint()
         user = Token.objects.get(key=request.data['token']).user
-        user.profile = request.data['profile']
+        user.profile = compressImage(request.data['profile'])
         user.save()
         return Response({"message": "changed the image mofo"}, status=status.HTTP_200_OK)
 
