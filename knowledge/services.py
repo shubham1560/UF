@@ -241,6 +241,7 @@ def get_course_section_and_articles(category, request):
     if not anonymous:
         views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
     try:
+        # breakpoint()
         course = KbCategory.objects.get(id=category)
         sections = course.parent_of_category.all().values("id", "label", "order").order_by('order')
         results = list(sections)
@@ -249,7 +250,8 @@ def get_course_section_and_articles(category, request):
         for section in sections:
             children = KbCategory.objects.get(id=section["id"]).article_category.all().values("id",
                                                                                               "title",
-                                                                                              'category'
+                                                                                              'category',
+                                                                                              'knowledge_base',
                                                                                               ).order_by('order')
             for child in children:
                 for section in sections:
