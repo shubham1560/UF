@@ -93,7 +93,10 @@ class KbCategory(models.Model):
         verbose_name_plural = "Knowledge Categories"
 
     def __str__(self):
-        return "parent: {self.parent_category}, current: {self.label}".format(self=self)
+        return "parent: {self.parent_category}, " \
+               "current: {self.label}, " \
+               "course: {self.course}, " \
+               "section: {self.section}".format(self=self)
 
     def save(self, *args, **kwargs):
         cache.clear()

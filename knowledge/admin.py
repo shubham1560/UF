@@ -9,7 +9,9 @@ import random
 class KbKnowledgeAdmin(admin.ModelAdmin):
     model = KbKnowledge
     list_display = ['id', 'author', 'order',
-                    'sys_created_on', 'view_count', 'view_count_logged_in']
+                    'sys_created_on', 'view_count', 'view_count_logged_in',
+                    'category'
+                    ]
     fields = ['id', 'title', 'description', 'featured_image', 'author', 'knowledge_base', 'category', 'article_body']
     ordering = ['-sys_created_on']
     list_editable = ('order', )
@@ -58,7 +60,9 @@ class KbCategoryAdmin(admin.ModelAdmin):
                     'parent_kb_base',
                     'parent_category',
                     'sys_created_by',
-                    'sys_created_on'
+                    'sys_created_on',
+                    'course',
+                    'section'
                     ]
     exclude = ['sys_created_by', 'sys_updated_by']
 
@@ -87,7 +91,7 @@ class KbFeedBackAdmin(admin.ModelAdmin):
 
 class KbUseAdmin(admin.ModelAdmin):
     model = KbUse
-    list_display = ['id', 'article','course', 'user', 'percentage_completed',  'useful', 'viewed']
+    list_display = ['id', 'article', 'course', 'user', 'percentage_completed',  'useful', 'viewed']
 
 
 class KbFeedbackLikesAdmin(admin.ModelAdmin):
