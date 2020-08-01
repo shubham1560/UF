@@ -6,11 +6,16 @@ def remove_user():
     pass
 
 
-def get_user_activity(request, ):
+def get_user_activity(request, requested_tye):
     user = request.user
-    activities = user.user_activity.select_related(
-        'article',
-        'course').all().order_by('-sys_created_on')
+    if requested_tye == 'courses':
+        activities = user.user_activity.select_related(
+            'article',
+            'course').exclude(course__isnull=True).order_by('-sys_updated_on')
+    if requested_tye == 'articles':
+        activities = user.user_activity.select_related(
+            'article',
+            'course').exclude(article__isnull=True).order_by('-sys_updated_on')[0:2]
     # breakpoint()
     related_activities = [None]*len(activities)
     counter = 0
