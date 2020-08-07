@@ -68,7 +68,7 @@ class EditImageOnlyViewSet(APIView):
 
 class GetUserActivity(APIView):
 
-    def get(self, request, requested_type, format=None):
-        result = get_user_activity(request, requested_type)
+    def get(self, request, requested_type, start, end, format=None):
+        result = get_user_activity(request, requested_type, start, end)
         # breakpoint()
         return Response(result, status=status.HTTP_200_OK)
