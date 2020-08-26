@@ -25,7 +25,7 @@ urlpatterns = [
     path('knowledge_crumb/<str:categoryId>/', GetBreadCrumbView.as_view()),
     path('articles/<str:article_id>/feedback/', ArticleFeedbackView.as_view()),
     path('knowledge_base/get_knowledge_bases/', GetKnowledgeBaseView.as_view()),
-    path('<str:kb_base>/categories/<str:kb_category>/', GetKnowledgeCategory.as_view()),
+    path('<str:kb_base>/categories/<str:kb_category>/<str:courses>/', GetKnowledgeCategory.as_view()),
     path('course/<str:category>/', GetCourseSectionAndArticles.as_view()),
     path('course_progress/', SetCourseProgress.as_view()),
 ]
