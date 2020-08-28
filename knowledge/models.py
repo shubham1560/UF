@@ -98,6 +98,20 @@ class KbCategory(models.Model):
                "course: {self.course}, " \
                "section: {self.section}".format(self=self)
 
+    def get_parent_category(self):
+        if self.parent_category:
+            return {
+                "label": self.parent_category.label,
+            }
+        return {
+            "label": "root"
+        }
+
+    def get_parent_knowledgebase(self):
+        return{
+            "label": self.parent_kb_base.title,
+        }
+
     def save(self, *args, **kwargs):
         cache.clear()
         if self.real_image:
