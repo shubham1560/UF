@@ -31,6 +31,37 @@ def nest_comment(comments):
     return final
 
 
+def nest_categories(categories):
+    # breakpoint()
+    queue = []
+    final = []
+    len_fin = 0
+    for category in categories:
+        category["children"] = []
+        if category["parent_category"] is None:
+            queue.append(category)
+            len_fin += 1
+    while queue:
+        s = queue.pop(0)
+        final.append(s)
+        # already_added = [].append(s)
+        for category in categories:
+            if category["parent_category"] == s['id']:
+                final[-1]["children"].append(category)
+                queue.append(category)
+        # if len(final) == len_fin:
+        #     return final
+                # if len(final) == len:
+                #     return final
+    # breakpoint()
+    final = final[:len_fin]
+    return final
+    # breakpoint()
+
+    # breakpoint()
+    # return {}
+
+
 def if_bookmarked_by_user(article_id, user):
     article = KbKnowledge.objects.get(id=article_id)
     exist = BookmarkUserArticle.objects.filter(user=user, article=article)
@@ -311,6 +342,11 @@ def set_progress_course_kbuse(request):
 
 
 def get_categories_tree(kb_base):
-    categories = KbKnowledgeBase.objects.get(id=kb_base).parent_of_category.all()
-    breakpoint()
-    pass
+    categories = KbKnowledgeBase.objects.get(id=kb_base).related_categories.\
+        filter(active=True, course=False, section=False).values('id',
+                                                                'parent_kb_base',
+                                                                'parent_category',
+                                                                'label').order_by('order')
+    nested_categories = nest_categories(list(categories))
+    return list(nested_categories)
+    # breakpoint()

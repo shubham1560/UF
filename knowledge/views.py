@@ -313,4 +313,4 @@ class GetKnowledgeCatgories(APIView):
         # categories = KbCategory.objects.filter(parent_kb_base=base, course=False, section=False)
         # breakpoint()
         # result = self.KnowledgeCategoryAllViewSerializer(categories, many=True)
-        return Response(status=status.HTTP_200_OK)
+        return Response(result, status=status.HTTP_200_OK)
