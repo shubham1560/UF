@@ -94,10 +94,14 @@ class KbCategory(models.Model):
         verbose_name_plural = "Knowledge Categories"
 
     def __str__(self):
-        return "parent: {self.parent_category}, " \
-               "current: {self.label}, " \
-               "course: {self.course}, " \
-               "section: {self.section}".format(self=self)
+        fin_str = ""
+        if self.course:
+            fin_str += "course: " + self.label
+        elif self.section:
+            fin_str += "section: " + self.label + ", course: " + self.parent_category.label
+        else:
+            fin_str += "Branch: " + self.label
+        return fin_str
 
     def get_parent_category(self):
         if self.parent_category:

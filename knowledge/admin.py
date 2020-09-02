@@ -67,7 +67,7 @@ class KbCategoryAdmin(admin.ModelAdmin):
     exclude = ['sys_created_by', 'sys_updated_by']
 
     empty_value_display = '-empty-'
-    list_filter = ('active', 'parent_kb_base', 'parent_category')
+    list_filter = ('course', 'section', 'active', 'parent_kb_base', 'parent_category')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(KbCategoryAdmin, self).get_form(request, obj, **kwargs)
