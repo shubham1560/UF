@@ -9,7 +9,7 @@ from uFraudApi.settings.base import CACHE_KEY
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
-    get_breadcrumb_category, set_progress_course_kbuse
+    get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree
 from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
@@ -298,3 +298,19 @@ class SetCourseProgress(APIView):
         else:
             result = "arrey bhai bhai bhai bhai, ye kahaan aa gye aap"
         return Response({"progress_saved": result}, status=status.HTTP_200_OK)
+
+
+class GetKnowledgeCatgories(APIView):
+    class KnowledgeCategoryAllViewSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbCategory
+            fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image', "course",
+                      "section", "order", "get_parent_category", "get_parent_knowledgebase", "description")
+
+    def get(self, request, kb_base, format=None):
+        result = get_categories_tree(kb_base)
+        # base = KbKnowledgeBase.objects.get(id=kb_base)
+        # categories = KbCategory.objects.filter(parent_kb_base=base, course=False, section=False)
+        # breakpoint()
+        # result = self.KnowledgeCategoryAllViewSerializer(categories, many=True)
+        return Response(status=status.HTTP_200_OK)

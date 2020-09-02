@@ -72,7 +72,8 @@ class KbKnowledgeBase(models.Model):
 class KbCategory(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
     label = models.CharField(max_length=100)
-    parent_kb_base = models.ForeignKey(KbKnowledgeBase, blank=False, null=False, on_delete=models.CASCADE)
+    parent_kb_base = models.ForeignKey(KbKnowledgeBase, blank=False, null=False, on_delete=models.CASCADE,
+                                       related_name="related_categories")
     parent_category = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE,
                                         related_name="parent_of_category")
     description = models.TextField(null=True, blank=True)

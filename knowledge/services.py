@@ -308,3 +308,9 @@ def set_progress_course_kbuse(request):
         return True
     except ObjectDoesNotExist:
         return False
+
+
+def get_categories_tree(kb_base):
+    categories = KbKnowledgeBase.objects.get(id=kb_base).parent_of_category.all()
+    breakpoint()
+    pass
