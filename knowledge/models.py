@@ -124,16 +124,36 @@ class KbCategory(models.Model):
         super().save(*args, **kwargs)
 
 
+class KnowledgeSection(models.Model):
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+    sys_updated_on = models.DateTimeField(auto_now=True)
+    label = models.CharField(max_length=100)
+    course = models.ForeignKey(KbCategory,
+                               on_delete=models.CASCADE,
+                               limit_choices_to={'course': True},
+                               related_name="related_sections")
+    order = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.course.label + " > " + self.label
+
+
 class KbKnowledge(models.Model):
     id = models.CharField(max_length=300, primary_key=True)
     title = models.CharField(max_length=300, blank=True, null=True)
-    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE, default='random', related_name="article_category")
+    category = models.ForeignKey(KbCategory, on_delete=models.CASCADE,
+                                 limit_choices_to={'course': True},
+                                 default='random',
+                                 related_name="article_category",
+                                 null=True, blank=True)
     knowledge_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.CASCADE, related_name="article_kb_base")
     description = models.TextField(blank=True, null=True)
     featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
     article_body = models.TextField(blank=True, null=True)
     author = models.ForeignKey(SysUser,
                                on_delete=models.CASCADE,)
+    section = models.ForeignKey(KnowledgeSection, on_delete=models.CASCADE, related_name="related_articles",
+                                null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
     featured_image_thumbnail = models.ImageField(upload_to="article/featured_image_thumbs/", blank=True, null=True)
     active = models.BooleanField(default=True)
@@ -289,5 +309,4 @@ class BookmarkUserArticle(models.Model):
             'author': self.article.getAuthor(),
 
         }
-
 

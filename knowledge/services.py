@@ -1,5 +1,5 @@
 from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle,\
-     KbUse, KbKnowledgeBase, KbCategory
+     KbUse, KbKnowledgeBase, KbCategory, KnowledgeSection
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from sys_user.models import SysUser
 from django.db.models import F
@@ -272,21 +272,21 @@ def get_course_section_and_articles(category, request):
     if not anonymous:
         views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
     try:
-        # breakpoint()
         course = KbCategory.objects.get(id=category)
-        sections = course.parent_of_category.all().values("id", "label", "order").order_by('order')
+        sections = course.related_sections.all().values('id', 'label', 'order').order_by('order')
         results = list(sections)
         for result in results:
             result["articles"] = []
         for section in sections:
-            children = KbCategory.objects.get(id=section["id"]).article_category.all().values("id",
-                                                                                              "title",
-                                                                                              'category',
-                                                                                              'knowledge_base',
-                                                                                              ).order_by('order')
+            children = KnowledgeSection.objects.get(id=section['id']).related_articles.all().values('id',
+                                                                                                    'title',
+                                                                                                    'category',
+                                                                                                    'knowledge_base',
+                                                                                                    'section'
+                                                                                                    ).order_by('order')
             for child in children:
                 for section in sections:
-                    if section["id"] == child["category"]:
+                    if section["id"] == child["section"]:
                         if not anonymous:
                             child["viewed"] = False
                             for view in views:
@@ -295,8 +295,43 @@ def get_course_section_and_articles(category, request):
                         section["articles"].append(child)
     except ObjectDoesNotExist:
         return False
-        # breakpoint()
+    # breakpoint()
     return sections, course.label
+    # breakpoint()
+
+    # Previously Working code
+
+    # anonymous = request.user.is_anonymous
+    # if not anonymous:
+    #     views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
+    # # breakpoint()
+    # try:
+    #     # breakpoint()
+    #     course = KbCategory.objects.get(id=category)
+    #     sections = course.parent_of_category.all().values("id", "label", "order").order_by('order')
+    #     results = list(sections)
+    #     for result in results:
+    #         result["articles"] = []
+    #     for section in sections:
+    #         children = KbCategory.objects.get(id=section["id"]).article_category.all().values("id",
+    #                                                                                           "title",
+    #                                                                                           'category',
+    #                                                                                           'knowledge_base',
+    #                                                                                           ).order_by('order')
+    #         for child in children:
+    #             for section in sections:
+    #                 if section["id"] == child["category"]:
+    #                     if not anonymous:
+    #                         child["viewed"] = False
+    #                         for view in views:
+    #                             if child["id"] == view["article"]:
+    #                                 child["viewed"] = True
+    #                     section["articles"].append(child)
+    # except ObjectDoesNotExist:
+    #     return False
+    #     # breakpoint()
+    # # breakpoint()
+    # return sections, course.label
 
 
 # def get_course_section_and_articles_for_logged_in_user(category, request):

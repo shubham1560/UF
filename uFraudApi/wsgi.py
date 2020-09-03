@@ -13,7 +13,7 @@ from decouple import config
 from django.core.wsgi import get_wsgi_application
 
 if config('LIVE') == '0':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.preprod')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.prod')
 else:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.finalsetup')
 

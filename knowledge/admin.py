@@ -1,22 +1,32 @@
 from django.contrib import admin
 from .models import KbKnowledgeBase, KbCategory, KbKnowledge, KbFeedback, KbUse,\
-    m2m_knowledge_feedback_likes,BookmarkUserArticle
+    m2m_knowledge_feedback_likes, BookmarkUserArticle, KnowledgeSection
 import binascii, os
 import random
+
+
+class KnowledgeSectionAdmin(admin.ModelAdmin):
+    model = KnowledgeSection
+    list_display = ['label', 'order', 'course', 'sys_created_on', 'sys_updated_on']
+    fields = ['label', 'order', 'course']
+    list_editable = ('order', )
+    list_filter = ('course', )
 
 
 # Register your models here.
 class KbKnowledgeAdmin(admin.ModelAdmin):
     model = KbKnowledge
-    list_display = ['id', 'author', 'order',
+    list_display = ['id', 'author', 'order', 'section',
                     'sys_created_on', 'view_count', 'view_count_logged_in',
                     'category'
                     ]
-    fields = ['id', 'title', 'description', 'featured_image', 'author', 'knowledge_base', 'category', 'article_body']
+    fields = ['id', 'title',
+              'description', 'section', 'featured_image', 'author', 'knowledge_base', 'category',
+              'article_body']
     ordering = ['-sys_created_on']
     list_editable = ('order', )
     exclude = ['sys_created_by', 'sys_updated_by']
-    list_filter = ('knowledge_base', 'workflow', 'category')
+    list_filter = ('knowledge_base', 'section', 'workflow', 'category')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(KbKnowledgeAdmin, self).get_form(request, obj, **kwargs)
@@ -62,12 +72,12 @@ class KbCategoryAdmin(admin.ModelAdmin):
                     'sys_created_by',
                     'sys_created_on',
                     'course',
-                    'section'
+                    # 'section'
                     ]
     exclude = ['sys_created_by', 'sys_updated_by']
 
     empty_value_display = '-empty-'
-    list_filter = ('course', 'section', 'active', 'parent_kb_base', 'parent_category')
+    list_filter = ('course', 'active', 'parent_kb_base', 'parent_category')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(KbCategoryAdmin, self).get_form(request, obj, **kwargs)
@@ -111,6 +121,7 @@ admin.site.register(KbFeedback, KbFeedBackAdmin)
 admin.site.register(KbUse, KbUseAdmin)
 admin.site.register(m2m_knowledge_feedback_likes, KbFeedbackLikesAdmin)
 admin.site.register(BookmarkUserArticle, BookmarkAdmin)
+admin.site.register(KnowledgeSection, KnowledgeSectionAdmin)
 
 
 
