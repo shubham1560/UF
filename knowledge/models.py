@@ -302,11 +302,25 @@ class BookmarkUserArticle(models.Model):
         unique_together = ['article', 'user']
 
     def get_article(self):
-        return {
-            'id': self.article.id,
-            'title': self.article.title,
-            'description': self.article.description,
-            'author': self.article.getAuthor(),
+        if self.article.section:
+            return {
+                'id': self.article.id or '',
+                'title': self.article.title or '',
+                # 'description': self.article.description or '',
+                # 'author': self.article.getAuthor() or '',
+                'course_id': self.article.section.course.id or '',
+                'course_label': self.article.section.course.label or '',
+                'kb_base_label': self.article.knowledge_base.title or '',
+                # 'kb_base_id': self.article.knowledge_base.title or ''
 
-        }
+            }
+        else:
+            return {
+                'id': self.article.id or '',
+                'title': self.article.title or '',
+                # 'description': self.article.description or '',
+                # 'author': self.article.getAuthor() or '',
+                # 'course_id': self.article.section.course.id or '',
+                # 'course_label': self.article.section.course.label or ''
+            }
 

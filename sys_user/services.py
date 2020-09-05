@@ -11,6 +11,7 @@ def get_user_activity(request, requested_tye, start, end):
     user = request.user
     # print(user)
     # breakpoint()
+    # breakpoint()
     if not user.is_anonymous:
         if requested_tye == 'courses':
             activities = user.user_activity.select_related(
@@ -49,8 +50,8 @@ def get_user_activity(request, requested_tye, start, end):
                     "description": activity.article.description or '',
                     "view_count": activity.article.view_count or '',
                     "view_count_logged_in": activity.article.view_count_logged_in or '',
-                    "course_id": activity.article.category.parent_category.id or '',
-                    "course_name": activity.article.category.parent_category.label or '',
+                    "course_id": activity.article.section.course.id or '',
+                    "course_name": activity.article.section.course.label or '',
                     "knowledge_base": activity.article.category.parent_kb_base.title or '',
                     # "thumbnail": activity.article.
                 }
