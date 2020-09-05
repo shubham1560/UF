@@ -128,9 +128,9 @@ class GetBookmarkedArticleViewSet(APIView):
         # count = BookmarkUserArticle.objects.filter(user=request.user).count()
         # articles = get_bookmarked_articles(request.user, start, end)
         if end == 0:
-            articles = request.user.user_bookmark.select_related('article').all()
+            articles = request.user.user_bookmark.select_related('article').all().order_by("-sys_created_on")
         else:
-            articles = request.user.user_bookmark.select_related('article')[start:end]
+            articles = request.user.user_bookmark.select_related('article').order_by("-sys_created_on")[start:end]
         # print(articles[0].article)
         # count = articles.count()
         result = self.BookmarkedArticleListSerializer(articles, many=True)
