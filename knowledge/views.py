@@ -336,7 +336,7 @@ class GetSearchResults(APIView):
         articles = KbKnowledge.objects.filter(Q(title__icontains=query_keyword) |
                                               Q(article_body__icontains=query_keyword)).order_by('-sys_updated_on')
         result_articles = self.KnowledgeArticlesSerializer(articles, many=True)
-        courses = KbCategory.objects.filter(label__icontains=query_keyword).order_by('-sys_updated_on')
+        courses = KbCategory.objects.filter(course=True, label__icontains=query_keyword).order_by('-sys_updated_on')
         result_courses = self.KnowledgeCourseSerializer(courses, many=True)
 
         # breakpoint()
