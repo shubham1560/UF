@@ -9,8 +9,9 @@ from uFraudApi.settings.base import CACHE_KEY
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
-    get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree
+    get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 # Create your views here.
 CACHE_TTL = getattr(settings, 'CACHE_TTL', 0)
@@ -317,4 +318,32 @@ class GetKnowledgeCatgories(APIView):
         # categories = KbCategory.objects.filter(parent_kb_base=base, course=False, section=False)
         # breakpoint()
         # result = self.KnowledgeCategoryAllViewSerializer(categories, many=True)
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class GetSearchResults(APIView):
+    class KnowledgeArticlesSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbKnowledge
+            fields = ('title', 'id', 'category', 'get_category', 'description')
+
+    class KnowledgeCourseSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbCategory
+            fields = ('id', 'label', 'description', 'get_parent_knowledgebase')
+
+    def get(self, request, query_keyword, format=None):
+        articles = KbKnowledge.objects.filter(Q(title__icontains=query_keyword) |
+                                              Q(article_body__icontains=query_keyword)).order_by('-sys_updated_on')
+        result_articles = self.KnowledgeArticlesSerializer(articles, many=True)
+        courses = KbCategory.objects.filter(label__icontains=query_keyword).order_by('-sys_updated_on')
+        result_courses = self.KnowledgeCourseSerializer(courses, many=True)
+
+        # breakpoint()
+        result = {
+            'courses': result_courses.data,
+            'articles': result_articles.data
+        }
+        # articles = get_articles(query_keyword)
+        # courses = get_courses(query_keyword)
         return Response(result, status=status.HTTP_200_OK)

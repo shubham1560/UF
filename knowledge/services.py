@@ -385,3 +385,11 @@ def get_categories_tree(kb_base):
     nested_categories = nest_categories(list(categories))
     return list(nested_categories)
     # breakpoint()
+
+
+def get_articles(query):
+    return
+
+
+def get_courses(query):
+    return
