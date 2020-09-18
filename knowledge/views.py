@@ -217,14 +217,14 @@ class GetKnowledgeBaseView(APIView):
 
     # @log_request
     def get(self, request, format=None):
-        key = cache_key+"."+"kb_bases"
-        if key in cache:
-            bases = cache.get(key)
-            print("from cache")
-        else:
-            bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
-            cache.set(key, bases, timeout=None)
-            print("from db")
+        # key = cache_key+"."+"kb_bases"
+        # if key in cache:
+        #     bases = cache.get(key)
+        #     print("from cache")
+        # else:
+        bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
+        # cache.set(key, bases, timeout=None)
+        # print("from db")
         result = self.KnowledgeBaseViewSerializer(bases, many=True)
         return Response({"bases": result.data}, status=status.HTTP_200_OK)
 
