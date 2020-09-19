@@ -12,6 +12,7 @@ from .services import get_all_articles, get_single_article, get_comments, get_pa
     get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from logs.services import log_random
 
 # Create your views here.
 CACHE_TTL = getattr(settings, 'CACHE_TTL', 0)
@@ -217,14 +218,14 @@ class GetKnowledgeBaseView(APIView):
 
     # @log_request
     def get(self, request, format=None):
-        # key = cache_key+"."+"kb_bases"
-        # if key in cache:
-        #     bases = cache.get(key)
-        #     print("from cache")
-        # else:
-        bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
-        # cache.set(key, bases, timeout=None)
-        # print("from db")
+        key = cache_key+"."+"kb_bases"
+        if key in cache:
+            bases = cache.get(key)
+            log_random("from cache")
+        else:
+            bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
+            cache.set(key, bases, timeout=None)
+            log_random("from db")
         result = self.KnowledgeBaseViewSerializer(bases, many=True)
         return Response({"bases": result.data}, status=status.HTTP_200_OK)
 
