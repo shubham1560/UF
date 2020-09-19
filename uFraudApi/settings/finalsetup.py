@@ -50,8 +50,11 @@ else:
 
     DEBUG = config('DEBUG') == 'True'
 
-    CELERY_BROKER_URL = "redis://h:pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624@ec2-50-16-240-35."\
-                        "compute-1.amazonaws.com:18709"
+    # CELERY_BROKER_URL = "redis://h:pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624@ec2-50-16-240-35."\
+    #                     "compute-1.amazonaws.com:18709"
+
+    CELERY_BROKER_URL = "redis://rediscloud:ok3AlmhlYZMSk7bQsfFhqri5c3d5dBJJ@redis-14029.c73.us-east-1-2.ec2." \
+                        "cloud.redislabs.com:14029"
 
     DATABASES = {
 
@@ -73,12 +76,23 @@ else:
 
     }
 
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'redis_cache.RedisCache',
+    #         'LOCATION': '%s:%s' % ("ec2-50-16-240-35.compute-1.amazonaws.com", "18709"),
+    #         'OPTIONS': {
+    #             'PASSWORD': "pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624",
+    #             'DB': 0,
+    #         }
+    #     }
+    # }
+
     CACHES = {
         'default': {
             'BACKEND': 'redis_cache.RedisCache',
-            'LOCATION': '%s:%s' % ("ec2-50-16-240-35.compute-1.amazonaws.com", "18709"),
+            'LOCATION': '%s:%s' % ("redis-14029.c73.us-east-1-2.ec2.cloud.redislabs.com", "14029"),
             'OPTIONS': {
-                'PASSWORD': "pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019e8d2145b8ee40624",
+                'PASSWORD': "ok3AlmhlYZMSk7bQsfFhqri5c3d5dBJJ",
                 'DB': 0,
             }
         }
