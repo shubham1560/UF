@@ -1,24 +1,44 @@
 from .models import SysUser, SubscriptionList
 from decouple import config
 from django.core.exceptions import ObjectDoesNotExist
-
+import re
 
 def remove_user():
     pass
 
+# Make a regular expression
+# for validating an Email
+regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+
+
+# for custom mails use: '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
+
+# Define a function for
+# for validating an Email
+def check(email):
+    # pass the regular expression
+    # and the string in search() method
+    if re.search(regex, email):
+        return True
+    else:
+        return False
+
 
 def add_subscriber(request):
     # breakpoint()
-    email_exist = SubscriptionList.objects.filter(email=request.data['email'])
-    if email_exist:
-        return {"status": "Email already exists", "value": False}
-    try:
-        email_list = SubscriptionList()
-        email_list.email = request.data['email']
-        email_list.save()
-        return {"status": "Entered to the subscriber's list", "value": True}
-    except ObjectDoesNotExist:
-        return False
+    if check(request.data['email']):
+        email_exist = SubscriptionList.objects.filter(email=request.data['email'])
+        if email_exist:
+            return {"status": "Email already exists", "value": False}
+        try:
+            email_list = SubscriptionList()
+            email_list.email = request.data['email']
+            email_list.save()
+            return {"status": "Entered to the subscriber's list", "value": True}
+        except ObjectDoesNotExist:
+            return False
+    else:
+        return {"status": "Invalid Email Address"}
 
 
 def get_user_activity(request, requested_tye, start, end):
