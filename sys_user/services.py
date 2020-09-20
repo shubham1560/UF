@@ -1,9 +1,24 @@
-from .models import SysUser
+from .models import SysUser, SubscriptionList
 from decouple import config
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def remove_user():
     pass
+
+
+def add_subscriber(request):
+    # breakpoint()
+    email_exist = SubscriptionList.objects.filter(email=request.data['email'])
+    if email_exist:
+        return {"status": "Email already exists", "value": False}
+    try:
+        email_list = SubscriptionList()
+        email_list.email = request.data['email']
+        email_list.save()
+        return {"status": "Entered to the subscriber's list", "value": True}
+    except ObjectDoesNotExist:
+        return False
 
 
 def get_user_activity(request, requested_tye, start, end):

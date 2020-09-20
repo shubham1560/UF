@@ -221,11 +221,11 @@ class GetKnowledgeBaseView(APIView):
         key = cache_key+"."+"kb_bases"
         if key in cache:
             bases = cache.get(key)
-            log_random("from cache")
+            # log_random("from cache")
         else:
             bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
             cache.set(key, bases, timeout=None)
-            log_random("from db")
+            # log_random("from db")
         result = self.KnowledgeBaseViewSerializer(bases, many=True)
         return Response({"bases": result.data}, status=status.HTTP_200_OK)
 

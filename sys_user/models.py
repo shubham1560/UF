@@ -66,3 +66,11 @@ class SysUser(AbstractUser):
         #     pass
         # self.featured_image = new_image
         super().save(*args, **kwargs)
+
+
+class SubscriptionList(models.Model):
+    email = models.EmailField(null=True, blank=True, max_length=200, unique=True)
+    active = models.BooleanField(default=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+    sys_updated_on = models.DateTimeField(auto_now=True)
+

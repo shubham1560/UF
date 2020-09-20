@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import SysUser
+from .models import SysUser, SubscriptionList
 
 
 class SysUserAdmin(UserAdmin):
@@ -27,5 +27,11 @@ class SysUserAdmin(UserAdmin):
     )
 
 
+class SubscriptionListAdmin(admin.ModelAdmin):
+    model = SubscriptionList
+    list_display = ['email', 'active', 'sys_created_on']
+
+
 # Register your models here.
 admin.site.register(SysUser, SysUserAdmin)
+admin.site.register(SubscriptionList, SubscriptionListAdmin)
