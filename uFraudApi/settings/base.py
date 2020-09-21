@@ -59,7 +59,7 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:4200",
     "https://uf-front.web.app",
     "https://uf-front.firebaseapp.com",
-    "https://sortedtree.com/"
+    "https://sortedtree.com"
 ]
 
 CORS_ALLOW_HEADERS = [

@@ -184,15 +184,23 @@ class KbKnowledge(models.Model):
 
     def getAuthor(self):
         try:
-            return {
-                'author_exist': True,
-                'first_name': self.author.first_name or '',
-                "id": self.author.id_name or '',
-                'last_name': self.author.last_name or '',
-                'header_image': config('S3URL')+str(self.author.header_image) or '',
-                'google_pic': self.author.profile_pic or '',
-                'about': self.author.about or '',
-            }
+            if self.author.public:
+                return {
+                    'author_exist': True,
+                    'first_name': self.author.first_name or '',
+                    "id": self.author.id_name or '',
+                    'last_name': self.author.last_name or '',
+                    'header_image': config('S3URL')+str(self.author.header_image) or '',
+                    'google_pic': self.author.profile_pic or '',
+                    'about': self.author.about or '',
+                    'facebook_link': self.author.facebook_profile_link or '',
+                    'instagram_link': self.author.instagram_profile_link or '',
+                    'linkedin_link': self.author.linkedin_profile or '',
+                    'external_website_link': self.author.external_website_link or '',
+                    'twitter_link': self.author.twitter_profile_link or ''
+                }
+            else:
+                return {}
         except ObjectDoesNotExist:
             return {
                 'author_exist': False

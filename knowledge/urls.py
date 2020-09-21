@@ -30,5 +30,4 @@ urlpatterns = [
     path('course_progress/', SetCourseProgress.as_view()),
     path('<str:kb_base>/categories_kb_base/', GetKnowledgeCatgories.as_view()),
     path('query/<str:query_keyword>/', GetSearchResults.as_view()),
-
 ]

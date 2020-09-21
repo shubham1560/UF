@@ -41,6 +41,12 @@ class SysUser(AbstractUser):
     id_name = models.CharField(max_length=100, unique=True, null=True, blank=True)
     about = models.TextField(null=True, blank=True)
     facebook_id = models.CharField(null=True, blank=True, max_length=100)
+    facebook_profile_link = models.CharField(max_length=300, null=True, blank=True)
+    public = models.BooleanField(default=True)
+    instagram_profile_link = models.CharField(max_length=300, null=True, blank=True)
+    twitter_profile_link = models.CharField(max_length=300, null=True, blank=True)
+    external_website_link = models.CharField(max_length=300, null=True, blank=True)
+    linkedin_profile = models.CharField(max_length=300, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # im = Image.open(self.featured_image).convert('RGB')
