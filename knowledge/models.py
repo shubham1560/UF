@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from decouple import config
 from django.core.cache import cache
 from django.core.files.base import ContentFile
+from uFraudApi.settings.base import CACHE_KEY
 
 
 def compressImage(uploadedImage):
@@ -63,7 +64,7 @@ class KbKnowledgeBase(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        cache.delete("kb_bases")
+        cache.delete(CACHE_KEY+".kb_bases")
         if self.real_image:
             self.compressed_image = compressImage(self.real_image)
         super().save(*args, **kwargs)

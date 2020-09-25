@@ -25,7 +25,6 @@ import facebook
 from django.contrib.auth import authenticate
 
 
-
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 # Create your views here.
 

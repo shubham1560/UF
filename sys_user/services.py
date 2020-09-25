@@ -94,3 +94,14 @@ def get_user_activity(request, requested_tye, start, end):
         # breakpoint()
         # print(related_activities)
         return list(related_activities)
+
+
+def is_developer(code):
+    try:
+        user = SysUser.objects.get(facebook_id=code)
+        if user:
+            if user.groups.filter(name='Developers').exists():
+                return True
+    except ObjectDoesNotExist:
+        return False
+    return False

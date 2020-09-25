@@ -2,7 +2,7 @@ from .models import SysUser
 from rest_framework.views import APIView
 from rest_framework import serializers, status
 from rest_framework.response import Response
-from .services import get_user_activity, add_subscriber
+from .services import get_user_activity, add_subscriber, is_developer
 from rest_framework.authtoken.models import Token
 from PIL import Image
 from io import BytesIO
@@ -86,4 +86,11 @@ class AddSubscriberViewSet(APIView):
 
     def post(self, request, format=None):
         result = add_subscriber(request)
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class IsDeveloperViewSet(APIView):
+
+    def get(self, request, developer_code, format=None):
+        result = is_developer(developer_code)
         return Response(result, status=status.HTTP_200_OK)

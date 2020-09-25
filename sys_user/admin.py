@@ -10,10 +10,11 @@ class SysUserAdmin(UserAdmin):
                     "username",
                     "is_active",
                     "is_staff",
+                    'facebook_id',
                     "date_joined",
                     "user_type",
                     "profile",
-                    "header_image",
+                    # "header_image",
                     "profile_pic"]
     # list_editable = ('is_active',)
     add_fieldsets = (
