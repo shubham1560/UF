@@ -91,6 +91,7 @@ class AddSubscriberViewSet(APIView):
 
 class IsDeveloperViewSet(APIView):
 
-    def get(self, request, developer_code, format=None):
-        result = is_developer(developer_code)
+    def post(self, request, format=None):
+        # breakpoint()
+        result = is_developer(request.data['passcode'], request.data['username'])
         return Response(result, status=status.HTTP_200_OK)
