@@ -18,7 +18,7 @@ class KbKnowledgeAdmin(admin.ModelAdmin):
     model = KbKnowledge
     list_display = ['id', 'author', 'order', 'section',
                     'sys_created_on', 'view_count', 'view_count_logged_in',
-                    'category'
+                    'category', 'workflow'
                     ]
     fields = ['id', 'title',
               'description', 'section', 'featured_image', 'author', 'knowledge_base', 'category',

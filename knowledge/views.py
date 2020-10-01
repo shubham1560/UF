@@ -198,8 +198,9 @@ class NewArticleInsertView(APIView):
 
     def post(self, request, format=None):
         # breakpoint()
+        publish_ready = request.data['publish_ready']
         article_id = request.data['id']
-        result = add_article(request, article_id)
+        result = add_article(request, publish_ready, article_id)
         return Response(result, status=status.HTTP_201_CREATED)
 
 
