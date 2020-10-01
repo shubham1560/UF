@@ -249,7 +249,7 @@ def add_feedback(request, article_id):
         return False
 
 
-def add_article(request, publish_ready, article_id=0 ):
+def add_article(request, publish_ready, article_id=0):
     # breakpoint()
     title = request.data['article']['blocks'][0]["data"]["text"]
     uid = title.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(2)).decode()
@@ -259,7 +259,7 @@ def add_article(request, publish_ready, article_id=0 ):
     else:
         a = KbKnowledge.objects.get(id=article_id)
     a.title = title
-    a.article_body = request.data['article']['blocks']
+    a.article_body = request.data['body_data']
     # a.featured_image = request.data["featured_image"]
     # a.description = request.data["description"]
     # a.author = request.user or SysUser.objects.get(username="admin")
