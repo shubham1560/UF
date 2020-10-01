@@ -13,7 +13,13 @@ class AttachedImageViewSet(APIView):
         attachment.real_image = image
         attachment.save()
         # up_image = AttachedImage.objects.create(real_image=image)
-        response = {"image_url": str(attachment.real_image.url), "compressed_image_url": str(attachment.compressed.url)}
+        response = \
+            {"success": 1,
+             "file": {
+                "url": str(attachment.compressed.url)
+                }
+            }
+        # response = {"image_url": str(attachment.real_image.url), "compressed_image_url": str(attachment.compressed.url)}
         # response = {"message": "image uploaded"}
         return Response(response, status=status.HTTP_201_CREATED)
 

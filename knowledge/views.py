@@ -197,8 +197,10 @@ class ArticleFeedbackView(APIView):
 class NewArticleInsertView(APIView):
 
     def post(self, request, format=None):
-        result = add_article(request)
-        return Response("well", status=status.HTTP_201_CREATED)
+        # breakpoint()
+        article_id = request.data['id']
+        result = add_article(request, article_id)
+        return Response(result, status=status.HTTP_201_CREATED)
 
 
 class UpdateArticleInsertView(APIView):

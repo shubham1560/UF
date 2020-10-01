@@ -6,7 +6,8 @@ from .models import AttachedImage
 
 class AttachedImagesAdmin(admin.ModelAdmin):
     model = AttachedImage
-    list_display = ['id', 'real_image', 'thumbnail', 'compressed', 'article']
+    list_display = ['id', 'real_image', 'thumbnail', 'compressed', 'article', 'sys_created_on']
+    sortable_by = ('sys_created_on', )
 
 
 admin.site.register(AttachedImage, AttachedImagesAdmin)

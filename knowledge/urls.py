@@ -10,7 +10,7 @@ from .views import KnowledgeArticleListView, KnowledgeArticleView,\
     GetBreadCrumbView, SetCourseProgress, GetKnowledgeCatgories, GetSearchResults
 
 urlpatterns = [
-    path('articles/new/', NewArticleInsertView.as_view()),
+    path('kb_knowledge/article/', NewArticleInsertView.as_view()),
     path('articles/update/<str:articleid>/', UpdateArticleInsertView.as_view()),
     path('articles/', KnowledgeArticleListView.as_view()),
     path('articles/<str:id>/', KnowledgeArticleView.as_view()),

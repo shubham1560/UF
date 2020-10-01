@@ -250,21 +250,25 @@ def add_feedback(request, article_id):
 
 
 def add_article(request, articleid=0):
-    uid = request.data["title"].lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
-    if articleid == 0:
+    # breakpoint()
+    title = request.data['article']['blocks'][0]["data"]["text"]
+    uid = title.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(2)).decode()
+    if articleid == '':
         a = KbKnowledge()
         a.id = uid
     else:
         a = KbKnowledge.objects.get(id=articleid)
-    a.title = request.data["title"]
-    a.article_body = request.data["article_body"]
-    a.featured_image = request.data["featured_image"]
-    a.description = request.data["description"]
-    a.author = request.user
+    a.title = title
+    a.article_body = request.data['article']['blocks']
+    # a.featured_image = request.data["featured_image"]
+    # a.description = request.data["description"]
+    # a.author = request.user or SysUser.objects.get(username="admin")
+    a.author = SysUser.objects.get(username="admin")
     a.workflow = "draft"
-    a.knowledge_base = KbKnowledgeBase.objects.get(id="testing")
+    a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing")
     a.save()
-    print(request)
+    return a.id
+    # print(request)
 
 
 def get_course_section_and_articles(category, request):

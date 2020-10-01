@@ -144,7 +144,7 @@ class KbKnowledge(models.Model):
     title = models.CharField(max_length=300, blank=True, null=True)
     category = models.ForeignKey(KbCategory, on_delete=models.CASCADE,
                                  limit_choices_to={'course': True},
-                                 default='random',
+                                 # default='random',
                                  related_name="article_category",
                                  null=True, blank=True)
     knowledge_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.CASCADE, related_name="article_kb_base")
