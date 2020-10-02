@@ -20,8 +20,8 @@ class KbKnowledgeAdmin(admin.ModelAdmin):
                     'sys_created_on', 'view_count', 'view_count_logged_in',
                     'category', 'workflow'
                     ]
-    fields = ['id', 'title',
-              'description', 'section', 'featured_image', 'author', 'knowledge_base', 'category',
+    fields = ['id', 'title', 'active', 'workflow',
+              'description', 'section', 'author', 'knowledge_base', 'category',
               'article_body']
     ordering = ['-sys_created_on']
     list_editable = ('order', )
