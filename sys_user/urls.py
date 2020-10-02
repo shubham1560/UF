@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import GetUserDetailViewSet, EditUserDetailViewSet, EditImageOnlyViewSet, GetUserActivity, \
-    AddSubscriberViewSet, IsDeveloperViewSet
+    AddSubscriberViewSet, IsDeveloperViewSet, IsPartOfTheGroup
 
 urlpatterns = [
     path('get_user_data/', GetUserDetailViewSet.as_view()),
@@ -10,4 +10,5 @@ urlpatterns = [
          GetUserActivity.as_view()),  # whether article or course
     path('add_subscriber/', AddSubscriberViewSet.as_view()),
     path('developer/', IsDeveloperViewSet.as_view()),
+    path('group/<group_name>/', IsPartOfTheGroup.as_view()),
 ]

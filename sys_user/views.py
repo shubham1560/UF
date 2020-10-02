@@ -9,6 +9,7 @@ from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
 
+
 def compressImage(uploadedImage):
     imageTemproary = Image.open(uploadedImage).convert('RGB')
     outputIoStream = BytesIO()
@@ -26,10 +27,11 @@ class GetUserDetailViewSet(APIView):
             model = SysUser
             fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image', 'email',
                       'about', 'header_image', 'facebook_profile_link', 'instagram_profile_link',
-                      'twitter_profile_link', 'external_website_link', 'linkedin_profile', 'public')
+                      'twitter_profile_link', 'external_website_link', 'linkedin_profile', 'public', 'groups')
 
     def get(self, request, format=None):
         serializer = self.GetUserDetailFromTokenSerializer(request.user, many=False)
+        # request.user.groups
         response = {'user': serializer.data}
         return Response(response, status=status.HTTP_200_OK)
 
@@ -95,3 +97,15 @@ class IsDeveloperViewSet(APIView):
         # breakpoint()
         result = is_developer(request.data['passcode'], request.data['username'])
         return Response(result, status=status.HTTP_200_OK)
+
+
+class IsPartOfTheGroup(APIView):
+
+    def get(self, request, group_name, format=None):
+        # request.user
+        # breakpoint()
+        if request.user.groups.filter(name=group_name).exists():
+            response = True
+        else:
+            response = False
+        return Response(response, status=status.HTTP_200_OK)
