@@ -211,8 +211,8 @@ class KbKnowledge(models.Model):
         try:
             return {
                 'category_exist': True,
-                'category_label': self.category.label,
-                'id': self.category.id
+                'category_label': self.category.label or '',
+                'id': self.category.id or ''
             }
         except ObjectDoesNotExist:
             return{
@@ -223,9 +223,9 @@ class KbKnowledge(models.Model):
         try:
             return {
                 'knowledge_base_exist': True,
-                'knowledge_base': self.knowledge_base.title,
-                'description': self.knowledge_base.description,
-                'id': self.knowledge_base.id,
+                'knowledge_base': self.knowledge_base.title or '',
+                'description': self.knowledge_base.description or '',
+                'id': self.knowledge_base.id or '',
             }
         except ObjectDoesNotExist:
             return {

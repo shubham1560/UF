@@ -264,7 +264,9 @@ def add_article(request, publish_ready, article_id=0):
         # a.featured_image = request.data["featured_image"]
         # a.description = request.data["description"]
         # a.author = request.user or SysUser.objects.get(username="admin")
-        a.author = SysUser.objects.get(username="admin")
+        # a.author = SysUser.objects.get(username="admin")
+        a.author = request.user
+        a.sys_created_by = request.user
         if publish_ready:
             a.workflow = "review"
         else:

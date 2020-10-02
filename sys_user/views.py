@@ -1,3 +1,6 @@
+from rest_framework.permissions import IsAuthenticated
+
+from knowledge.models import KbKnowledge
 from .models import SysUser
 from rest_framework.views import APIView
 from rest_framework import serializers, status
@@ -77,6 +80,7 @@ class EditImageOnlyViewSet(APIView):
 
 
 class GetUserActivity(APIView):
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, requested_type, start, end, format=None):
         result = get_user_activity(request, requested_type, start, end)
@@ -92,6 +96,7 @@ class AddSubscriberViewSet(APIView):
 
 
 class IsDeveloperViewSet(APIView):
+    # permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
         # breakpoint()
@@ -100,6 +105,7 @@ class IsDeveloperViewSet(APIView):
 
 
 class IsPartOfTheGroup(APIView):
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, group_name, format=None):
         # request.user
@@ -108,4 +114,24 @@ class IsPartOfTheGroup(APIView):
             response = True
         else:
             response = False
+        return Response(response, status=status.HTTP_200_OK)
+
+
+class GetUserAuthoredArticles(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    class GetUserAuthoreArticlesSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbKnowledge
+            fields = ['id', 'title', 'sys_created_on', 'sys_updated_on', 'workflow']
+
+    def get(self, request, sort_by, format=None):
+        # breakpoint()
+        articles = KbKnowledge.objects.filter(author=request.user).order_by(sort_by)
+        articles_count = KbKnowledge.objects.filter(author=request.user).count()
+        articles_data = self.GetUserAuthoreArticlesSerializer(articles, many=True)
+        response = {
+            'articles': articles_data.data,
+            'total_count': articles_count,
+        }
         return Response(response, status=status.HTTP_200_OK)
