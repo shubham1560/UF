@@ -208,14 +208,19 @@ class KbKnowledge(models.Model):
             }
 
     def get_category(self):
-        try:
+        if self.category:
+            try:
+                return {
+                    'category_exist': True,
+                    'category_label': self.category.label or '',
+                    'id': self.category.id or ''
+                }
+            except ObjectDoesNotExist:
+                return{
+                    'category_exist': False,
+                }
+        else:
             return {
-                'category_exist': True,
-                'category_label': self.category.label or '',
-                'id': self.category.id or ''
-            }
-        except ObjectDoesNotExist:
-            return{
                 'category_exist': False,
             }
 

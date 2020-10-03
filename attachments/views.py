@@ -1,8 +1,10 @@
 from django.shortcuts import render
+
+from knowledge.models import KbKnowledge
 from .models import AttachedImage
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
-from .services import get_the_link
+from .services import get_the_link, get_the_url_link_data
 
 
 class AttachedImageViewSet(APIView):
@@ -29,15 +31,19 @@ class AddLinkForVideo(APIView):
 
     def get(self, request, format=None):
         # breakpoint()
-        get_the_link(request)
+        url = get_the_link(request)
+        result = get_the_url_link_data(request)
+        # url = request.META['QUERY_STRING']
+
         response = {
             "success": 1,
             "meta": {
+                "result": result,
                 "title": "CodeX Team",
                 "site_name": "CodeX",
                 "description": "Club of web-development, design and marketing. We build team learning how to build full-valued projects on the world market.",
                 "image": {
-                    "url": "https://codex.so/public/app/img/meta_img.png"
+                    "url": url
                 }
             }
         }

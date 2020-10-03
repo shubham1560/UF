@@ -336,10 +336,12 @@ class GetSearchResults(APIView):
             fields = ('id', 'label', 'description', 'get_parent_knowledgebase')
 
     def get(self, request, query_keyword, format=None):
-        articles = KbKnowledge.objects.filter(Q(title__icontains=query_keyword) |
-                                              Q(article_body__icontains=query_keyword)).order_by('-sys_updated_on')
+        articles = KbKnowledge.objects.filter(Q(title__icontains=query_keyword, workflow='published') |
+                                              Q(article_body__icontains=query_keyword, workflow='published'
+                                                )).order_by('-sys_updated_on')
         result_articles = self.KnowledgeArticlesSerializer(articles, many=True)
-        courses = KbCategory.objects.filter(course=True, label__icontains=query_keyword).order_by('-sys_updated_on')
+        courses = KbCategory.objects.filter(course=True, label__icontains=query_keyword,
+                                            active=True).order_by('-sys_updated_on')
         result_courses = self.KnowledgeCourseSerializer(courses, many=True)
 
         # breakpoint()
