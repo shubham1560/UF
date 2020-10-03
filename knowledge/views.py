@@ -62,28 +62,27 @@ class KnowledgeArticleView(APIView):
             fields = ('id',
                       'title',
                       'article_body',
+                      'workflow',
                       "getAuthor",
                       "get_category",
                       "get_knowledge_base",
-                      'featured_image',
-                      'featured_image_thumbnail'
                       )
 
     # @log_request
     def get(self, request, id, format=None):
-        key = cache_key+"."+"singlearticle"+id
-        if key in cache:
-            result = cache.get(key)
+        # key = cache_key+"."+"singlearticle"+id
+        # if key in cache:
+        #     result = cache.get(key)
+        # else:
+        article = get_single_article(id, request)
+        if article:
+            response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "message": "Ok"}
+            status_code = status.HTTP_200_OK
         else:
-            article = get_single_article(id)
-            if article:
-                response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "message": "Ok"}
-                status_code = status.HTTP_200_OK
-            else:
-                response = {"message": "the article with this id doesn't exist"}
-                status_code = status.HTTP_404_NOT_FOUND
-            result = {"response": response, "status": status_code}
-            cache.set(key, result, timeout=None)
+            response = {"message": "the article with this id doesn't exist"}
+            status_code = status.HTTP_404_NOT_FOUND
+        result = {"response": response, "status": status_code}
+            # cache.set(key, result, timeout=None)
         return Response(result["response"], status=result["status"])
 
 

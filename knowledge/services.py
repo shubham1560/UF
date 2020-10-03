@@ -116,9 +116,13 @@ def get_all_articles():
     return articles
 
 
-def get_single_article(id):
+def get_single_article(id, request):
+
     try:
-        article = KbKnowledge.objects.get(id=id)
+        if request.user.groups.filter(name='Authors').exists():
+            article = KbKnowledge.objects.get(id=id)
+        else:
+            article = KbKnowledge.objects.get(id=id, workflow='published')
         return article
     except ObjectDoesNotExist:
         pass
