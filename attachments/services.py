@@ -13,7 +13,9 @@ def get_the_url_link_data(request):
     # print(request.META['QUERY_STRING'])
     final_blocks = []
     arr_url_section = request.META['QUERY_STRING'].split('%23')
+    # breakpoint()
     if len(arr_url_section) == 2:
+        # breakpoint()
         section = arr_url_section[1]
         article_id = arr_url_section[0].split('%2F')[-1]
         article = KbKnowledge.objects.get(id=article_id)

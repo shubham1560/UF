@@ -24,7 +24,7 @@ class KbKnowledgeAdmin(admin.ModelAdmin):
               'description', 'section', 'author', 'knowledge_base', 'category',
               'article_body']
     ordering = ['-sys_created_on']
-    list_editable = ('order', )
+    list_editable = ('order', 'workflow', 'section')
     exclude = ['sys_created_by', 'sys_updated_by']
     list_filter = ('knowledge_base', 'section', 'workflow', 'category')
 

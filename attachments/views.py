@@ -37,7 +37,9 @@ class AddLinkForVideo(APIView):
         arr_url_section = request.META['QUERY_STRING'].split('%23')
         article_id = arr_url_section[0].split('%2F')[-1]
         article = KbKnowledge.objects.get(id=article_id)
-        section = arr_url_section[1]
+        section = "The whole article has been selected"
+        if len(arr_url_section) == 2:
+            section = arr_url_section[1]
 
         response = {
             "success": 1,

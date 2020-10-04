@@ -296,12 +296,10 @@ def get_course_section_and_articles(category, request):
         for result in results:
             result["articles"] = []
         for section in sections:
-            children = KnowledgeSection.objects.get(id=section['id']).related_articles.all().values('id',
-                                                                                                    'title',
-                                                                                                    'category',
-                                                                                                    'knowledge_base',
-                                                                                                    'section'
-                                                                                                    ).order_by('order')
+            children = KnowledgeSection.objects.get(id=section['id']).related_articles.filter\
+                (workflow='published').values('id',
+                                              'title', 'category', 'knowledge_base', 'section').order_by('order')
+
             for child in children:
                 for section in sections:
                     if section["id"] == child["section"]:

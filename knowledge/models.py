@@ -201,7 +201,9 @@ class KbKnowledge(models.Model):
                     'twitter_link': self.author.twitter_profile_link or ''
                 }
             else:
-                return {}
+                return {
+                    # 'about': self.author.about or '',
+                }
         except ObjectDoesNotExist:
             return {
                 'author_exist': False

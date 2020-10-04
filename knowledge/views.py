@@ -66,6 +66,7 @@ class KnowledgeArticleView(APIView):
                       "getAuthor",
                       "get_category",
                       "get_knowledge_base",
+                      'sys_updated_on'
                       )
 
     # @log_request
