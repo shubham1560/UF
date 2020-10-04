@@ -82,7 +82,7 @@ class KnowledgeArticleView(APIView):
             response = {"message": "the article with this id doesn't exist"}
             status_code = status.HTTP_404_NOT_FOUND
         result = {"response": response, "status": status_code}
-            # cache.set(key, result, timeout=None)
+        # cache.set(key, result, timeout=None)
         return Response(result["response"], status=result["status"])
 
 

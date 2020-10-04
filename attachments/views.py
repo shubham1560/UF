@@ -34,14 +34,18 @@ class AddLinkForVideo(APIView):
         url = get_the_link(request)
         result = get_the_url_link_data(request)
         # url = request.META['QUERY_STRING']
+        arr_url_section = request.META['QUERY_STRING'].split('%23')
+        article_id = arr_url_section[0].split('%2F')[-1]
+        article = KbKnowledge.objects.get(id=article_id)
+        section = arr_url_section[1]
 
         response = {
             "success": 1,
             "meta": {
                 "result": result,
-                "title": "CodeX Team",
-                "site_name": "CodeX",
-                "description": "Club of web-development, design and marketing. We build team learning how to build full-valued projects on the world market.",
+                "title": article.title,
+                "site_name": "Sorted Tree",
+                "description": section,
                 "image": {
                     "url": url
                 }

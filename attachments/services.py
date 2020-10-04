@@ -12,9 +12,10 @@ def get_the_link(request):
 def get_the_url_link_data(request):
     # print(request.META['QUERY_STRING'])
     final_blocks = []
-    if len(request.META['QUERY_STRING'].split('%23')) == 2:
-        section = request.META['QUERY_STRING'].split('%23')[1]
-        article_id = request.META['QUERY_STRING'].split("%23")[0].split('%2F')[-1]
+    arr_url_section = request.META['QUERY_STRING'].split('%23')
+    if len(arr_url_section) == 2:
+        section = arr_url_section[1]
+        article_id = arr_url_section[0].split('%2F')[-1]
         article = KbKnowledge.objects.get(id=article_id)
         string_of_blocks = article.article_body[1: -1]
         blocks_string = string_obj(string_of_blocks)
@@ -52,7 +53,7 @@ def string_obj(string):
             arr.append("{")
         if i == "}":
             arr.pop()
-        if len(arr) == 0 and i==',':
+        if len(arr) == 0 and i == ',':
             change_list.append(counter)
         counter += 1
     ind = change_list
