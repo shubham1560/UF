@@ -152,7 +152,7 @@ class KbKnowledge(models.Model):
     featured_image = models.ImageField(upload_to="articles/featured_images/", blank=True, null=True)
     article_body = models.TextField(blank=True, null=True)
     author = models.ForeignKey(SysUser,
-                               on_delete=models.CASCADE,)
+                               on_delete=models.CASCADE, null=True, blank=True)
     section = models.ForeignKey(KnowledgeSection, on_delete=models.CASCADE, related_name="related_articles",
                                 null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
@@ -185,21 +185,26 @@ class KbKnowledge(models.Model):
 
     def getAuthor(self):
         try:
-            if self.author.public:
-                return {
-                    'author_exist': True,
-                    'first_name': self.author.first_name or '',
-                    "id": self.author.id_name or '',
-                    'last_name': self.author.last_name or '',
-                    'header_image': config('S3URL')+str(self.author.header_image) or '',
-                    'google_pic': self.author.profile_pic or '',
-                    'about': self.author.about or '',
-                    'facebook_link': self.author.facebook_profile_link or '',
-                    'instagram_link': self.author.instagram_profile_link or '',
-                    'linkedin_link': self.author.linkedin_profile or '',
-                    'external_website_link': self.author.external_website_link or '',
-                    'twitter_link': self.author.twitter_profile_link or ''
-                }
+            if self.author:
+                if self.author.public:
+                    return {
+                        'author_exist': True,
+                        'first_name': self.author.first_name or '',
+                        "id": self.author.id_name or '',
+                        'last_name': self.author.last_name or '',
+                        'header_image': config('S3URL')+str(self.author.header_image) or '',
+                        'google_pic': self.author.profile_pic or '',
+                        'about': self.author.about or '',
+                        'facebook_link': self.author.facebook_profile_link or '',
+                        'instagram_link': self.author.instagram_profile_link or '',
+                        'linkedin_link': self.author.linkedin_profile or '',
+                        'external_website_link': self.author.external_website_link or '',
+                        'twitter_link': self.author.twitter_profile_link or ''
+                    }
+                else:
+                    return {
+
+                    }
             else:
                 return {
                     # 'about': self.author.about or '',

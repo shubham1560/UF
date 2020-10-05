@@ -125,13 +125,23 @@ class GetUserAuthoredArticles(APIView):
             model = KbKnowledge
             fields = ['id', 'title', 'sys_created_on', 'sys_updated_on', 'workflow']
 
-    def get(self, request, sort_by, format=None):
+    def get(self, request, sort_by, state, format=None):
         # breakpoint()
-        articles = KbKnowledge.objects.filter(author=request.user).order_by(sort_by)
-        articles_count = KbKnowledge.objects.filter(author=request.user).count()
-        articles_data = self.GetUserAuthoreArticlesSerializer(articles, many=True)
-        response = {
-            'articles': articles_data.data,
-            'total_count': articles_count,
-        }
+
+        if state == 'all':
+            articles = KbKnowledge.objects.filter(author=request.user, active=True).order_by(sort_by)
+            articles_count = KbKnowledge.objects.filter(author=request.user, active=True).count()
+            articles_data = self.GetUserAuthoreArticlesSerializer(articles, many=True)
+            response = {
+                'articles': articles_data.data,
+                'total_count': articles_count,
+            }
+        if state != 'all':
+            articles = KbKnowledge.objects.filter(author=request.user, active=True, workflow=state).order_by(sort_by)
+            articles_count = KbKnowledge.objects.filter(author=request.user, active=True, workflow=state).count()
+            articles_data = self.GetUserAuthoreArticlesSerializer(articles, many=True)
+            response = {
+                'articles': articles_data.data,
+                'total_count': articles_count,
+            }
         return Response(response, status=status.HTTP_200_OK)

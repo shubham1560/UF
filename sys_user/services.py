@@ -87,7 +87,7 @@ def get_user_activity(request, requested_tye, start, end):
                     "view_count_logged_in": activity.article.view_count_logged_in or '',
                     "course_id": activity.article.section.course.id or '',
                     "course_name": activity.article.section.course.label or '',
-                    "knowledge_base": activity.article.category.parent_kb_base.title or '',
+                    # "knowledge_base": activity.article.category.parent_kb_base.title or '',
                     # "thumbnail": activity.article.
                 }
             counter += 1

@@ -11,5 +11,5 @@ urlpatterns = [
     path('add_subscriber/', AddSubscriberViewSet.as_view()),
     path('developer/', IsDeveloperViewSet.as_view()),
     path('group/<group_name>/', IsPartOfTheGroup.as_view()),
-    path('user/kb_knowledge/author/<str:sort_by>/', GetUserAuthoredArticles.as_view())
+    path('user/kb_knowledge/author/<str:sort_by>/<str:state>/', GetUserAuthoredArticles.as_view())
 ]
