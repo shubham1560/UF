@@ -353,3 +353,15 @@ class GetSearchResults(APIView):
         # articles = get_articles(query_keyword)
         # courses = get_courses(query_keyword)
         return Response(result, status=status.HTTP_200_OK)
+
+
+class GetCoursesForAddingArticle(APIView):
+    class KnowledgeCourseSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbCategory
+            fields = ('id', 'label', 'description', 'get_parent_knowledgebase')
+
+    def get(self, request, format=None):
+        courses = KbCategory.objects.filter(course=True)
+        result = self.KnowledgeCourseSerializer(courses, many=True)
+        return Response(result.data, status=status.HTTP_200_OK)
