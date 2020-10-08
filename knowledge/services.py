@@ -425,6 +425,7 @@ def add_article_to_course(request):
         article = KbKnowledge.objects.get(id=article_id)
         article.workflow = "published"
         article.section = section
+        article.knowledge_base = course.parent_kb_base
         article.save()
         return True
     except ObjectDoesNotExist:
