@@ -9,7 +9,8 @@ from uFraudApi.settings.base import CACHE_KEY
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
-    get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles
+    get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles, \
+    add_article_to_course
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from logs.services import log_random
@@ -362,6 +363,16 @@ class GetCoursesForAddingArticle(APIView):
             fields = ('id', 'label', 'description', 'get_parent_knowledgebase')
 
     def get(self, request, format=None):
-        courses = KbCategory.objects.filter(course=True)
+        courses = KbCategory.objects.filter(course=True,active=True)
         result = self.KnowledgeCourseSerializer(courses, many=True)
         return Response(result.data, status=status.HTTP_200_OK)
+
+
+class AddArticleToCourse(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        # breakpoint()
+        add_article_to_course(request)
+        return Response("", status=status.HTTP_200_OK)
+        # pass

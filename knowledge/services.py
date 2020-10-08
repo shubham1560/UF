@@ -257,7 +257,7 @@ def add_article(request, publish_ready, article_id=0):
     # breakpoint()
     try:
         title = request.data['article']['blocks'][0]["data"]["text"]
-        uid = title.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(2)).decode()
+        uid = title.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
         if article_id == '':
             a = KbKnowledge()
             a.id = uid
@@ -409,3 +409,24 @@ def get_articles(query):
 
 def get_courses(query):
     return
+
+
+def add_article_to_course(request):
+    article_id = request.data['article_id']
+    course_id = request.data['course_id']
+    # breakpoint()
+    try:
+        course = KbCategory.objects.get(id=course_id, course=True, active=True)
+        section, created = KnowledgeSection.objects.get_or_create(
+            label="Individual Articles",
+            course=course,
+            order=100000
+            )
+        article = KbKnowledge.objects.get(id=article_id)
+        article.workflow = "published"
+        article.section = section
+        article.save()
+        return True
+    except ObjectDoesNotExist:
+        return False
+    # pass

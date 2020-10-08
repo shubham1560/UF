@@ -7,7 +7,8 @@ from .views import KnowledgeArticleListView, KnowledgeArticleView,\
     ArticleCommentsView, KnowledgeUseView, KbUseExistingView, \
     ArticleFeedbackView, NewArticleInsertView, UpdateArticleInsertView, \
     GetKnowledgeBaseView, GetKnowledgeCategory, GetCourseSectionAndArticles, \
-    GetBreadCrumbView, SetCourseProgress, GetKnowledgeCatgories, GetSearchResults, GetCoursesForAddingArticle
+    GetBreadCrumbView, SetCourseProgress, GetKnowledgeCatgories, GetSearchResults, GetCoursesForAddingArticle, \
+    AddArticleToCourse
 
 urlpatterns = [
     path('kb_knowledge/article/', NewArticleInsertView.as_view()),
@@ -30,5 +31,6 @@ urlpatterns = [
     path('course_progress/', SetCourseProgress.as_view()),
     path('<str:kb_base>/categories_kb_base/', GetKnowledgeCatgories.as_view()),
     path('query/<str:query_keyword>/', GetSearchResults.as_view()),
-    path('kb_category/courses/', GetCoursesForAddingArticle.as_view())
+    path('kb_category/courses/', GetCoursesForAddingArticle.as_view()),
+    path('kb_sections/article/insert/', AddArticleToCourse.as_view())
 ]
