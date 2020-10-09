@@ -312,7 +312,7 @@ def get_course_section_and_articles(category, request):
     except ObjectDoesNotExist:
         return False
     # breakpoint()
-    return sections, course.label
+    return sections, {"label": course.label, "description": course.description}
     # breakpoint()
 
     # Previously Working code
