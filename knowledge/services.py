@@ -261,10 +261,17 @@ def add_article(request, publish_ready, article_id=0):
         if article_id == '':
             a = KbKnowledge()
             a.id = uid
-        else:
-            a = KbKnowledge.objects.get(id=article_id)
+            # a.workflow = "draft"
             a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing")
             a.category, created = KbCategory.objects.get_or_create(id="testing")
+        else:
+            a = KbKnowledge.objects.get(id=article_id)
+        if not a.knowledge_base:
+            a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing")
+        if not a.category:
+            a.category, created = KbCategory.objects.get_or_create(id="testing")
+        if not a.workflow:
+            a.workflow = "draft"
         a.title = title
         a.article_body = request.data['body_data']
         # a.featured_image = request.data["featured_image"]
@@ -275,8 +282,8 @@ def add_article(request, publish_ready, article_id=0):
         a.sys_created_by = request.user
         if publish_ready:
             a.workflow = 'review'
-        else:
-            a.workflow = "draft"
+        # else:
+        #     a.workflow = "draft"
         # a.workflow  = publish_ready"draft": "review"
         a.save()
     except ValidationError:
@@ -425,9 +432,30 @@ def add_article_to_course(request):
         article = KbKnowledge.objects.get(id=article_id)
         article.workflow = "published"
         article.section = section
+        article.category = course
         article.knowledge_base = course.parent_kb_base
         article.save()
         return True
     except ObjectDoesNotExist:
         return False
+    # pass
+
+
+def add_path_or_branch(request):
+    # breakpoint()
+    a = KbCategory()
+
+    a.label = request.data["form_data"]["title"]
+    a.id = a.label.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
+    a.description = request.data["form_data"]["description"]
+    a.active = request.data["form_data"]["active"]
+    # a.parent_kb_base =
+    if request.data['type']['add'] == 'course':
+        a.course = True
+    a.parent_kb_base = KbKnowledgeBase.objects.get(id=request.data["type"]["kb_base"])
+    if request.data['type']['kb_category'] != 'root':
+        a.parent_category = KbCategory.objects.get(id=request.data['type']['kb_category'])
+    # breakpoint()
+    a.save()
+    return a
     # pass

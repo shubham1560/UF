@@ -10,7 +10,7 @@ from .services import get_all_articles, get_single_article, get_comments, get_pa
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
     get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles, \
-    add_article_to_course
+    add_article_to_course, add_path_or_branch
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from logs.services import log_random
@@ -199,10 +199,13 @@ class NewArticleInsertView(APIView):
 
     def post(self, request, format=None):
         # breakpoint()
-        publish_ready = request.data['publish_ready']
-        article_id = request.data['id']
-        result = add_article(request, publish_ready, article_id)
-        return Response(result, status=status.HTTP_201_CREATED)
+        if request.user.groups.filter(name="Authors").exists():
+            publish_ready = request.data['publish_ready']
+            article_id = request.data['id']
+            result = add_article(request, publish_ready, article_id)
+            return Response(result, status=status.HTTP_201_CREATED)
+        else:
+            return Response('', status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UpdateArticleInsertView(APIView):
@@ -363,7 +366,7 @@ class GetCoursesForAddingArticle(APIView):
             fields = ('id', 'label', 'description', 'get_parent_knowledgebase')
 
     def get(self, request, format=None):
-        courses = KbCategory.objects.filter(course=True,active=True)
+        courses = KbCategory.objects.filter(course=True, active=True)
         result = self.KnowledgeCourseSerializer(courses, many=True)
         return Response(result.data, status=status.HTTP_200_OK)
 
@@ -373,6 +376,20 @@ class AddArticleToCourse(APIView):
 
     def post(self, request, format=None):
         # breakpoint()
-        add_article_to_course(request)
+        if request.user.groups.filter(name__in=["Moderators", "Authors"]).exists():
+            add_article_to_course(request)
+        else:
+            return Response("Invalid Request", status=status.HTTP_401_UNAUTHORIZED)
         return Response("", status=status.HTTP_200_OK)
-        # pass
+
+
+class AddPathOrBranch(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request, format=None):
+        if request.user.groups.filter(name="Moderators").exists():
+            add_path_or_branch(request)
+        else:
+            return Response("invalid request", status=status.HTTP_401_UNAUTHORIZED)
+        # breakpoint()
+        return Response("", status=status.HTTP_201_CREATED)
