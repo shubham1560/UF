@@ -67,12 +67,14 @@ class KbKnowledgeBaseAdmin(admin.ModelAdmin):
 class KbCategoryAdmin(admin.ModelAdmin):
     model = KbCategory
     list_display = ['id',
+                    'label',
                     'active',
+                    'course',
                     'parent_kb_base',
                     'parent_category',
                     'sys_created_by',
                     'sys_created_on',
-                    'course',
+                    'sys_updated_on'
                     # 'section'
                     ]
     exclude = ['sys_created_by', 'sys_updated_by']

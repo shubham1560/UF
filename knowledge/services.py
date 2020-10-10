@@ -456,6 +456,7 @@ def add_path_or_branch(request):
     if request.data['type']['kb_category'] != 'root':
         a.parent_category = KbCategory.objects.get(id=request.data['type']['kb_category'])
     # breakpoint()
+    a.sys_created_by = request.user
     a.save()
     return a
     # pass
