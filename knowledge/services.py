@@ -263,6 +263,8 @@ def add_article(request, publish_ready, article_id=0):
             a.id = uid
         else:
             a = KbKnowledge.objects.get(id=article_id)
+            a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing")
+            a.category, created = KbCategory.objects.get_or_create(id="testing")
         a.title = title
         a.article_body = request.data['body_data']
         # a.featured_image = request.data["featured_image"]
@@ -276,8 +278,6 @@ def add_article(request, publish_ready, article_id=0):
         else:
             a.workflow = "draft"
         # a.workflow  = publish_ready"draft": "review"
-        a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing")
-        a.category, created = KbCategory.objects.get_or_create(id="testing")
         a.save()
     except ValidationError:
         return "Please add the heading to the article"

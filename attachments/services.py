@@ -9,7 +9,7 @@ def get_the_link(request):
     return url
 
 
-def get_the_url_link_data(request):
+def get_the_url_link_data(request, article):
     # print(request.META['QUERY_STRING'])
     final_blocks = []
     arr_url_section = request.META['QUERY_STRING'].split('%23')
@@ -17,8 +17,10 @@ def get_the_url_link_data(request):
     if len(arr_url_section) == 2:
         # breakpoint()
         section = arr_url_section[1]
-        article_id = arr_url_section[0].split('%2F')[-1]
-        article = KbKnowledge.objects.get(id=article_id)
+        # arr_url_section[0] = arr_url_section[0].replace("/", '%2F')
+        # article_id = arr_url_section[0].split('%2F')[-1]
+        # article = KbKnowledge.objects.get(id=article_id)
+        # article = article
         string_of_blocks = article.article_body[1: -1]
         blocks_string = string_obj(string_of_blocks)
         for block in blocks_string:
