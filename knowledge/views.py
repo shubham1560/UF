@@ -10,7 +10,7 @@ from .services import get_all_articles, get_single_article, get_comments, get_pa
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
     get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles, \
-    add_article_to_course, add_path_or_branch
+    add_article_to_course, add_path_or_branch, edit_path_or_branch
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from logs.services import log_random
@@ -238,6 +238,13 @@ class GetKnowledgeBaseView(APIView):
 
 
 class GetKnowledgeCategory(APIView):
+    class KnowledgeCategoryModeratorViewSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbCategory
+            fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image', "course",
+                      "section", "order", "get_parent_category", "get_parent_knowledgebase", "description",
+                      'get_created_by')
+
     class KnowledgeCategoryViewSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbCategory
@@ -251,6 +258,7 @@ class GetKnowledgeCategory(APIView):
         # if key in cache:
         #     categories = cache.get(key)
         # else:
+        # if request.user.groups.filter(name="Moderators"):
         if kb_category != "root":
             try:
                 category = KbCategory.objects.get(id=kb_category)
@@ -273,7 +281,10 @@ class GetKnowledgeCategory(APIView):
             except ObjectDoesNotExist:
                 categories = []
         # cache.set(key, categories, timeout=None)
-        result = self.KnowledgeCategoryViewSerializer(categories, many=True)
+        if request.user.groups.filter(name="Moderators"):
+            result = self.KnowledgeCategoryModeratorViewSerializer(categories, many=True)
+        else:
+            result = self.KnowledgeCategoryViewSerializer(categories, many=True)
         # breakpoint()
         return Response({"categories": result.data}, status=status.HTTP_200_OK)
 
@@ -387,8 +398,14 @@ class AddPathOrBranch(APIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
+        # breakpoint()
         if request.user.groups.filter(name="Moderators").exists():
-            add_path_or_branch(request)
+            try:
+                if request.data["type"]["product"]:
+                    edit_path_or_branch(request)
+                    # print("yellow")
+            except KeyError:
+                add_path_or_branch(request)
         else:
             return Response("invalid request", status=status.HTTP_401_UNAUTHORIZED)
         # breakpoint()

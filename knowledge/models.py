@@ -118,6 +118,12 @@ class KbCategory(models.Model):
             "label": self.parent_kb_base.title,
         }
 
+    def get_created_by(self):
+        if self.sys_created_by:
+            return {
+                "author": self.sys_created_by.email
+            }
+
     def save(self, *args, **kwargs):
         cache.clear()
         if self.real_image:

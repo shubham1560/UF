@@ -460,3 +460,15 @@ def add_path_or_branch(request):
     a.save()
     return a
     # pass
+
+
+def edit_path_or_branch(request):
+    try:
+        category = KbCategory.objects.get(id=request.data["type"]["product"]["id"])
+        category.label = request.data["form_data"]["title"]
+        category.description = request.data["form_data"]["description"]
+        category.active = request.data["form_data"]["active"]
+        category.save()
+    except KeyError:
+        pass
+    # breakpoint()
