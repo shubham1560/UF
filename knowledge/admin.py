@@ -89,7 +89,7 @@ class KbCategoryAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         # breakpoint()
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id is None or "random" in obj.id:
             obj.id = obj.label.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
         if obj.id:

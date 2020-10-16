@@ -243,7 +243,7 @@ class GetKnowledgeCategory(APIView):
             model = KbCategory
             fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image', "course",
                       "section", "order", "get_parent_category", "get_parent_knowledgebase", "description",
-                      'get_created_by')
+                      'get_created_by', "active")
 
     class KnowledgeCategoryViewSerializer(serializers.ModelSerializer):
         class Meta:
@@ -252,6 +252,10 @@ class GetKnowledgeCategory(APIView):
                       "section", "order", "get_parent_category", "get_parent_knowledgebase", "description")
 
     def get(self, request, kb_base, kb_category, courses, format=None):
+        if request.user.groups.filter(name="Moderators").exists():
+            moderator = True
+        else:
+            moderator = False
         # breakpoint()
         # If courses is true, then all the courses in the database is sent in response
         # key = cache_key+"."+kb_base+"."+kb_category
@@ -275,9 +279,22 @@ class GetKnowledgeCategory(APIView):
                 kb = KbKnowledgeBase.objects.get(id=kb_base)
                 if courses == "courses":
                     # print("fetch courses only")
-                    categories = KbCategory.objects.filter(course=True, active=True, parent_kb_base=kb).order_by('order')
+                    if moderator:
+                        categories = KbCategory.objects.filter(course=True, parent_kb_base=kb).order_by('order')
+                    else:
+                        categories = KbCategory.objects.filter(course=True,parent_kb_base=kb,
+                                                               active=True).order_by('order')
                 else:
-                    categories = KbCategory.objects.filter(active=True, parent_category=None, parent_kb_base=kb).order_by('order')
+                    if moderator:
+                        categories = KbCategory.objects.filter(parent_category=None,
+                                                               parent_kb_base=kb
+                                                               ).order_by('order')
+                    else:
+                        categories = KbCategory.objects.filter(active=True,
+                                                               course=True,
+                                                               parent_category=None,
+                                                               parent_kb_base=kb
+                                                               ).order_by('order')
             except ObjectDoesNotExist:
                 categories = []
         # cache.set(key, categories, timeout=None)
@@ -307,7 +324,8 @@ class GetBreadCrumbView(APIView):
             category = KbCategory.objects.get(id=categoryId)
             result = get_breadcrumb_category(category)
             cache.set(key, result, timeout=None)
-        return Response({"labels": result["crumb_label"], "id": result["crumb_id"]}, status=status.HTTP_200_OK)
+        return Response({"labels": result["crumb_label"], "id": result["crumb_id"], "desc": result["crumb_desc"]},
+                        status=status.HTTP_200_OK)
 
 
 class SetCourseProgress(APIView):
