@@ -1,6 +1,7 @@
 from .models import SysUser, SubscriptionList
 from decouple import config
 from django.core.exceptions import ObjectDoesNotExist
+from knowledge.models import KbUse
 import re
 
 def remove_user():
@@ -49,13 +50,19 @@ def get_user_activity(request, requested_tye, start, end):
     # breakpoint()
     if not user.is_anonymous:
         if requested_tye == 'courses':
-            activities = user.user_activity.select_related(
-                'article',
-                'course').exclude(course__isnull=True).order_by('-sys_updated_on')[start:end]
+            activities = KbUse.objects.filter(user=request.user,
+                                              article__isnull=True,
+                                              active=True).order_by('-sys_updated_on')[start:end]
+            # activities = user.user_activity.select_related(
+            #     'article',
+            #     'course').exclude(course__isnull=True).order_by('-sys_updated_on')[start:end]
         if requested_tye == 'articles':
-            activities = user.user_activity.select_related(
-                'article',
-                'course').exclude(article__isnull=True).order_by('-sys_updated_on')[start:end]
+            activities = KbUse.objects.filter(user=request.user,
+                                              percentage_completed__isnull=True,
+                                              active=True).order_by('-sys_updated_on')[start:end]
+            # activities = user.user_activity.select_related(
+            #     'article',
+            #     'course').exclude(article__isnull=True).order_by('-sys_updated_on')[start:end]
         # breakpoint()
         related_activities = [None]*len(activities)
         counter = 0
@@ -67,32 +74,41 @@ def get_user_activity(request, requested_tye, start, end):
                 "progress": activity.percentage_completed or '',
                 "created_on": activity.sys_created_on or '',
             }
-            if activity.course and activity.course.active:
-                related_activities[counter]["course"] = {
-                    "id": activity.course.id or '',
-                    "label": activity.course.label or '',
-                    "description": activity.course.description or '',
-                    "compressed_image": config("S3URL") + str(activity.course.compressed_image) or '',
-                    "knowledge_base": activity.course.parent_kb_base.title or '',
-                    # "parent_kb_base": activity.course.parent_kb_base,
-                }
+            if activity.course:
+                if activity.course.active:
+                    related_activities[counter]["course"] = {
+                        "id": activity.course.id or '',
+                        "label": activity.course.label or '',
+                        "description": activity.course.description or '',
+                        "compressed_image": config("S3URL") + str(activity.course.compressed_image) or '',
+                        "knowledge_base": activity.course.parent_kb_base.title or '',
+                        # "parent_kb_base": activity.course.parent_kb_base,
+                    }
+                else:
+                    related_activities = related_activities[1:]
+                    counter -= 1
 
-            elif activity.article and activity.article.active:
-                related_activities[counter]["article"] = {
-                    "id": activity.article.id or '',
-                    "featured_image_thumbnail": config('S3URL')+str(activity.article.featured_image_thumbnail),
-                    "title": activity.article.title or '',
-                    "description": activity.article.description or '',
-                    "view_count": activity.article.view_count or '',
-                    "view_count_logged_in": activity.article.view_count_logged_in or '',
-                    "course_id": activity.article.section.course.id or '',
-                    "course_name": activity.article.section.course.label or '',
-                    "knowledge_base": activity.article.category.parent_kb_base.title or '',
-                    # "thumbnail": activity.article.
-                }
+            if activity.article:
+                if activity.article.active and activity.article.workflow == "published":
+                    related_activities[counter]["article"] = {
+                        "id": activity.article.id or '',
+                        "featured_image_thumbnail": config('S3URL')+str(activity.article.featured_image_thumbnail),
+                        "title": activity.article.title or '',
+                        "description": activity.article.description or '',
+                        "view_count": activity.article.view_count or '',
+                        "view_count_logged_in": activity.article.view_count_logged_in or '',
+                        "course_id": activity.article.section.course.id or '',
+                        "course_name": activity.article.section.course.label or '',
+                        "knowledge_base": activity.article.category.parent_kb_base.title or '',
+                        # "thumbnail": activity.article.
+                    }
+                else:
+                    related_activities = related_activities[1:]
+                    counter -= 1
             counter += 1
         # breakpoint()
         # print(related_activities)
+        # related_activities = []
         return list(related_activities)
 
 

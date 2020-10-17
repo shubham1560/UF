@@ -211,6 +211,7 @@ def kb_use(request):
                 view = KbUse.objects.get_or_create(
                     user=request.user,
                     article=article[0],
+                    course=article[0].section.course,
                     viewed=True,
                 )
             return "viewed by logged in user"
@@ -393,8 +394,8 @@ def get_breadcrumb_category(category):
 def set_progress_course_kbuse(request):
     progress = request.data['progress']
     try:
-        course = KbCategory.objects.get(id=request.data['course'])
-        use, boolean = KbUse.objects.get_or_create(course=course, user=request.user)
+        course = KbCategory.objects.get(id=request.data['course'], active=True)
+        use, boolean = KbUse.objects.get_or_create(course=course, user=request.user, article__isnull=True)
         use.percentage_completed = progress
         use.save()
         return True
@@ -472,6 +473,13 @@ def edit_path_or_branch(request):
         category.description = request.data["form_data"]["description"]
         category.active = request.data["form_data"]["active"]
         category.save()
+
+        if not category.active:
+            KbUse.objects.filter(course=category).update(active=False)
+
+        if category.active:
+            KbUse.objects.filter(course=category).update(active=True)
+
     except KeyError:
         pass
     # breakpoint()

@@ -293,6 +293,7 @@ class KbUse(models.Model):
                                blank=True,
                                related_name='course_kb_category',
                                on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
     percentage_completed = models.IntegerField(null=True, blank=True)
     useful = models.BooleanField(blank=True, null=True)
     viewed = models.BooleanField(blank=True, null=True)
@@ -301,7 +302,7 @@ class KbUse(models.Model):
 
     class Meta:
         verbose_name_plural = "Knowledge Uses"
-        unique_together = ['article', 'user']
+        unique_together = ['article', 'user', 'course']
 
 
 class m2m_knowledge_feedback_likes(models.Model):
