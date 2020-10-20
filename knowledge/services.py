@@ -267,6 +267,8 @@ def add_article(request, publish_ready, article_id=0):
             a.category, created = KbCategory.objects.get_or_create(id="testing")
         else:
             a = KbKnowledge.objects.get(id=article_id)
+            if a.sys_created_by != request.user:
+                return
         if not a.knowledge_base:
             a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing")
         if not a.category:

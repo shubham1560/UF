@@ -5,8 +5,8 @@ from .views import UserViewSet, UserListViewSet, CreateUserViewSet, CreateGoogle
 
 urlpatterns = [
     path('get_token/', ObtainAuthTokenViewSet.as_view()),
-    path('users/', UserListViewSet.as_view()),
-    path('users/<str:id>', UserViewSet.as_view()),
+    # path('users/', UserListViewSet.as_view()),
+    # path('users/<str:id>', UserViewSet.as_view()),
     path('create_user_sys/', CreateUserViewSet.as_view()),
     path('create_user_google/', CreateGoogleUserViewSet.as_view()),
     path('create_user_facebook/', FacebookUserViewSet.as_view()),

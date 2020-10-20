@@ -67,7 +67,8 @@ class KnowledgeArticleView(APIView):
                       "getAuthor",
                       "get_category",
                       "get_knowledge_base",
-                      'sys_updated_on'
+                      'sys_updated_on',
+                      'sys_created_by'
                       )
 
     # @log_request
@@ -77,8 +78,12 @@ class KnowledgeArticleView(APIView):
         #     result = cache.get(key)
         # else:
         article = get_single_article(id, request)
+        if not request.user.is_anonymous:
+            owner = False
+            if request.user == article.sys_created_by:
+                owner = True
         if article:
-            response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "message": "Ok"}
+            response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "owner": owner}
             status_code = status.HTTP_200_OK
         else:
             response = {"message": "the article with this id doesn't exist"}
