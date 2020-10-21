@@ -7,7 +7,7 @@ import random
 
 class KnowledgeSectionAdmin(admin.ModelAdmin):
     model = KnowledgeSection
-    list_display = ['label', 'order', 'course', 'sys_created_on', 'sys_updated_on']
+    list_display = ['id', 'label', 'order', 'course', 'sys_created_on', 'sys_updated_on']
     fields = ['label', 'order', 'course']
     list_editable = ('order', )
     list_filter = ('course', )

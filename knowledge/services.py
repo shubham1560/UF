@@ -308,7 +308,8 @@ def get_course_section_and_articles(category, request):
         for section in sections:
             children = KnowledgeSection.objects.get(id=section['id']).related_articles.filter\
                 (workflow='published').values('id',
-                                              'title', 'category', 'knowledge_base', 'section').order_by('order')
+                                              'title', 'category', 'knowledge_base', 'section',
+                                              'order').order_by('order')
 
             for child in children:
                 for section in sections:
@@ -485,3 +486,39 @@ def edit_path_or_branch(request):
     except KeyError:
         pass
     # breakpoint()
+
+
+def build_path(request):
+    try:
+        course = KbCategory.objects.get(id=request.data["course"])
+        if course.sys_created_by == request.user:
+            path = request.data["path"]
+            sections = []
+            articles = []
+            for section in path:
+                sections.append(section)
+                # breakpoint()
+                try:
+                    if section["id"]:
+                        change_section = KnowledgeSection.objects.get(id=section["id"])
+                except KeyError:
+                    change_section = KnowledgeSection()
+                change_section.label = section["label"]
+                if section["label"] != "Individual Articles":
+                    change_section.order = section["order"]
+                change_section.course = course
+                change_section.save()
+
+                for article in section["articles"]:
+                    get_article = KbKnowledge.objects.get(id=article["id"])
+                    get_article.order = article["order"]
+                    get_article.section = change_section
+                    get_article.save()
+                    # articles.append(article)
+                return {"message": "Path created successfully!"}
+            else:
+                return {"message": "The user is not the owner of the course!"}
+    except ObjectDoesNotExist:
+        return {"message": "The path does not exist"}
+    # breakpoint()
+    # pass
