@@ -1,3 +1,5 @@
+from rest_framework import status
+
 from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle,\
      KbUse, KbKnowledgeBase, KbCategory, KnowledgeSection
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -511,10 +513,10 @@ def build_path(request):
                     get_article.section = change_section
                     get_article.save()
                     # articles.append(article)
-            return {"message": "Path created successfully!"}
+            return {"message": "Path created successfully!", "status": status.HTTP_201_CREATED}
         else:
-            return {"message": "The user is not the owner of the course!"}
+            return {"message": "The user is not the owner of the course!", "status": status.HTTP_401_UNAUTHORIZED}
     except ObjectDoesNotExist:
-        return {"message": "The path does not exist"}
+        return {"message": "The path does not exist", "status": status.HTTP_404_NOT_FOUND}
     # breakpoint()
     # pass

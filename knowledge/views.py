@@ -441,4 +441,4 @@ class BuildPathViewSet(APIView):
 
     def post(self, request, format=None):
         response = build_path(request)
-        return Response(response, status=status.HTTP_200_OK)
+        return Response(response["message"], status=response["status"])
