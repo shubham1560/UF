@@ -78,8 +78,8 @@ class KnowledgeArticleView(APIView):
         #     result = cache.get(key)
         # else:
         article = get_single_article(id, request)
+        owner = False
         if not request.user.is_anonymous:
-            owner = False
             if request.user == article.author:
                 owner = True
         if article:
