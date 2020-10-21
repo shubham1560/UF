@@ -520,3 +520,15 @@ def build_path(request):
         return {"message": "The path does not exist", "status": status.HTTP_404_NOT_FOUND}
     # breakpoint()
     # pass
+
+
+def course_owner(course, request):
+    # breakpoint()
+    try:
+        course = KbCategory.objects.get(id=course)
+        if request.user == course.sys_created_by:
+            return {"owner": True, "course": course.label, "status": status.HTTP_200_OK}
+        else:
+            return {"owner": False, "course": "", "status": status.HTTP_401_UNAUTHORIZED}
+    except ObjectDoesNotExist:
+        return {"owner": False, "status": status.HTTP_404_NOT_FOUND}

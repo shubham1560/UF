@@ -10,7 +10,7 @@ from .services import get_all_articles, get_single_article, get_comments, get_pa
     get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
     get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles, \
-    add_article_to_course, add_path_or_branch, edit_path_or_branch, build_path
+    add_article_to_course, add_path_or_branch, edit_path_or_branch, build_path, course_owner
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from logs.services import log_random
@@ -442,3 +442,11 @@ class BuildPathViewSet(APIView):
     def post(self, request, format=None):
         response = build_path(request)
         return Response(response["message"], status=response["status"])
+
+
+class CourseOwner(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, course, format=None):
+        response = course_owner(course, request)
+        return Response(response, status=response["status"])
