@@ -493,11 +493,7 @@ def build_path(request):
         course = KbCategory.objects.get(id=request.data["course"])
         if course.sys_created_by == request.user:
             path = request.data["path"]
-            sections = []
-            articles = []
             for section in path:
-                sections.append(section)
-                # breakpoint()
                 try:
                     if section["id"]:
                         change_section = KnowledgeSection.objects.get(id=section["id"])
@@ -515,9 +511,9 @@ def build_path(request):
                     get_article.section = change_section
                     get_article.save()
                     # articles.append(article)
-                return {"message": "Path created successfully!"}
-            else:
-                return {"message": "The user is not the owner of the course!"}
+            return {"message": "Path created successfully!"}
+        else:
+            return {"message": "The user is not the owner of the course!"}
     except ObjectDoesNotExist:
         return {"message": "The path does not exist"}
     # breakpoint()
