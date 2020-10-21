@@ -80,7 +80,7 @@ class KnowledgeArticleView(APIView):
         article = get_single_article(id, request)
         if not request.user.is_anonymous:
             owner = False
-            if request.user == article.sys_created_by:
+            if request.user == article.author:
                 owner = True
         if article:
             response = {"data": self.KnowledgeArticleSerializer(article, many=False).data, "owner": owner}
@@ -89,6 +89,7 @@ class KnowledgeArticleView(APIView):
             response = {"message": "the article with this id doesn't exist"}
             status_code = status.HTTP_404_NOT_FOUND
         result = {"response": response, "status": status_code}
+        # breakpoint()
         # cache.set(key, result, timeout=None)
         return Response(result["response"], status=result["status"])
 
