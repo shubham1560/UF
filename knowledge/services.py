@@ -522,6 +522,13 @@ def build_path(request):
     # pass
 
 
+def delete_sections(section_ids_to_delete):
+    for del_id in section_ids_to_delete:
+        section = KnowledgeSection.objects.get(id=del_id)
+        section.delete()
+    # pass
+
+
 def course_owner(course, request):
     # breakpoint()
     try:
