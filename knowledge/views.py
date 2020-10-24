@@ -362,11 +362,7 @@ class GetKnowledgeCatgories(APIView):
                       "section", "order", "get_parent_category", "get_parent_knowledgebase", "description")
 
     def get(self, request, kb_base, format=None):
-        result = get_categories_tree(kb_base)
-        # base = KbKnowledgeBase.objects.get(id=kb_base)
-        # categories = KbCategory.objects.filter(parent_kb_base=base, course=False, section=False)
-        # breakpoint()
-        # result = self.KnowledgeCategoryAllViewSerializer(categories, many=True)
+        result = get_categories_tree(kb_base, request)
         return Response(result, status=status.HTTP_200_OK)
 
 

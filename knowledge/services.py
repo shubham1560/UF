@@ -1,7 +1,7 @@
 from rest_framework import status
 
-from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle,\
-     KbUse, KbKnowledgeBase, KbCategory, KnowledgeSection
+from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle, \
+    KbUse, KbKnowledgeBase, KbCategory, KnowledgeSection
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from sys_user.models import SysUser
 from django.db.models import F
@@ -33,35 +33,30 @@ def nest_comment(comments):
     return final
 
 
-def nest_categories(categories):
-    # breakpoint()
+def nest_categories(categories, moderator):
     queue = []
     final = []
     len_fin = 0
+    # breakpoint()
     for category in categories:
         category["children"] = []
+        if moderator:
+            courses = KbCategory.objects.filter(parent_category=category['id'], course=True).count()
+        else:
+            courses = KbCategory.objects.filter(parent_category=category['id'], active=True, course=True).count()
+        category["course_count"] = courses
         if category["parent_category"] is None:
             queue.append(category)
             len_fin += 1
     while queue:
         s = queue.pop(0)
         final.append(s)
-        # already_added = [].append(s)
         for category in categories:
             if category["parent_category"] == s['id']:
                 final[-1]["children"].append(category)
                 queue.append(category)
-        # if len(final) == len_fin:
-        #     return final
-                # if len(final) == len:
-                #     return final
-    # breakpoint()
     final = final[:len_fin]
     return final
-    # breakpoint()
-
-    # breakpoint()
-    # return {}
 
 
 def if_bookmarked_by_user(article_id, user):
@@ -79,7 +74,7 @@ def bookmark_status(articles, user):
     fin_articles = []
     for article in articles:
         if article["featured_image_thumbnail"]:
-            article["featured_image_thumbnail"] = str(config('S3URL'))+article["featured_image_thumbnail"]
+            article["featured_image_thumbnail"] = str(config('S3URL')) + article["featured_image_thumbnail"]
         article["bookmarked"] = False
 
         a = KbKnowledge.objects.select_related('author', 'category', 'knowledge_base').get(id=article['id'])
@@ -119,7 +114,6 @@ def get_all_articles():
 
 
 def get_single_article(id, request):
-
     try:
         if request.user.groups.filter(name='Authors').exists():
             article = KbKnowledge.objects.get(id=id)
@@ -199,7 +193,7 @@ def kb_use(request):
     """
     if request.data['useful'] == 'no_response':
         if request.user.is_anonymous:
-            KbKnowledge.objects.filter(id=request.data['article']).update(view_count=F('view_count')+1)
+            KbKnowledge.objects.filter(id=request.data['article']).update(view_count=F('view_count') + 1)
             return "viewed by anonymous user"
         else:
             article = KbKnowledge.objects.filter(id=request.data['article'])
@@ -308,7 +302,7 @@ def get_course_section_and_articles(category, request):
         for result in results:
             result["articles"] = []
         for section in sections:
-            children = KnowledgeSection.objects.get(id=section['id']).related_articles.filter\
+            children = KnowledgeSection.objects.get(id=section['id']).related_articles.filter \
                 (workflow='published').values('id',
                                               'title', 'category', 'knowledge_base', 'section',
                                               'order').order_by('order')
@@ -364,10 +358,10 @@ def get_course_section_and_articles(category, request):
 
 
 # def get_course_section_and_articles_for_logged_in_user(category, request):
-    # breakpoint()
-    # sections, course = get_course_section_and_articles(category)
-    # views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
-    # return sections, course
+# breakpoint()
+# sections, course = get_course_section_and_articles(category)
+# views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
+# return sections, course
 
 def adding_recursive_category(category: KbCategory, label_array, id_array, description_array):
     # breakpoint()
@@ -408,13 +402,24 @@ def set_progress_course_kbuse(request):
         return False
 
 
-def get_categories_tree(kb_base):
-    categories = KbKnowledgeBase.objects.get(id=kb_base).related_categories.\
-        filter(active=True, course=False, section=False).values('id',
-                                                                'parent_kb_base',
-                                                                'parent_category',
-                                                                'label').order_by('order')
-    nested_categories = nest_categories(list(categories))
+def get_categories_tree(kb_base, request):
+    moderator = False
+    if request.user.groups.filter(name="Moderators").exists():
+        moderator = True
+    if moderator:
+        categories = KbKnowledgeBase.objects.get(id=kb_base).related_categories. \
+            filter(course=False, section=False).values('id',
+                                                       'parent_kb_base',
+                                                       'parent_category',
+                                                       'label').order_by('order')
+    else:
+        categories = KbKnowledgeBase.objects.get(id=kb_base).related_categories. \
+            filter(course=False, section=False, active=True).values('id',
+                                                                    'parent_kb_base',
+                                                                    'parent_category',
+                                                                    'label').order_by('order')
+
+    nested_categories = nest_categories(list(categories), moderator)
     return list(nested_categories)
     # breakpoint()
 
@@ -437,7 +442,7 @@ def add_article_to_course(request):
             label="Individual Articles",
             course=course,
             order=100000
-            )
+        )
         article = KbKnowledge.objects.get(id=article_id)
         article.workflow = "published"
         article.section = section
