@@ -61,6 +61,6 @@ CACHES = {
 # }
 
 
-AWS_STORAGE_BUCKET_NAME = 'urbanfraud-test'
+AWS_STORAGE_BUCKET_NAME = 'sortedtree-test'
 
 CELERY_RESULT_BACKEND = 'db+postgresql://postgres:Olabola@12@localhost/uf-db-django'

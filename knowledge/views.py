@@ -272,7 +272,13 @@ class GetKnowledgeCategory(APIView):
         if kb_category != "root":
             try:
                 category = KbCategory.objects.get(id=kb_category)
-                categories = KbCategory.objects.filter(parent_category=category, active=True).order_by('order')
+                if moderator:
+                    categories = KbCategory.objects.filter(parent_category=category,
+                                                           active=True).order_by('order')
+                else:
+                    categories = KbCategory.objects.filter(parent_category=category,
+                                                           course=True,
+                                                           active=True).order_by('order')
             except ObjectDoesNotExist:
                 categories = []
         # categories = KbCategory.parent_of_category()
@@ -288,7 +294,7 @@ class GetKnowledgeCategory(APIView):
                     if moderator:
                         categories = KbCategory.objects.filter(course=True, parent_kb_base=kb).order_by('order')
                     else:
-                        categories = KbCategory.objects.filter(course=True,parent_kb_base=kb,
+                        categories = KbCategory.objects.filter(course=True, parent_kb_base=kb,
                                                                active=True).order_by('order')
                 else:
                     if moderator:
