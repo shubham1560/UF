@@ -12,7 +12,7 @@ class EnhancementAdmin(admin.ModelAdmin):
         obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
-        super(EpicAdmin, self).save_model(request, obj, form, change)
+        super(EnhancementAdmin, self).save_model(request, obj, form, change)
 
     class Meta:
         ordering = ['sys_updated_on']
