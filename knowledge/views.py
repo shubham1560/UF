@@ -255,7 +255,8 @@ class GetKnowledgeCategory(APIView):
         class Meta:
             model = KbCategory
             fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image', "course",
-                      "section", "order", "get_parent_category", "get_parent_knowledgebase", "description")
+                      "section", "order", "get_parent_category", "get_parent_knowledgebase", "get_first_article",
+                      "description")
 
     def get(self, request, kb_base, kb_category, courses, format=None):
         if request.user.groups.filter(name="Moderators").exists():

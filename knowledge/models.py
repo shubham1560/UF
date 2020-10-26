@@ -108,6 +108,7 @@ class KbCategory(models.Model):
         if self.parent_category:
             return {
                 "label": self.parent_category.label,
+                'description': self.parent_category.description
             }
         return {
             "label": "root"
@@ -116,12 +117,25 @@ class KbCategory(models.Model):
     def get_parent_knowledgebase(self):
         return{
             "label": self.parent_kb_base.title,
+            "description": self.parent_kb_base.description
         }
 
     def get_created_by(self):
         if self.sys_created_by:
             return {
                 "author": self.sys_created_by.email
+            }
+
+    def get_first_article(self):
+        article = KbKnowledge.objects.filter(category=self).order_by('order')[0:1]
+        # breakpoint()
+        if article:
+            return {
+                "first_article_id": article[0].id
+            }
+        else:
+            return {
+                "first_article_id" : ''
             }
 
     def save(self, *args, **kwargs):
