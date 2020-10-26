@@ -36,12 +36,12 @@ def send_confirmation_mail(username: str, email: str, token: str):
 def promotion_mail(email: str):
     mail = Email.objects.get(title="Promotion")
     email = email
-    status = send_mail(mail.subject, mail.body, sent_from, [email, ], fail_silently=False)
+    status = send_mail(mail.subject, mail.body, auth_sent_from, [email, ], fail_silently=False)
     log_details = {
         "mail": mail,
         "body": mail.body,
         "recipient": email,
-        "sent_from": sent_from,
+        "sent_from": auth_sent_from,
         "type": 'SR',
         "recipients": '',
         "comments": 'The Promotion mail for individual user',
@@ -59,13 +59,13 @@ def promotion_mail_mass(email_list: list, title: str):
         mail = Email.objects.get(title=title)
         b = []
         for email in email_list:
-            b.append((mail.subject, mail.body, sent_from, [email, ]))
+            b.append((mail.subject, mail.body, auth_sent_from, [email, ]))
         status = send_mass_mail(b, fail_silently=False)
         log_details = {
             "mail": mail,
             "body": mail.body,
             "recipient": email,
-            "sent_from": sent_from,
+            "sent_from": auth_sent_from,
             "type": 'SR',
             "recipients": email_list,
             "comments": 'The Promotion mail for all the users is sent',
@@ -83,4 +83,4 @@ def promotion_mail_mass(email_list: list, title: str):
 def send_password_reset_link(email: str, token: str):
     mail = Email.objects.get(title="passwordresetlink")
     body = mail.body.format(token=token, url=config('CLIENT_URL'))
-    send_mail(mail.subject, body, sent_from, [email, ], fail_silently=False)
+    send_mail(mail.subject, body, auth_sent_from, [email, ], fail_silently=False)
