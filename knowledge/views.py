@@ -249,7 +249,7 @@ class GetKnowledgeCategory(APIView):
             model = KbCategory
             fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image', "course",
                       "section", "order", "get_parent_category", "get_parent_knowledgebase", "description",
-                      'get_created_by', "active")
+                      'get_created_by', "active", 'get_first_article')
 
     class KnowledgeCategoryViewSerializer(serializers.ModelSerializer):
         class Meta:

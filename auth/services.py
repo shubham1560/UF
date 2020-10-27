@@ -37,7 +37,8 @@ def create_root_user(**validated_data) -> SysUser:
         try:
             send_confirmation_mail(username=user.first_name, email=validated_data['username'], token=str(token))
         except ObjectDoesNotExist:
-            log_random("The mail is not reaching, check if the mail exists or not, the mailing is failing")
+            log_random("The mail is not reaching, check if the mail exists or not, the mailing is failing",
+                       "email-auth")
             return False
         return True
     except Exception as e:
