@@ -35,7 +35,12 @@ class GetUserDetailViewSet(APIView):
     def get(self, request, format=None):
         serializer = self.GetUserDetailFromTokenSerializer(request.user, many=False)
         # request.user.groups
-        response = {'user': serializer.data}
+        moderator = author = False
+        if request.user.groups.filter(name="Moderators").exists():
+            moderator = True
+        if request.user.groups.filter(name="Authors").exists():
+            author = True
+        response = {'user': serializer.data, 'author': author, 'moderator': moderator}
         return Response(response, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):

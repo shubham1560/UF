@@ -64,6 +64,7 @@ class KnowledgeArticleView(APIView):
                       'title',
                       'article_body',
                       'workflow',
+                      'description',
                       "getAuthor",
                       "get_category",
                       "get_knowledge_base",
