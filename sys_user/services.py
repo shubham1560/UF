@@ -114,7 +114,7 @@ def get_user_activity(request, requested_tye, start, end):
 
 def is_developer(code, username):
     try:
-        user = SysUser.objects.get(facebook_id=code, username="admin")
+        user = SysUser.objects.get(facebook_id=code, username=username)
         if user:
             if user.groups.filter(name='Developers').exists():
                 return True

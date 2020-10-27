@@ -2,7 +2,7 @@ from .models import Email
 from django.core.mail import send_mail, send_mass_mail
 from celery import shared_task
 from decouple import config
-from logs.services import log_mail
+from logs.services import log_mail, log_random
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -14,6 +14,8 @@ def send_confirmation_mail(username: str, email: str, token: str):
     mail = Email.objects.get(title="confirmation")
     # body = mail.body.format(token=token, url=config('URL'))
     body = mail.body.format(username=username, token=token, url=config('CLIENT_URL'))
+    if not config('CLIENT_URL'):
+        log_random("The client url envireonment variable is not present")
     status = send_mail(mail.subject, body, auth_sent_from, [email, ], fail_silently=False)
     log_details = {
         "mail": mail,
