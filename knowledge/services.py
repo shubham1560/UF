@@ -262,7 +262,10 @@ def add_article(request, publish_ready, article_id=0):
             a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing", active=False)
             a.category, created = KbCategory.objects.get_or_create(id="testing", active=False)
         else:
-            a = KbKnowledge.objects.get(id=article_id)
+            try:
+                a = KbKnowledge.objects.get(id=article_id)
+            except ObjectDoesNotExist:
+                return '1'
             if a.sys_created_by != request.user:
                 return
         if not a.knowledge_base:
@@ -535,3 +538,30 @@ def course_owner(course, request):
             return {"owner": False, "course": "", "status": status.HTTP_401_UNAUTHORIZED}
     except ObjectDoesNotExist:
         return {"owner": False, "status": status.HTTP_404_NOT_FOUND}
+
+
+def delete_article(article_id, request):
+    try:
+        article = KbKnowledge.objects.get(id=article_id)
+        if article.author == request.user:
+            article.delete()
+            response = {
+                "message": 'article deleted succesfully',
+                "status": status.HTTP_200_OK,
+                "deleted": True
+            }
+        else:
+            response = {
+                "message": 'the user is not the owner of the article',
+                "status": status.HTTP_401_UNAUTHORIZED,
+                "deleted": False
+            }
+    except ObjectDoesNotExist:
+        response = {
+            "message": 'Article with this id does not exist',
+            "status": status.HTTP_404_NOT_FOUND,
+            "deleted": False
+        }
+    return response
+
+    # pass
