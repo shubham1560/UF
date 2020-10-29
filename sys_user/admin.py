@@ -13,7 +13,8 @@ class SysUserAdmin(UserAdmin):
                     'facebook_id',
                     # "date_joined",
                     "user_type",
-                    "public"
+                    "public",
+                    "date_joined"
                     # "profile",
                     # "header_image",
                     # "profile_pic"

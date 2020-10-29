@@ -1,39 +1,66 @@
 from django.shortcuts import render
+from rest_framework.permissions import IsAuthenticated
 
 from knowledge.models import KbKnowledge
 from .models import AttachedImage
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from .services import get_the_link, get_the_url_link_data
+from rest_framework.authtoken.models import Token
 
 
 class AttachedImageViewSet(APIView):
+    permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
-        # breakpoint()
-        image = request.data["image"]
-        attachment = AttachedImage()
-        attachment.real_image = image
-        attachment.save()
-        # up_image = AttachedImage.objects.create(real_image=image)
-        response = \
-            {"success": 1,
-             "file": {
-                "url": str(attachment.compressed.url)
+        if request.user.groups.filter(name="Authors").exists():
+            image = request.data["image"]
+            attachment = AttachedImage()
+            attachment.image_caption = request.data['image'].name
+            attachment.real_image = image
+
+            attachment.save()
+            # up_image = AttachedImage.objects.create(real_image=image)
+            response = \
+                {"success": 1,
+                 "file": {
+                    "url": str(attachment.compressed.url)
+                    }
                 }
-            }
-        # response = {"image_url": str(attachment.real_image.url), "compressed_image_url": str(attachment.compressed.url)}
-        # response = {"message": "image uploaded"}
+        else:
+            return Response('Unauthorized', status=status.HTTP_401_UNAUTHORIZED)
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
+class AttachedImageGenericViewSet(APIView):
+    # permission_classes = (IsAuthenticated, )
+
+    def post(self, request, format=None):
+        token = Token.objects.get(key=request.data['token'])
+        if token:
+            image = request.data["image"]
+            attachment = AttachedImage()
+            attachment.image_caption = request.data['image'].name
+            attachment.real_image = image
+            attachment.save()
+            response = \
+                {"success": 1,
+                 "file": {
+                    "url": str(attachment.compressed.url),
+                    "name": attachment.image_caption,
+                    "id": attachment.id,
+                     "sys_created_on": attachment.sys_created_on
+                    }
+                }
+        else:
+            return Response('invalid', status=status.HTTP_401_UNAUTHORIZED)
         return Response(response, status=status.HTTP_201_CREATED)
 
 
 class AddLinkForVideo(APIView):
 
     def get(self, request, format=None):
-        # breakpoint()
         url = get_the_link(request)
-        # breakpoint()
-        # url = request.META['QUERY_STRING']
         arr_url_section = request.META['QUERY_STRING'].split('%23')
         arr_url_section[0] = arr_url_section[0].replace("/", "%2F")
         article_id = arr_url_section[0].split('%2F')[-1]
