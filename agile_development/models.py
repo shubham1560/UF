@@ -52,6 +52,7 @@ TASK_TYPE = (
     ('testing', 'Testing'),
 )
 
+
 def upload_path(instance, filename):
     return '/'.join(['story_images', str(instance.id), filename])
 

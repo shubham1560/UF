@@ -56,6 +56,7 @@ class AttachedImageGenericViewSet(APIView):
                 {"success": 1,
                  "file": {
                      "url": str(attachment.compressed.url),
+                     "real_url": str(attachment.real_image.url),
                      "name": attachment.image_caption,
                      "id": attachment.id,
                      "sys_created_on": attachment.sys_created_on
