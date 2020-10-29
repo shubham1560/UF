@@ -7,25 +7,30 @@ from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from .services import get_the_link, get_the_url_link_data
 from rest_framework.authtoken.models import Token
+from django.core.exceptions import ValidationError
 
 
 class AttachedImageViewSet(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
         if request.user.groups.filter(name="Authors").exists():
+            # breakpoint()
             image = request.data["image"]
+            if image.size >= 10*1000*1000:
+                return Response("Image size more than 10 mb is not allowed!", status=status.HTTP_406_NOT_ACCEPTABLE)
             attachment = AttachedImage()
             attachment.image_caption = request.data['image'].name
             attachment.real_image = image
-
+            attachment.table = "KbKnowledge"
+            attachment.sys_created_by = request.user
             attachment.save()
             # up_image = AttachedImage.objects.create(real_image=image)
             response = \
                 {"success": 1,
                  "file": {
-                    "url": str(attachment.compressed.url)
-                    }
+                     "url": str(attachment.compressed.url)
+                 }
                 }
         else:
             return Response('Unauthorized', status=status.HTTP_401_UNAUTHORIZED)
@@ -39,16 +44,20 @@ class AttachedImageGenericViewSet(APIView):
         token = Token.objects.get(key=request.data['token'])
         if token:
             image = request.data["image"]
+            if image.size >= 5 * 1000 * 1000:
+                return Response("Image size more than 5 mb is not allowed!", status=status.HTTP_406_NOT_ACCEPTABLE)
             attachment = AttachedImage()
             attachment.image_caption = request.data['image'].name
             attachment.real_image = image
+            attachment.table = request.data['table']
+            attachment.sys_created_by = token.user
             attachment.save()
             response = \
                 {"success": 1,
                  "file": {
-                    "url": str(attachment.compressed.url),
-                    "name": attachment.image_caption,
-                    "id": attachment.id,
+                     "url": str(attachment.compressed.url),
+                     "name": attachment.image_caption,
+                     "id": attachment.id,
                      "sys_created_on": attachment.sys_created_on
                     }
                 }
@@ -111,4 +120,3 @@ class GetEmbedLinkDetail(APIView):
             }
         }
         return Response(response, status=status.HTTP_200_OK)
-

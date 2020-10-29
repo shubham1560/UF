@@ -60,6 +60,7 @@ class Feature(models.Model):
     priority = models.CharField(choices=PRIORITY, blank=True, null=True, max_length=30)
     short_description = models.CharField(max_length=300, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    attached_images = models.TextField(blank=True, null=True)
     work_notes = models.TextField(blank=True, null=True)
     additional_comments = models.TextField(blank=True, null=True)
     assigned_to = models.ForeignKey(SysUser, on_delete=models.CASCADE, limit_choices_to={'is_staff': True}, blank=True, null=True)
