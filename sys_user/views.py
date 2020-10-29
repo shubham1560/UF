@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-
+from django.contrib.auth.models import Group
 from knowledge.models import KbKnowledge
 from .models import SysUser
 from rest_framework.views import APIView
@@ -150,3 +150,12 @@ class GetUserAuthoredArticles(APIView):
                 'total_count': articles_count,
             }
         return Response(response, status=status.HTTP_200_OK)
+
+
+class MakeUserAuthor(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request, format=None):
+        my_group = Group.objects.get(name='Authors')
+        my_group.user_set.add(request.user)
+        return Response('success', status=status.HTTP_201_CREATED)
