@@ -9,7 +9,7 @@ class EnhancementAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(EnhancementAdmin, self).save_model(request, obj, form, change)
@@ -24,7 +24,7 @@ class EpicAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(EpicAdmin, self).save_model(request, obj, form, change)
@@ -39,7 +39,7 @@ class DefectAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(DefectAdmin, self).save_model(request, obj, form, change)
@@ -54,7 +54,7 @@ class FeatureAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(FeatureAdmin, self).save_model(request, obj, form, change)
@@ -70,7 +70,7 @@ class ThemeAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(ThemeAdmin, self).save_model(request, obj, form, change)
@@ -85,7 +85,7 @@ class StoryAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(StoryAdmin, self).save_model(request, obj, form, change)
@@ -97,7 +97,7 @@ class SprintAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(SprintAdmin, self).save_model(request, obj, form, change)
@@ -112,7 +112,7 @@ class StoryDependencyAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(StoryDependencyAdmin, self).save_model(request, obj, form, change)
@@ -127,7 +127,7 @@ class ScrumTaskAdmin(admin.ModelAdmin):
     exclude = ['sys_created_on', 'sys_updated_by', 'sys_created_by']
 
     def save_model(self, request, obj, form, change):
-        obj.sys_created_by = request.user
+        # obj.sys_created_by = request.user
         if obj.id:
             obj.sys_updated_by = request.user
         super(ScrumTaskAdmin, self).save_model(request, obj, form, change)

@@ -30,3 +30,29 @@ def save_the_attachments(attachments, record_id):
         record.image_caption = attachment['file']['name']
         record.table_id = record_id
         record.save()
+
+
+def get_support(request):
+    # defects = Defect.objects.filter(sys_created_by=request.user).values('id',
+    #                                                                     'short_description',
+    #                                                                     'description',
+    #                                                                     'state',
+    #                                                                     'sys_created_on')
+    # features = Enhancement.objects.filter(sys_created_by=request.user).values('id',
+    #                                                                           'short_description',
+    #                                                                           'description',
+    #                                                                           'state',
+    #                                                                           'sys_created_on')
+    # for feature in features:
+    #     feature['attachment'] = []
+    #
+    # for defect in defects:
+    #     defect['attachment'] = []
+
+    # breakpoint()
+    pass
+
+
+def get_ticket_detail(request, id, type):
+
+    pass
