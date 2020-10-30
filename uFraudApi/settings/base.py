@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'image_optimizer',
     'agile_development.apps.AgileDevelopmentConfig',
+    'history.apps.HistoryConfig'
 ]
 
 CORS_ORIGIN_WHITELIST = [
