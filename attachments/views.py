@@ -121,3 +121,9 @@ class GetEmbedLinkDetail(APIView):
             }
         }
         return Response(response, status=status.HTTP_200_OK)
+
+
+# class EditAttachment(APIView):
+
+    # def post(self, request, format=None):
+    #     return Response('', status=status.HTTP_200_OK)
