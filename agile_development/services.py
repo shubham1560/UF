@@ -1,26 +1,27 @@
 from rest_framework.views import status
 from rest_framework.response import Response
-from .models import Enhancement
+from .models import Enhancement, Defect
 from attachments.models import AttachedImage
 
 
 def add_feature(request):
-    enhancement = Enhancement()
     # breakpoint()
-    enhancement.short_description = request.data['formdata']['short_description']
-    enhancement.description = request.data['formdata']['description']
-    enhancement.attached_images = request.data['attachments']
-    enhancement.sys_created_by = request.user
-    enhancement.state = 'draft'
-    enhancement.priority = '4'
+    if request.data['record_type'] == 'feature':
+        support = Enhancement()
+    if request.data['record_type'] == 'defect':
+        support = Defect()
+    support.short_description = request.data["feature"]['formdata']['short_description']
+    support.description = request.data["feature"]['formdata']['description']
+    support.attached_images = request.data["feature"]['attachments']
+    support.sys_created_by = request.user
+    support.state = 'draft'
+    support.priority = '4'
     if request.user.groups.filter(name="Authors").exists():
-        enhancement.priority = '3'
+        support.priority = '3'
     if request.user.groups.filter(name="Moderators").exists():
-        enhancement.priority = '2'
-    # enhancement.
-    enhancement.save()
-    save_the_attachments(request.data['attachments'], enhancement.id)
-    # breakpoint()
+        support.priority = '2'
+    support.save()
+    save_the_attachments(request.data["feature"]['attachments'], support.id)
 
 
 def save_the_attachments(attachments, record_id):

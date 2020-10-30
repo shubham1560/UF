@@ -8,7 +8,7 @@ from .services import add_feature
 
 
 class CreateFeatureViewSet(APIView):
-    # permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
         # breakpoint()

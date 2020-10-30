@@ -7,6 +7,20 @@ from django.core.files import File
 from sys_user.models import SysUser
 
 
+def upload_path(instance, filename):
+    if instance.table:
+        return '/'.join(['attachments', str(instance.table), 'real', filename])
+    else:
+        return '/'.join(['attachments', 'rogue', 'real', filename])
+
+
+def upload_path_compress(instance, filename):
+    if instance.table:
+        return '/'.join(['attachments', str(instance.table), 'compress', filename])
+    else:
+        return '/'.join(['attachments', 'rogue', 'compressed', filename])
+
+
 def compress(image, quality, name='test'):
     # breakpoint()
     im = Image.open(image).convert('RGB')
@@ -29,9 +43,11 @@ class AttachedImage(models.Model):
     sys_updated_on = models.DateTimeField(auto_now=True)
     sys_created_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, blank=True, null=True)
     image_caption = models.CharField(max_length=100, blank=True, null=True)
-    real_image = models.ImageField(upload_to='articleimages/real_image/')
+    real_image = models.ImageField(upload_to=upload_path)
     thumbnail = models.ImageField(upload_to='articleimages/thumbnail/', blank=True, null=True)
-    compressed = models.ImageField(upload_to='articleimages/compressed/', blank=True, null=True)
+    compressed = models.ImageField(upload_to=upload_path_compress, blank=True, null=True)
+    real_image_size = models.CharField(max_length=20, blank=True, null=True)
+    compressed_image_size = models.CharField(max_length=20, blank=True, null=True)
     featured_image = models.BooleanField(default=False)
     table = models.CharField(max_length=100, null=True, blank=True)
     table_id = models.CharField(max_length=50, null=True, blank=True)
@@ -39,8 +55,10 @@ class AttachedImage(models.Model):
 
     def save(self, *args, **kwargs):
         # breakpoint()
+        self.real_image_size = str(self.real_image.size/1000) + " KB"
         compressed = compress(self.real_image, quality="compress")
         self.compressed = compressed
+        self.compressed_image_size = str(self.compressed.size/1000) + " KB"
         super().save(*args, **kwargs)
 
 

@@ -13,7 +13,9 @@ class AttachedImagesAdmin(admin.ModelAdmin):
                     'table',
                     'table_id',
                     'sys_created_by',
-                    'sys_created_on']
+                    'sys_created_on',
+                    'real_image_size',
+                    'compressed_image_size']
     sortable_by = ('sys_created_on', )
     list_filter = ('table',)
 
