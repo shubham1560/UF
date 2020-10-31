@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-
+from emails.services import send_confirmation_mail
 from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
@@ -224,6 +224,16 @@ class UserPasswordResetLinkViewSet(APIView):
     def post(self, request, format=None):
         email = request.data.get("email")
         try:
+            timeout = 5
+            key = 'reset.' + email
+            reactivate_attempt = rate_limit(key, timeout=timeout)
+            if reactivate_attempt > 1:
+                return Response(
+                    {'message': 'Reset attempt exceeded! Please try again after ' + str(timeout) + ' minutes'},
+                    status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        except ObjectDoesNotExist:
+            pass
+        try:
             user = SysUser.objects.get(email=email)
             active = user.is_active
         except ObjectDoesNotExist:
@@ -234,7 +244,7 @@ class UserPasswordResetLinkViewSet(APIView):
             token = Token.objects.get(user=user)
         except ObjectDoesNotExist:
             response = {"token_exist": False, "is_active": True, "user_exist": True,
-                        "message": "Please check for the token creation"}
+                        "message": "Please check for the credential!", "warn": "token!"}
             r_status = status.HTTP_404_NOT_FOUND
             return Response(response, status=r_status)
         if active:
@@ -369,3 +379,34 @@ class GetUserDetailFromTokenViewSet(APIView):
         serializer = self.GetUserDetailFromTokenSerializer(request.user, many=False)
         response = {'user': serializer.data}
         return Response(response, status=status.HTTP_200_OK)
+
+
+class SendActivationLinkAgain(APIView):
+
+    def get(self, request, email,format=None):
+        try:
+            timeout = 5
+            key = 'reactivate.' + email
+            reactivate_attempt = rate_limit(key, timeout=timeout)
+            if reactivate_attempt > 1:
+                return Response(
+                    {'message': 'Too many reactivation attempts, please try again after ' + str(timeout) + ' minutes'},
+                    status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        except ObjectDoesNotExist:
+            pass
+        try:
+            user = SysUser.objects.get(email=email)
+        except ObjectDoesNotExist:
+            return Response(
+                {'message': "User with this email id doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            token = Token.objects.get(user=user)
+        except ObjectDoesNotExist:
+            return Response({
+                "message": "Internal error!"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            send_confirmation_mail(user.first_name, email, str(token))
+        except KeyError:
+            return Response({"message": "Email couldn't be sent"}, status=status.HTTP_200_OK)
+        return Response({"message": "Confirmation mail sent"}, status=status.HTTP_200_OK)

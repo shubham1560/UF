@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from knowledge.models import KbKnowledge
 from .models import AttachedImage
 from rest_framework.views import APIView, status
+from rest_framework import serializers
 from rest_framework.response import Response
 from .services import get_the_link, get_the_url_link_data
 from rest_framework.authtoken.models import Token
@@ -123,7 +124,22 @@ class GetEmbedLinkDetail(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-# class EditAttachment(APIView):
+class GetAttachment(APIView):
+    class GetUserDetailFromTokenSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = AttachedImage
+            fields = ('image_caption', 'compressed', 'real_image_size', 'compressed_image_size', 'sys_created_on')
 
-    # def post(self, request, format=None):
-    #     return Response('', status=status.HTTP_200_OK)
+    def get(self, request, table_name, table_sys_id, format=None):
+        print(table_name, table_sys_id)
+        if table_name == 'feature':
+            table = "Enhancement"
+        if table_name == 'defect':
+            table = "Defect"
+        if request.user.is_staff:
+            images = AttachedImage.objects.filter(table=table, table_id=table_sys_id)
+        else:
+            images = AttachedImage.objects.filter(table=table, table_id=table_sys_id, sys_created_by=request.user)
+        result = self.GetUserDetailFromTokenSerializer(images, many=True)
+        # breakpoint()
+        return Response(result.data, status=status.HTTP_200_OK)

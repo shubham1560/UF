@@ -6,7 +6,7 @@ from logs.services import log_mail, log_random
 from django.core.exceptions import ObjectDoesNotExist
 
 
-auth_sent_from = "accounts@sortedtree.com"
+auth_sent_from = "SortedTree <accounts@sortedtree.com>"
 
 
 # @shared_task

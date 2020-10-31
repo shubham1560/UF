@@ -73,7 +73,9 @@ def reset_password(token: str, **validated_data):
 
 
 def send_reset_link(email: str, _token: str):
-    send_password_reset_link.delay(email=email, token=_token)
+    # send_password_reset_link.delay(email=email, token=_token)
+    send_password_reset_link(email=email, token=_token)
+
 
 
 

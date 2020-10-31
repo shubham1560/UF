@@ -11,7 +11,6 @@ class CreateFeatureViewSet(APIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
-        # breakpoint()
         id = add_feature(request)
         return Response(id, status=status.HTTP_201_CREATED)
 
