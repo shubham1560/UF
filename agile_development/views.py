@@ -3,8 +3,6 @@ from rest_framework import serializers
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from .models import Enhancement, Defect
-from rest_framework.authtoken.models import Token
-# Create your views here.
 from .services import add_feature, get_support, get_ticket_detail
 
 
@@ -42,6 +40,23 @@ class GetSupportRecords(APIView):
 class GetSupportRowDetail(APIView):
     permission_classes = (IsAuthenticated, )
 
+    class FeatureSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Enhancement
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on',
+                      'sys_updated_on', 'work_notes', 'additional_comments', 'priority')
+
+    class DefectSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Defect
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on',
+                      'sys_updated_on', 'work_notes', 'additional_comments', 'priority')
+
     def get(self, request, record_id, record_type, format=None):
-        get_ticket_detail(request, record_id, record_type)
-        return Response('', status=status.HTTP_200_OK)
+        if record_type == 'defect':
+            support = Defect.objects.get(id=record_id)
+            result = self.DefectSerializer(support, many=False)
+        if record_type == 'feature':
+            support = Enhancement.objects.get(id=record_id)
+            result = self.FeatureSerializer(support, many=False)
+        return Response(result.data, status=status.HTTP_200_OK)
