@@ -22,6 +22,7 @@ def add_feature(request):
         support.priority = '2'
     support.save()
     save_the_attachments(request.data["feature"]['attachments'], support.id)
+    return support.id
 
 
 def save_the_attachments(attachments, record_id):

@@ -23,5 +23,6 @@ urlpatterns = [
     path('knowledge/', include('knowledge.urls')),
     path('userprofile/', include('sys_user.urls')),
     path('attachment/', include('attachments.urls')),
-    path('support/', include('agile_development.urls'))
+    path('support/', include('agile_development.urls')),
+    path('history/', include('history.urls'))
 ]

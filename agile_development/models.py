@@ -76,6 +76,13 @@ class Feature(models.Model):
     def __str__(self):
         return self.short_description
 
+    def get_created_by(self):
+        return {
+            "first_name": self.sys_created_by.first_name,
+            "last_name": self.sys_created_by.last_name,
+            "email": self.sys_created_by.email,
+        }
+
 
 class Defect(Feature):
     state = models.CharField(choices=STATES, max_length=50, blank=True, null=True)
