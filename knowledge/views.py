@@ -471,3 +471,13 @@ class DeleteArticleId(APIView):
         else:
             return Response('', status=status.HTTP_401_UNAUTHORIZED)
         return Response(response, status=response["status"])
+
+
+class Tag(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request, format=None):
+        pass
+
+    def get(self, request, format=None):
+        pass

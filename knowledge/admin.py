@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import KbKnowledgeBase, KbCategory, KbKnowledge, KbFeedback, KbUse,\
-    m2m_knowledge_feedback_likes, BookmarkUserArticle, KnowledgeSection
+    m2m_knowledge_feedback_likes, BookmarkUserArticle, KnowledgeSection, Tag, ArticleTag
 import binascii, os
 import random
 
@@ -117,6 +117,19 @@ class BookmarkAdmin(admin.ModelAdmin):
     list_display = ['id', 'article', 'user', 'sys_created_on']
 
 
+class TagAdmin(admin.ModelAdmin):
+    model = Tag
+    list_display = ['id', 'label', 'sys_created_on', 'sys_created_by']
+    list_filter = ('label',)
+
+
+class ArticleTagAdmin(admin.ModelAdmin):
+    model = ArticleTag
+    list_display = ['id', 'article', 'tag', 'sys_created_by', 'sys_created_on']
+    ordering = ['-sys_created_on']
+    list_filter = ('tag',)
+
+
 admin.site.register(KbCategory, KbCategoryAdmin)
 admin.site.register(KbKnowledge, KbKnowledgeAdmin)
 admin.site.register(KbKnowledgeBase, KbKnowledgeBaseAdmin)
@@ -125,6 +138,8 @@ admin.site.register(KbUse, KbUseAdmin)
 admin.site.register(m2m_knowledge_feedback_likes, KbFeedbackLikesAdmin)
 admin.site.register(BookmarkUserArticle, BookmarkAdmin)
 admin.site.register(KnowledgeSection, KnowledgeSectionAdmin)
+admin.site.register(Tag, TagAdmin)
+admin.site.register(ArticleTag, ArticleTagAdmin)
 
 
 

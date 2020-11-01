@@ -42,6 +42,13 @@ WORKFLOW_STATES = (
     )
 
 
+RELEVANCE = (
+        (1, 'High'),
+        (2, 'Moderate'),
+        (3, 'Little'),
+    )
+
+
 class KbKnowledgeBase(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
     active = models.BooleanField(default=True)
@@ -366,3 +373,37 @@ class BookmarkUserArticle(models.Model):
                 # 'course_label': self.article.section.course.label or ''
             }
 
+
+class Tag(models.Model):
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_updated_by = models.ForeignKey(SysUser, on_delete=models.SET_NULL, null=True, blank=True,
+                                       related_name="tags_updated_by")
+    sys_created_by = models.ForeignKey(SysUser, on_delete=models.SET_NULL, null=True, blank=True,
+                                       related_name="tags_created_by")
+    label = models.CharField(max_length=100, null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Tags"
+
+    def __str__(self):
+        return self.label
+
+
+class ArticleTag(models.Model):
+    sys_created_on = models.DateTimeField(auto_now_add=True)
+    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_updated_by = models.ForeignKey(SysUser, on_delete=models.SET_NULL, null=True, blank=True,
+                                       related_name="article_tag_updated_by")
+    sys_created_by = models.ForeignKey(SysUser, on_delete=models.SET_NULL, null=True, blank=True,
+                                       related_name="article_tag_created_by")
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, null=True, blank=True)
+    article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE, null=True, blank=True)
+    relevance = models.CharField(choices=RELEVANCE, max_length=10, null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Article Tags"
+        unique_together = ['tag', 'article']
+
+    def __str__(self):
+        return self.tag + " " + self.article
