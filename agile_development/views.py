@@ -62,6 +62,12 @@ class GetSupportRowDetail(APIView):
             fields = ('id', 'short_description', 'description', 'state', 'sys_created_on',
                       'sys_updated_on', 'work_notes', 'additional_comments', 'priority')
 
+    class DefectSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Defect
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on',
+                      'sys_updated_on', 'work_notes', 'additional_comments', 'priority')
+
     class FeatureStaffSerializer(serializers.ModelSerializer):
         class Meta:
             model = Enhancement

@@ -8,7 +8,7 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from .services import get_the_link, get_the_url_link_data
 from rest_framework.authtoken.models import Token
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 
 class AttachedImageViewSet(APIView):
@@ -18,7 +18,7 @@ class AttachedImageViewSet(APIView):
         if request.user.groups.filter(name="Authors").exists():
             # breakpoint()
             image = request.data["image"]
-            if image.size >= 10*1000*1000:
+            if image.size >= 10 * 1000 * 1000:
                 return Response("Image size more than 10 mb is not allowed!", status=status.HTTP_406_NOT_ACCEPTABLE)
             attachment = AttachedImage()
             attachment.image_caption = request.data['image'].name
@@ -32,7 +32,7 @@ class AttachedImageViewSet(APIView):
                  "file": {
                      "url": str(attachment.compressed.url)
                  }
-                }
+                 }
         else:
             return Response('Unauthorized', status=status.HTTP_401_UNAUTHORIZED)
         return Response(response, status=status.HTTP_201_CREATED)
@@ -52,6 +52,10 @@ class AttachedImageGenericViewSet(APIView):
             attachment.real_image = image
             attachment.table = request.data['table']
             attachment.sys_created_by = token.user
+            try:
+                attachment.table_id = request.data['id']
+            except KeyError:
+                pass
             attachment.save()
             response = \
                 {"success": 1,
@@ -60,9 +64,10 @@ class AttachedImageGenericViewSet(APIView):
                      "real_url": str(attachment.real_image.url),
                      "name": attachment.image_caption,
                      "id": attachment.id,
+                     "size": attachment.real_image_size,
                      "sys_created_on": attachment.sys_created_on
                     }
-                }
+                 }
         else:
             return Response('invalid', status=status.HTTP_401_UNAUTHORIZED)
         return Response(response, status=status.HTTP_201_CREATED)
@@ -128,7 +133,9 @@ class GetAttachment(APIView):
     class GetUserDetailFromTokenSerializer(serializers.ModelSerializer):
         class Meta:
             model = AttachedImage
-            fields = ('image_caption', 'compressed', 'real_image_size', 'compressed_image_size', 'sys_created_on')
+            fields = ('id', 'image_caption',
+                      'compressed', 'real_image',
+                      'real_image_size', 'sys_created_on')
 
     def get(self, request, table_name, table_sys_id, format=None):
         print(table_name, table_sys_id)
@@ -137,9 +144,33 @@ class GetAttachment(APIView):
         if table_name == 'defect':
             table = "Defect"
         if request.user.is_staff:
-            images = AttachedImage.objects.filter(table=table, table_id=table_sys_id)
+            images = AttachedImage.objects.filter(table=table, table_id=table_sys_id).order_by('-sys_created_on')
         else:
-            images = AttachedImage.objects.filter(table=table, table_id=table_sys_id, sys_created_by=request.user)
+            images = AttachedImage.objects.filter(table=table, table_id=table_sys_id,
+                                                  sys_created_by=request.user).order_by('-sys_created_on')
         result = self.GetUserDetailFromTokenSerializer(images, many=True)
         # breakpoint()
         return Response(result.data, status=status.HTTP_200_OK)
+
+
+class AttachmentAction(APIView):
+
+    def post(self, request, format=None):
+        message = "working"
+        if request.data['action'] == 'delete':
+            try:
+                AttachedImage.objects.get(id=request.data['config']['id'], sys_created_by=request.user).delete()
+                message = "deleted"
+            except ObjectDoesNotExist:
+                return Response('', status=status.HTTP_401_UNAUTHORIZED)
+
+        if request.data['action'] == 'edit':
+            try:
+                image = AttachedImage.objects.get(id=request.data['config']['id'],
+                                                  sys_created_by=request.user)
+                image.image_caption = request.data['config']['new_name']
+                image.save()
+                message = "edited"
+            except ObjectDoesNotExist:
+                return Response('', status=status.HTTP_401_UNAUTHORIZED)
+        return Response(message, status=status.HTTP_201_CREATED)
