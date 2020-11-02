@@ -95,9 +95,9 @@ class GetSupportRowDetail(APIView):
 
     def get(self, request, record_id, record_type, format=None):
         result = ''
+        staff = False
         if record_type == 'defect':
             # support
-            staff = False
             if request.user.is_staff:
                 try:
                     support = Defect.objects.get(id=record_id)
