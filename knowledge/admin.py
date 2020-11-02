@@ -125,7 +125,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class ArticleTagAdmin(admin.ModelAdmin):
     model = ArticleTag
-    list_display = ['id', 'article', 'tag', 'sys_created_by', 'sys_created_on']
+    list_display = ['id', 'article', 'tag', 'relevance', 'sys_created_by', 'sys_created_on']
     ordering = ['-sys_created_on']
     list_filter = ('tag',)
 

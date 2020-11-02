@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from .models import KbKnowledge, BookmarkUserArticle, KbFeedback, KbKnowledgeBase, KbCategory
+from .models import KbKnowledge, BookmarkUserArticle, KbFeedback, KbKnowledgeBase, KbCategory, Tag, ArticleTag
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -473,11 +473,83 @@ class DeleteArticleId(APIView):
         return Response(response, status=response["status"])
 
 
-class Tag(APIView):
+class TagsViewSet(APIView):
     permission_classes = (IsAuthenticated, )
 
-    def post(self, request, format=None):
-        pass
+    class GetTagsSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Tag
+            fields = ('id', 'label')
 
+    # def post(self, request, format=None):
+    #     pass
     def get(self, request, format=None):
-        pass
+        # pass
+        tags = Tag.objects.all()
+        result = self.GetTagsSerializer(tags, many=True)
+        return Response(result.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        tag = Tag()
+        tag.label = request.data['label']
+        tag.save()
+        result = {"id": tag.id, "label": tag.label}
+        return Response(result, status=status.HTTP_201_CREATED)
+
+
+class ArticleTags(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    class GetArticleTagsSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = ArticleTag
+            fields = ('id', 'get_tag')
+
+    def get(self, request, article_id, format=None):
+        try:
+            article = KbKnowledge.objects.get(id=article_id)
+        except ObjectDoesNotExist:
+            return Response('not found', status=status.HTTP_404_NOT_FOUND)
+        try:
+            article_tags = ArticleTag.objects.filter(article=article)
+        except ObjectDoesNotExist:
+            return Response('', status=status.HTTP_404_NOT_FOUND)
+        result = self.GetArticleTagsSerializer(article_tags, many=True)
+        return Response(result.data, status=status.HTTP_200_OK)
+
+    def post(self, request, article_id, format=None):
+        try:
+            article = KbKnowledge.objects.get(id=article_id)
+            tag = Tag.objects.get(id=request.data['tag_id'])
+        except ObjectDoesNotExist:
+            return Response('not found', status=status.HTTP_404_NOT_FOUND)
+        if request.data['action'] == 'insert':
+            try:
+                article_tag = ArticleTag()
+                article_tag.article = article
+                article_tag.tag = tag
+                article_tag.save()
+            except KeyError:
+                return Response('', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response('inserted', status=status.HTTP_201_CREATED)
+        if request.data['action'] == 'delete':
+            try:
+                ArticleTag.objects.get(article=article, tag=tag).delete()
+            except ObjectDoesNotExist:
+                return Response('', status=status.HTTP_404_NOT_FOUND)
+            return Response('deleted', status=status.HTTP_200_OK)
+        if request.data['action'] == 'edit':
+            try:
+                atag = ArticleTag.objects.get(article=article, tag=tag)
+                atag.relevance = request.data['relevance']
+                atag.save()
+            except ObjectDoesNotExist:
+                return Response('', status=status.HTTP_404_NOT_FOUND)
+            return Response('edited', status=status.HTTP_200_OK)
+        return Response('', status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+
+        # pass
+        # try:
+            # article =

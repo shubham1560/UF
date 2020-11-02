@@ -43,9 +43,9 @@ WORKFLOW_STATES = (
 
 
 RELEVANCE = (
-        (1, 'High'),
-        (2, 'Moderate'),
-        (3, 'Little'),
+        ('1', 'High'),
+        ('2', 'Moderate'),
+        ('3', 'Little'),
     )
 
 
@@ -399,11 +399,17 @@ class ArticleTag(models.Model):
                                        related_name="article_tag_created_by")
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE, null=True, blank=True)
     article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE, null=True, blank=True)
-    relevance = models.CharField(choices=RELEVANCE, max_length=10, null=True, blank=True)
+    relevance = models.CharField(choices=RELEVANCE, default='2', max_length=10, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Article Tags"
         unique_together = ['tag', 'article']
 
+    def get_tag(self):
+        return {
+            "id": self.tag.id,
+            "label": self.tag.label
+        }
+
     def __str__(self):
-        return self.tag + " " + self.article
+        return str(self.tag.label) + " " + str(self.article.title)
