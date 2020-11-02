@@ -4,15 +4,26 @@ from rest_framework import serializers
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from .models import Enhancement, Defect
-from .services import add_feature, get_support, get_ticket_detail
+from .services import add_support, get_support, get_ticket_detail, edit_support
 
 
-class CreateFeatureViewSet(APIView):
+class CreateSupportViewSet(APIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
-        id = add_feature(request)
-        return Response(id, status=status.HTTP_201_CREATED)
+        feature_id = add_support(request)
+        return Response(feature_id, status=status.HTTP_201_CREATED)
+
+
+class EditSupportViewSet(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request, format=None):
+        if request.user.is_staff:
+            response = edit_support(request)
+        else:
+            return Response("unauthorized", status=status.HTTP_401_UNAUTHORIZED)
+        return Response(response["message"], status=response["status"])
 
 
 class GetSupportRecords(APIView):
@@ -21,22 +32,24 @@ class GetSupportRecords(APIView):
     class FeatureSerializer(serializers.ModelSerializer):
         class Meta:
             model = Enhancement
-            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on')
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on')
 
     class DefectSerializer(serializers.ModelSerializer):
         class Meta:
             model = Defect
-            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on')
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on')
 
     class FeatureStaffSerializer(serializers.ModelSerializer):
         class Meta:
             model = Enhancement
-            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'get_created_by')
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on',
+                      'get_created_by', 'priority')
 
     class DefectStaffSerializer(serializers.ModelSerializer):
         class Meta:
             model = Defect
-            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'get_created_by')
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on',
+                      'get_created_by', 'priority')
 
     def get(self, request, format=None):
         get_support(request)
@@ -84,13 +97,14 @@ class GetSupportRowDetail(APIView):
         result = ''
         if record_type == 'defect':
             # support
+            staff = False
             if request.user.is_staff:
                 try:
                     support = Defect.objects.get(id=record_id)
                     result = self.DefectStaffSerializer(support, many=False)
+                    staff = True
                 except ObjectDoesNotExist:
                     pass
-
             else:
                 try:
                     support = Defect.objects.get(id=record_id, sys_created_by=request.user)
@@ -102,6 +116,7 @@ class GetSupportRowDetail(APIView):
                 try:
                     support = Enhancement.objects.get(id=record_id)
                     result = self.FeatureStaffSerializer(support, many=False)
+                    staff = True
                 except ObjectDoesNotExist:
                     pass
             else:
@@ -112,4 +127,4 @@ class GetSupportRowDetail(APIView):
                     pass
         if result == '':
             return Response('', status=status.HTTP_404_NOT_FOUND)
-        return Response(result.data, status=status.HTTP_200_OK)
+        return Response({"data": result.data, "staff": staff}, status=status.HTTP_200_OK)

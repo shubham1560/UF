@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-
+from datetime import datetime
 from agile_development.models import Enhancement, Defect
 from .models import SysHistoryLine
 from rest_framework.views import status
@@ -17,9 +17,18 @@ def make_history_record(request):
             table = Enhancement
         if not request.user.is_staff:
             try:
-                table.objects.get(id=request.data['record_id'], sys_created_by=request.user)
+                _table = table.objects.get(id=request.data['record_id'], sys_created_by=request.user)
+                _table.sys_updated_on = datetime.now
+                _table.save()
             except ObjectDoesNotExist:
                 return {"status": status.HTTP_401_UNAUTHORIZED}
+        else:
+            try:
+                _table = table.objects.get(id=request.data['record_id'])
+                _table.sys_updated_on = datetime.now
+                _table.save()
+            except ObjectDoesNotExist:
+                return {"status": status.HTTP_404_NOT_FOUND}
         new_record.additional_comment = request.data['comment']
         new_record.table_sys_id = request.data['record_id']
         new_record.sys_created_by = request.user

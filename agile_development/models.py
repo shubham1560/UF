@@ -15,8 +15,8 @@ FEATURE_TYPE = (
 STORY_STATES = (
     ('draft', 'Draft'),
     ('ready', 'Ready'),
-    ('wip', "Work in Progress"),
-    ('rft', 'Ready for Testing'),
+    ('work in progress', "Work in Progress"),
+    ('ready for test', 'Ready for Testing'),
     ('complete', "Complete"),
     ('cancelled', "Cancelled")
 )
