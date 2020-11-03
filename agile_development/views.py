@@ -32,35 +32,37 @@ class GetSupportRecords(APIView):
     class FeatureSerializer(serializers.ModelSerializer):
         class Meta:
             model = Enhancement
-            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on')
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on',
+                      'read_by_user')
 
     class DefectSerializer(serializers.ModelSerializer):
         class Meta:
             model = Defect
-            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on')
+            fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on',
+                      'read_by_user')
 
     class FeatureStaffSerializer(serializers.ModelSerializer):
         class Meta:
             model = Enhancement
             fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on',
-                      'get_created_by', 'priority')
+                      'get_created_by', 'priority', 'read_by_staff')
 
     class DefectStaffSerializer(serializers.ModelSerializer):
         class Meta:
             model = Defect
             fields = ('id', 'short_description', 'description', 'state', 'sys_created_on', 'sys_updated_on',
-                      'get_created_by', 'priority')
+                      'get_created_by', 'priority', 'read_by_staff')
 
     def get(self, request, format=None):
         get_support(request)
         if request.user.is_staff:
-            d = Defect.objects.all().order_by('-sys_updated_on')
-            f = Enhancement.objects.all().order_by('-sys_updated_on')
+            d = Defect.objects.all().order_by('read_by_staff', '-sys_updated_on')
+            f = Enhancement.objects.all().order_by('read_by_staff', '-sys_updated_on')
             defects = self.DefectStaffSerializer(d, many=True)
             features = self.FeatureStaffSerializer(f, many=True)
         else:
-            d = Defect.objects.filter(sys_created_by=request.user).order_by('-sys_updated_on')
-            f = Enhancement.objects.filter(sys_created_by=request.user).order_by('-sys_updated_on')
+            d = Defect.objects.filter(sys_created_by=request.user).order_by('read_by_user', '-sys_updated_on')
+            f = Enhancement.objects.filter(sys_created_by=request.user).order_by('read_by_user', '-sys_updated_on')
             defects = self.DefectSerializer(d, many=True)
             features = self.FeatureSerializer(f, many=True)
         return Response({"defects": defects.data, "features": features.data}, status=status.HTTP_200_OK)
@@ -101,6 +103,8 @@ class GetSupportRowDetail(APIView):
             if request.user.is_staff:
                 try:
                     support = Defect.objects.get(id=record_id)
+                    support.read_by_staff = True
+                    support.save()
                     result = self.DefectStaffSerializer(support, many=False)
                     staff = True
                 except ObjectDoesNotExist:
@@ -108,6 +112,8 @@ class GetSupportRowDetail(APIView):
             else:
                 try:
                     support = Defect.objects.get(id=record_id, sys_created_by=request.user)
+                    support.read_by_user = True
+                    support.save()
                     result = self.DefectSerializer(support, many=False)
                 except ObjectDoesNotExist:
                     pass
@@ -115,6 +121,8 @@ class GetSupportRowDetail(APIView):
             if request.user.is_staff:
                 try:
                     support = Enhancement.objects.get(id=record_id)
+                    support.read_by_staff = True
+                    support.save()
                     result = self.FeatureStaffSerializer(support, many=False)
                     staff = True
                 except ObjectDoesNotExist:
@@ -122,6 +130,8 @@ class GetSupportRowDetail(APIView):
             else:
                 try:
                     support = Enhancement.objects.get(id=record_id, sys_created_by=request.user)
+                    support.read_by_user = True
+                    support.save()
                     result = self.FeatureSerializer(support, many=False)
                 except ObjectDoesNotExist:
                     pass

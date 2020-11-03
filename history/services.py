@@ -19,6 +19,7 @@ def make_history_record(request):
             try:
                 _table = table.objects.get(id=request.data['record_id'], sys_created_by=request.user)
                 _table.sys_updated_on = datetime.now
+                _table.read_by_staff = False
                 _table.save()
             except ObjectDoesNotExist:
                 return {"status": status.HTTP_401_UNAUTHORIZED}
@@ -26,6 +27,7 @@ def make_history_record(request):
             try:
                 _table = table.objects.get(id=request.data['record_id'])
                 _table.sys_updated_on = datetime.now
+                _table.read_by_user = False
                 _table.save()
             except ObjectDoesNotExist:
                 return {"status": status.HTTP_404_NOT_FOUND}

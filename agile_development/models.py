@@ -72,6 +72,8 @@ class Feature(models.Model):
                                        related_name='feature_created_by', limit_choices_to={'is_staff': True})
     sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
                                        related_name='feature_updated_by', limit_choices_to={'is_staff': True})
+    read_by_user = models.BooleanField(default=True)
+    read_by_staff = models.BooleanField(default=False)
 
     def __str__(self):
         return self.short_description

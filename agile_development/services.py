@@ -43,6 +43,7 @@ def edit_support(request):
     support.work_notes = request.data['data']['work_notes']
     support.state = request.data['data']['state']
     support.additional_comments = request.data['data']['additional_comments']
+    support.read_by_user = False
     support.save()
     return {"message": 'updated!', "status": status.HTTP_201_CREATED}
 
