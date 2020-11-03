@@ -1,7 +1,8 @@
 from django.urls import path, include
 from .views import UserViewSet, UserListViewSet, CreateUserViewSet, CreateGoogleUserViewSet, ActivateAccountViewSet, \
     UserPasswordResetViewSet, UserPasswordResetLinkViewSet, ObtainAuthTokenViewSet, \
-    UserTokenValidViewSet, GetUserDetailFromTokenViewSet, FacebookUserViewSet, SendActivationLinkAgain
+    UserTokenValidViewSet, GetUserDetailFromTokenViewSet, FacebookUserViewSet, SendActivationLinkAgain, \
+    ResetLoggedInUserPassword
 
 urlpatterns = [
     path('get_token/', ObtainAuthTokenViewSet.as_view()),
@@ -16,5 +17,6 @@ urlpatterns = [
     path('rest-auth/', include('rest_auth.urls')),
     path('token_valid/<str:token>/', UserTokenValidViewSet.as_view()),
     path('token_get_user/', GetUserDetailFromTokenViewSet.as_view()),
-    path('resend_activation_link/<str:email>/', SendActivationLinkAgain.as_view())
+    path('resend_activation_link/<str:email>/', SendActivationLinkAgain.as_view()),
+    path('sys_user/reset_password_logged_in/', ResetLoggedInUserPassword.as_view())
 ]

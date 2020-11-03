@@ -1,4 +1,6 @@
 from django.http import JsonResponse
+from rest_framework.permissions import IsAuthenticated
+
 from emails.services import send_confirmation_mail
 from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
@@ -410,3 +412,23 @@ class SendActivationLinkAgain(APIView):
         except KeyError:
             return Response({"message": "Email couldn't be sent"}, status=status.HTTP_200_OK)
         return Response({"message": "Confirmation mail sent"}, status=status.HTTP_200_OK)
+
+
+class ResetLoggedInUserPassword(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request, format=None):
+        username = request.user.username
+        # user = authenticate(request=None,
+        #                     username=request.data['username'], password=request.data['password'])
+        user = authenticate(request=None,
+                            username=username, password=request.data['password'])
+        if user:
+            if user == request.user:
+                user.set_password(request.data['new_password'])
+                user.save()
+            else:
+                return Response('Unauthorized user', status=status.HTTP_401_UNAUTHORIZED)
+            return Response('Password updated', status=status.HTTP_201_CREATED)
+        else:
+            return Response('Incorrect password', status=status.HTTP_400_BAD_REQUEST)
