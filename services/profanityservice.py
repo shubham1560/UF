@@ -11,9 +11,14 @@ def profanity_prob(input_string):
 
 def profanity_array(input_array):
     prof_array = []
+    profane = False
     for string in input_array:
-        prof_array.append(profanity(string))
-    return prof_array
+        # breakpoint()
+        test = profanity(string)
+        prof_array.append(test)
+        if test["profanity"] == 1:
+            profane = True
+    return prof_array, profane
 
 
 def profanity_prob_array(input_array):

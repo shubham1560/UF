@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from sys_user.models import SysUser
 from django.db.models import F
 from decouple import config
+from services.profanityservice import profanity_array
 import binascii, os
 
 
@@ -564,4 +565,21 @@ def delete_article(article_id, request):
         }
     return response
 
-    # pass
+
+def get_profanity_matrix(request):
+    text_array = extract_array_from_article_body_json(request.data['data'])
+    result, profane = profanity_array(text_array)
+    return {"result": result, "profane": profane}
+
+
+def extract_array_from_article_body_json(article_body):
+    text_array = []
+    for text in article_body:
+        if text['type'] == 'header':
+            text_array.append(text['data']['text'])
+        if text['type'] == 'list':
+            text_array.append(text['data']['items'][0])
+        if text['type'] == 'paragraph':
+            text_array.append(text['data']['text'])
+    return text_array
+

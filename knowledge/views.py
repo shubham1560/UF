@@ -11,7 +11,7 @@ from .services import get_all_articles, get_single_article, get_comments, get_pa
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
     get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles, \
     add_article_to_course, add_path_or_branch, edit_path_or_branch, build_path, course_owner, delete_sections, \
-    delete_article
+    delete_article, get_profanity_matrix
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from logs.services import log_random
@@ -549,7 +549,9 @@ class ArticleTags(APIView):
         return Response('', status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
+class CheckProfanity(APIView):
 
-        # pass
-        # try:
-            # article =
+    def post(self, request, format=None):
+        # breakpoint()
+        result = get_profanity_matrix(request)
+        return Response(result, status=status.HTTP_200_OK)

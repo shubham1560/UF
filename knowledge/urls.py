@@ -9,7 +9,7 @@ from .views import KnowledgeArticleListView, KnowledgeArticleView,\
     GetKnowledgeBaseView, GetKnowledgeCategory, GetCourseSectionAndArticles, \
     GetBreadCrumbView, SetCourseProgress, GetKnowledgeCatgories, GetSearchResults, GetCoursesForAddingArticle, \
     AddArticleToCourse, AddPathOrBranch, BuildPathViewSet, CourseOwner, DeleteArticleId, TagsViewSet, \
-    ArticleTags
+    ArticleTags, CheckProfanity
 
 urlpatterns = [
     path('kb_knowledge/article/', NewArticleInsertView.as_view()),
@@ -39,5 +39,6 @@ urlpatterns = [
     path("path_valid_user/<str:course>/", CourseOwner.as_view()),
     path("kb_knowledge/delete/", DeleteArticleId.as_view()),
     path("tag/", TagsViewSet.as_view()),
-    path("tag/<str:article_id>/", ArticleTags.as_view())
+    path("tag/<str:article_id>/", ArticleTags.as_view()),
+    path("kb_knowledge/check_profanity/", CheckProfanity.as_view())
 ]
