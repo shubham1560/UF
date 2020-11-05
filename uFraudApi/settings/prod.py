@@ -27,46 +27,46 @@ CELERY_BROKER_URL = 'redis://h:pc6c586d35c82a4c6dbfd1ca940bbec02ded3af2098fe0019
 #
 # }
 #
-# DATABASES = {
-#
-#         'default': {
-#
-#             'ENGINE': 'django.db.backends.postgresql',
-#
-#             'NAME': 'd9c0nluu7dv5e8',
-#
-#             'USER': 'ieidkekrasxwji',
-#
-#             'PASSWORD': '4384cf08085469fe6501bf57bb4ea10a16d048a01fd07039dde636375aa6cc64',
-#
-#             'HOST': 'ec2-54-164-134-207.compute-1.amazonaws.com',
-#
-#             'PORT': '5432',
-#
-#         }
-#
-#     }
-
-
 DATABASES = {
 
-    'default': {
+        'default': {
 
-        'ENGINE': 'django.db.backends.postgresql',
+            'ENGINE': 'django.db.backends.postgresql',
 
-        'NAME': 'defaultdb',
+            'NAME': 'd9c0nluu7dv5e8',
 
-        'USER': 'doadmin',
+            'USER': 'ieidkekrasxwji',
 
-        'PASSWORD': 'mu4dfunuqhu1fy23',
+            'PASSWORD': '4384cf08085469fe6501bf57bb4ea10a16d048a01fd07039dde636375aa6cc64',
 
-        'HOST': 'db-postgresql-blr1-63156-do-user-7592334-0.b.db.ondigitalocean.com',
+            'HOST': 'ec2-54-164-134-207.compute-1.amazonaws.com',
 
-        'PORT': '25060',
+            'PORT': '5432',
+
+        }
 
     }
 
-}
+#
+# DATABASES = {
+#
+#     'default': {
+#
+#         'ENGINE': 'django.db.backends.postgresql',
+#
+#         'NAME': 'defaultdb',
+#
+#         'USER': 'doadmin',
+#
+#         'PASSWORD': 'mu4dfunuqhu1fy23',
+#
+#         'HOST': 'db-postgresql-blr1-63156-do-user-7592334-0.b.db.ondigitalocean.com',
+#
+#         'PORT': '25060',
+#
+#     }
+#
+# }
 
 
 CACHES = {
