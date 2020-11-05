@@ -256,7 +256,7 @@ def add_article(request, publish_ready, article_id=0):
     try:
         # title = request.data['article']['blocks'][0]["data"]["text"]
         title = request.data['title']
-        uid = title.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
+        uid = title.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(2)).decode()
         if article_id == '':
             a = KbKnowledge()
             a.id = uid

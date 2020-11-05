@@ -30,6 +30,27 @@ DATABASES = {
 
 }
 
+#
+# DATABASES = {
+#
+#     'default': {
+#
+#         'ENGINE': 'django.db.backends.postgresql',
+#
+#         'NAME': 'defaultdb',
+#
+#         'USER': 'doadmin',
+#
+#         'PASSWORD': 'mu4dfunuqhu1fy23',
+#
+#         'HOST': 'db-postgresql-blr1-63156-do-user-7592334-0.b.db.ondigitalocean.com',
+#
+#         'PORT': '25060',
+#
+#     }
+#
+# }
+
 
 CACHES = {
     'default': {

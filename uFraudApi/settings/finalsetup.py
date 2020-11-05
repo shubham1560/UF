@@ -76,21 +76,41 @@ else:
     #
     # }
 
+    # DATABASES = {
+    #
+    #     'default': {
+    #
+    #         'ENGINE': 'django.db.backends.postgresql',
+    #
+    #         'NAME': 'd9c0nluu7dv5e8',
+    #
+    #         'USER': 'ieidkekrasxwji',
+    #
+    #         'PASSWORD': '4384cf08085469fe6501bf57bb4ea10a16d048a01fd07039dde636375aa6cc64',
+    #
+    #         'HOST': 'ec2-54-164-134-207.compute-1.amazonaws.com',
+    #
+    #         'PORT': '5432',
+    #
+    #     }
+    #
+    # }
+
     DATABASES = {
 
         'default': {
 
             'ENGINE': 'django.db.backends.postgresql',
 
-            'NAME': 'd9c0nluu7dv5e8',
+            'NAME': 'defaultdb',
 
-            'USER': 'ieidkekrasxwji',
+            'USER': 'doadmin',
 
-            'PASSWORD': '4384cf08085469fe6501bf57bb4ea10a16d048a01fd07039dde636375aa6cc64',
+            'PASSWORD': 'mu4dfunuqhu1fy23',
 
-            'HOST': 'ec2-54-164-134-207.compute-1.amazonaws.com',
+            'HOST': 'db-postgresql-blr1-63156-do-user-7592334-0.b.db.ondigitalocean.com',
 
-            'PORT': '5432',
+            'PORT': '25060',
 
         }
 
