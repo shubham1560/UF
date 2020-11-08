@@ -16,9 +16,8 @@ class KnowledgeSectionAdmin(admin.ModelAdmin):
 # Register your models here.
 class KbKnowledgeAdmin(admin.ModelAdmin):
     model = KbKnowledge
-    list_display = ['id', 'author', 'order', 'section',
-                    'sys_created_on', 'view_count', 'view_count_logged_in',
-                    'category', 'workflow'
+    list_display = ['id', 'author', 'title', 'order', 'article_url', 'section',
+                    'sys_created_on', 'category', 'workflow'
                     ]
     fields = ['id', 'title', 'active', 'workflow',
               'description', 'section', 'author', 'knowledge_base', 'category',

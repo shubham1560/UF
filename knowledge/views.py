@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.cache import cache
 from uFraudApi.settings.base import CACHE_KEY
 from .services import get_all_articles, get_single_article, get_comments, get_paginated_articles, \
-    get_bookmarked_articles, bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
+    bookmark_the_article, get_articles_for_logged_in_user_with_bookmark, kb_use,\
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
     get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles, \
     add_article_to_course, add_path_or_branch, edit_path_or_branch, build_path, course_owner, delete_sections, \

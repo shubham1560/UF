@@ -48,6 +48,7 @@ class AttachedImage(models.Model):
     compressed = models.ImageField(upload_to=upload_path_compress, blank=True, null=True)
     real_image_size = models.CharField(max_length=20, blank=True, null=True)
     compressed_image_size = models.CharField(max_length=20, blank=True, null=True)
+    # featured image going for the review from nsfw js
     featured_image = models.BooleanField(default=False)
     table = models.CharField(max_length=100, null=True, blank=True)
     table_id = models.CharField(max_length=50, null=True, blank=True)

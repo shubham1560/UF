@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import Group
 from knowledge.models import KbKnowledge
@@ -159,3 +160,45 @@ class MakeUserAuthor(APIView):
         my_group = Group.objects.get(name='Authors')
         my_group.user_set.add(request.user)
         return Response('success', status=status.HTTP_201_CREATED)
+
+
+class PublicUserData(APIView):
+    class GetUserDetailFromTokenSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = SysUser
+            fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image',
+                      'about', 'header_image', 'facebook_profile_link', 'instagram_profile_link',
+                      'twitter_profile_link', 'external_website_link', 'linkedin_profile', 'public', 'groups')
+
+    def get(self, request, id, format=None):
+        try:
+            user = SysUser.objects.get(id_name=id, is_active=True, public=True)
+        except ObjectDoesNotExist:
+            return Response('', status=status.HTTP_404_NOT_FOUND)
+        serializer = self.GetUserDetailFromTokenSerializer(user, many=False)
+        # request.user.groups
+        moderator = author = False
+        if request.user.groups.filter(name="Moderators").exists():
+            moderator = True
+        if request.user.groups.filter(name="Authors").exists():
+            author = True
+        response = {'user': serializer.data, 'author': author, 'moderator': moderator}
+        return Response(response, status=status.HTTP_200_OK)
+
+
+class GetPublicAuthorArticles(APIView):
+    class GetUserAuthoreArticlesSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbKnowledge
+            fields = ['id', 'title', 'get_knowledge_base', 'get_category']
+
+    def get(self, request, id_name, sort_by, format=None):
+        user = SysUser.objects.get(id_name=id_name, public=True, is_active=True)
+        articles = KbKnowledge.objects.filter(author=user, active=True).order_by(sort_by)
+        articles_count = KbKnowledge.objects.filter(author=request.user, active=True).count()
+        articles_data = self.GetUserAuthoreArticlesSerializer(articles, many=True)
+        response = {
+            'articles': articles_data.data,
+            'total_count': articles_count,
+        }
+        return Response(response, status=status.HTTP_200_OK)

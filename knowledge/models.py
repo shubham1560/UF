@@ -203,6 +203,7 @@ class KbKnowledge(models.Model):
                                        related_name='article_created_by', limit_choices_to={'is_staff': True})
     sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
                                        related_name='article_updated_by', limit_choices_to={'is_staff': True})
+    article_url = models.CharField(max_length=400, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Knowledge Articles"

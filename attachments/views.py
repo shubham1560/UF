@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from .services import get_the_link, get_the_url_link_data
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.cache import cache
 
 
 class AttachedImageViewSet(APIView):
@@ -174,3 +175,11 @@ class AttachmentAction(APIView):
             except ObjectDoesNotExist:
                 return Response('', status=status.HTTP_401_UNAUTHORIZED)
         return Response(message, status=status.HTTP_201_CREATED)
+
+
+class ClearCache(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, format=None):
+        if request.user.is_staff:
+            cache.delet
