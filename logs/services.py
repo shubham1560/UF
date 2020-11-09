@@ -40,6 +40,7 @@ def log_request(func):
                 req_log.time_elapsed = str(total_time)
                 req_log.request_body = args[1].data
                 req_log.response_data = f.data
+                req_log.sys_created_by = args[1].user
                 req_log.save()
             except FieldDoesNotExist:
                 pass

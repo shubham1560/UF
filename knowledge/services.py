@@ -537,7 +537,7 @@ def course_owner(course, request):
         if request.user == course.sys_created_by:
             return {"owner": True, "course": course.label, "status": status.HTTP_200_OK}
         else:
-            return {"owner": False, "course": "", "status": status.HTTP_401_UNAUTHORIZED}
+            return {"owner": False, "course": "", "status": status.HTTP_200_OK}
     except ObjectDoesNotExist:
         return {"owner": False, "status": status.HTTP_404_NOT_FOUND}
 

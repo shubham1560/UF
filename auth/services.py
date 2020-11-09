@@ -7,7 +7,7 @@ from logs.services import log_random
 
 
 def get_all_users() -> SysUser:
-    result = SysUser.objects.all()
+    result = SysUser.objects.filter(is_active=True, is_superuser=False)
     return result
 
 
@@ -24,6 +24,12 @@ def get_user(id_name: str) -> SysUser:
     except ObjectDoesNotExist:
         result = False
     return result
+
+
+def get_user_token(username):
+    user = SysUser.objects.get(username=username)
+    token = Token.objects.get(user=user)
+    return token
 
 
 def create_root_user(**validated_data) -> SysUser:

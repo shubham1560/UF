@@ -6,8 +6,8 @@ from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .services import get_all_users, get_user, create_root_user, activate_account, reset_password,\
-    send_reset_link
+from .services import get_all_users, get_user, create_root_user, activate_account, reset_password, \
+    send_reset_link, get_user_token
 from rest_framework import serializers
 from rest_framework import status
 from django.conf import settings
@@ -26,29 +26,48 @@ from services.cacheservice import rate_limit
 import facebook
 from django.contrib.auth import authenticate
 
-
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
+
+
 # Create your views here.
 
 
 class UserListViewSet(APIView):
+    permission_classes = (IsAuthenticated,)
+
     class UserListSerializer(serializers.ModelSerializer):
         class Meta:
             model = SysUser
-            fields = ('id', 'email', 'profile_pic')
+            fields = ('first_name', 'last_name', 'email', 'username')
 
     @log_request
     def get(self, request, format=None):
-        # breakpoint()
-        if 'allusers' in cache:
-            users = cache.get('allusers')
-        else:
+        if request.user.is_superuser:
+            # breakpoint()
+            # if 'allusers' in cache:
+            #     users = cache.get('allusers')
+            # else:
             users = get_all_users()
-            print("From db")
-            log_random.delay(str(users), 'bhanu')
-            cache.set('allusers', users)
-        serializer = self.UserListSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            # print("From db")
+            # log_random.delay(str(users), 'bhanu')
+            # cache.set('allusers', users)
+            serializer = self.UserListSerializer(users, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response('', status=status.HTTP_401_UNAUTHORIZED)
+
+
+class GetUserTokenImpersonation(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    @log_request
+    def post(self, request, format=None):
+        if request.user.is_superuser:
+            username = request.data['username']
+            token = get_user_token(username)
+            return Response(str(token), status=status.HTTP_200_OK)
+        else:
+            return Response('unauthorized', status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserViewSet(APIView):
@@ -63,7 +82,7 @@ class UserViewSet(APIView):
         if a:
             serializer = self.UserSerializer(a, many=False)  # for a single result, many should be ommited or False
             return Response(data=serializer.data, status=status.HTTP_200_OK)
-        response = {'message': 'User with this id: '+str(id)+' does not exist in the database'}
+        response = {'message': 'User with this id: ' + str(id) + ' does not exist in the database'}
         return Response(data=response, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -151,7 +170,8 @@ class FacebookUserViewSet(APIView):
         try:
             access_token = request.data.get("access_token")
             graph = facebook.GraphAPI(access_token=access_token)
-            user_info = graph.get_object(id='me', fields='first_name, middle_name, last_name,email, picture.type(large)')
+            user_info = graph.get_object(id='me',
+                                         fields='first_name, middle_name, last_name,email, picture.type(large)')
             print(user_info)
         except facebook.GraphAPIError:
             return JsonResponse({'error': 'Invalid data'}, safe=False)
@@ -304,11 +324,12 @@ class ObtainAuthTokenViewSet(APIView):
             logic for rate limiting the user on login attempt
             """
             timeout = 5
-            key = 'login.'+request.data.get('username')
+            key = 'login.' + request.data.get('username')
             login_attempt = rate_limit(key, timeout=timeout)
             if login_attempt > 3:
-                return Response({'message': 'Too many login attempts, please try again after '+str(timeout)+' minutes'},
-                                status=status.HTTP_405_METHOD_NOT_ALLOWED)
+                return Response(
+                    {'message': 'Too many login attempts, please try again after ' + str(timeout) + ' minutes'},
+                    status=status.HTTP_405_METHOD_NOT_ALLOWED)
         except ObjectDoesNotExist:
             pass
         serializer = self.serializer_class(data=request.data,
@@ -379,13 +400,16 @@ class GetUserDetailFromTokenViewSet(APIView):
 
     def get(self, request, format=None):
         serializer = self.GetUserDetailFromTokenSerializer(request.user, many=False)
-        response = {'user': serializer.data}
+        superuser = False
+        if request.user.is_superuser:
+            superuser = True
+        response = {'user': serializer.data, 'gtg': superuser}
         return Response(response, status=status.HTTP_200_OK)
 
 
 class SendActivationLinkAgain(APIView):
 
-    def get(self, request, email,format=None):
+    def get(self, request, email, format=None):
         try:
             timeout = 5
             key = 'reactivate.' + email
@@ -415,7 +439,7 @@ class SendActivationLinkAgain(APIView):
 
 
 class ResetLoggedInUserPassword(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
         username = request.user.username

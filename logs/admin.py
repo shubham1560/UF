@@ -10,8 +10,9 @@ class SysEmailLogAdmin(admin.ModelAdmin):
 
 class RequestLogAdmin(admin.ModelAdmin):
     model = RequestLog
-    list_display = ['id', 'viewset', 'method', 'request_body', 'response_data', 'status', 'time_elapsed',
-                    'sys_created_on']
+    list_display = ['id', 'viewset', 'method', 'sys_created_by',
+                    'request_body', 'response_data', 'status',
+                    'time_elapsed', 'sys_created_on']
     empty_value_display = '-empty-'
     list_filter = ('status', 'method', 'viewset', 'sys_created_on')
     search_fields = ['viewset']

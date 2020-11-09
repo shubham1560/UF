@@ -2,11 +2,11 @@ from django.urls import path, include
 from .views import UserViewSet, UserListViewSet, CreateUserViewSet, CreateGoogleUserViewSet, ActivateAccountViewSet, \
     UserPasswordResetViewSet, UserPasswordResetLinkViewSet, ObtainAuthTokenViewSet, \
     UserTokenValidViewSet, GetUserDetailFromTokenViewSet, FacebookUserViewSet, SendActivationLinkAgain, \
-    ResetLoggedInUserPassword
+    ResetLoggedInUserPassword, GetUserTokenImpersonation
 
 urlpatterns = [
     path('get_token/', ObtainAuthTokenViewSet.as_view()),
-    # path('users/', UserListViewSet.as_view()),
+    path('users/', UserListViewSet.as_view()),
     # path('users/<str:id>', UserViewSet.as_view()),
     path('create_user_sys/', CreateUserViewSet.as_view()),
     path('create_user_google/', CreateGoogleUserViewSet.as_view()),
@@ -18,5 +18,6 @@ urlpatterns = [
     path('token_valid/<str:token>/', UserTokenValidViewSet.as_view()),
     path('token_get_user/', GetUserDetailFromTokenViewSet.as_view()),
     path('resend_activation_link/<str:email>/', SendActivationLinkAgain.as_view()),
-    path('sys_user/reset_password_logged_in/', ResetLoggedInUserPassword.as_view())
+    path('sys_user/reset_password_logged_in/', ResetLoggedInUserPassword.as_view()),
+    path('get_impersonation_token/', GetUserTokenImpersonation.as_view())
 ]
