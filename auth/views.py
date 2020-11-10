@@ -209,11 +209,12 @@ class ActivateAccountViewSet(APIView):
 
     @log_request
     def get(self, request, token, format=None):
-        if activate_account(token):
-            response = {"Message": "The account has been activated, you can log in now"}
+        done, user = activate_account(token)
+        if done:
+            response = {"Message": "The account has been activated, you can log in now", "user": user}
             return Response(response, status=status.HTTP_200_OK)
         else:
-            response = {"Message": "The url is invalid"}
+            response = {"Message": "The url is invalid", "user": user}
             return Response(response, status=status.HTTP_404_NOT_FOUND)
 
 

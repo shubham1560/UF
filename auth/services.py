@@ -55,13 +55,19 @@ def activate_account(token: str):
     try:
         current_token = Token.objects.get(key=token)
     except ObjectDoesNotExist:
-        return False
+        return False, {}
     user = current_token.user
     user.is_active = True
     user.save()
     current_token.delete()
     Token.objects.create(user=user)
-    return True
+
+    u = {
+        "name": user.first_name + " " + user.last_name,
+        "email": user.email
+    }
+
+    return True, u
 
 
 def reset_password(token: str, **validated_data):
