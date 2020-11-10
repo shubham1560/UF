@@ -178,12 +178,15 @@ class PublicUserData(APIView):
         serializer = self.GetUserDetailFromTokenSerializer(user, many=False)
         # request.user.groups
         moderator = author = False
-        if request.user.groups.filter(name="Moderators").exists():
-            moderator = True
-        if request.user.groups.filter(name="Authors").exists():
-            author = True
-        response = {'user': serializer.data, 'author': author, 'moderator': moderator}
-        return Response(response, status=status.HTTP_200_OK)
+        if user:
+            if user.groups.filter(name="Moderators").exists():
+                moderator = True
+            if user.groups.filter(name="Authors").exists():
+                author = True
+            response = {'user': serializer.data, 'author': author, 'moderator': moderator}
+            return Response(response, status=status.HTTP_200_OK)
+        else:
+            return Response('User has deactivated his account!', status=status.HTTP_404_NOT_FOUND)
 
 
 class GetPublicAuthorArticles(APIView):
@@ -193,10 +196,16 @@ class GetPublicAuthorArticles(APIView):
             fields = ['id', 'title', 'get_knowledge_base', 'get_category']
 
     def get(self, request, id_name, sort_by, format=None):
-        user = SysUser.objects.get(id_name=id_name, public=True, is_active=True)
-        articles = KbKnowledge.objects.filter(author=user, active=True).order_by(sort_by)
+        # breakpoint()
+        try:
+            user = SysUser.objects.get(id_name=id_name, public=True, is_active=True)
+        except ObjectDoesNotExist:
+            return Response('User has deactivated his account', status=status.HTTP_404_NOT_FOUND)
+
+        articles = KbKnowledge.objects.filter(author=user, active=True, workflow="published").order_by(sort_by)
         articles_count = KbKnowledge.objects.filter(author=request.user, active=True).count()
         articles_data = self.GetUserAuthoreArticlesSerializer(articles, many=True)
+        # breakpoint()
         response = {
             'articles': articles_data.data,
             'total_count': articles_count,

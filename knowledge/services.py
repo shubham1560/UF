@@ -456,7 +456,7 @@ def add_path_or_branch(request):
     a = KbCategory()
 
     a.label = request.data["form_data"]["title"]
-    a.id = a.label.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(4)).decode()
+    a.id = a.label.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(2)).decode()
     a.description = request.data["form_data"]["description"]
     a.active = request.data["form_data"]["active"]
     # a.parent_kb_base =
