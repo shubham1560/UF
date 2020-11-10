@@ -19,6 +19,8 @@ class SysUserAdmin(UserAdmin):
                     # "header_image",
                     # "profile_pic"
                     ]
+    # sortable_by = ('-date_joined', )
+    ordering = ('-date_joined',)
     # list_editable = ('is_active',)
     add_fieldsets = (
         (

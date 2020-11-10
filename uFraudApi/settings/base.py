@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'image_optimizer',
     'agile_development.apps.AgileDevelopmentConfig',
-    'history.apps.HistoryConfig'
+    'history.apps.HistoryConfig',
+    'sqanda.apps.SqandaConfig'
 ]
 
 CORS_ORIGIN_WHITELIST = [
