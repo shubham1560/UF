@@ -35,7 +35,7 @@ class KbKnowledgeAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.sys_created_by = request.user
         if obj.id is None or 'random' in obj.id:
-            obj.id = obj.title.lower().replace(" ", "-") + binascii.hexlify(os.urandom(4)).decode()
+            obj.id = obj.title.lower().replace(" ", "-") + binascii.hexlify(os.urandom(1)).decode()
         if obj.id:
             obj.sys_updated_by = request.user
         super(KbKnowledgeAdmin, self).save_model(request, obj, form, change)

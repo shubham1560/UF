@@ -9,6 +9,6 @@ urlpatterns = [
     path('general_add_image/', AttachedImageGenericViewSet.as_view()),
     path('get_image/<str:table_name>/<str:table_sys_id>/', GetAttachment.as_view()),
     path('attachment/post/', AttachmentAction.as_view()),
-    path('cache_clear/', ClearCache.as_view())
+    path('cache/', ClearCache.as_view())
     # path('edit', EditAttachment.as_view())
 ]

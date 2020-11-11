@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 
 from knowledge.models import KbKnowledge
+from logs.services import log_request
 from .models import AttachedImage
 from rest_framework.views import APIView, status
 from rest_framework import serializers
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from .services import get_the_link, get_the_url_link_data
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from services.cacheservice import clear_all
 from django.core.cache import cache
 
 
@@ -180,6 +182,9 @@ class AttachmentAction(APIView):
 class ClearCache(APIView):
     permission_classes = (IsAuthenticated, )
 
+    @log_request
     def get(self, request, format=None):
         if request.user.is_staff:
-            cache.delet
+            clear_all()
+            return Response({"detail": "Cache cleared successfully"}, status=status.HTTP_200_OK)
+        return Response({"detail": 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
