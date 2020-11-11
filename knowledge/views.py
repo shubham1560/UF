@@ -441,8 +441,8 @@ class AddPathOrBranch(APIView):
         key = cache_key + "." + "path_to_add"
         mod_key = key+"moderator"
         delete_many([key, mod_key])
-        key = cache_key + ".branch." + request.data['type']['kb_base']
         if request.data['type']['add'] == 'branch':
+            key = cache_key + ".branch." + request.data['type']['kb_base']
             del_key(key)
         if request.user.groups.filter(name="Moderators").exists():
             try:
