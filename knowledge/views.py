@@ -14,6 +14,7 @@ from .services import get_all_articles, get_single_article, get_comments, get_pa
     delete_article, get_profanity_matrix
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from services.cacheservice import del_key, get_key, set_key, has_key, delete_many
 from logs.services import log_random
 
 # Create your views here.
@@ -75,11 +76,12 @@ class KnowledgeArticleView(APIView):
 
     # @log_request
     def get(self, request, id, format=None):
-        # key = cache_key+"."+"singlearticle"+id
-        # if key in cache:
-        #     result = cache.get(key)
-        # else:
-        article = get_single_article(id, request)
+        key = cache_key+"."+id
+        if has_key(key):
+            article = get_key(key)
+        else:
+            article = get_single_article(id, request)
+            set_key(key, article)
         owner = False
         if not request.user.is_anonymous:
             if request.user == article.author:
@@ -91,8 +93,6 @@ class KnowledgeArticleView(APIView):
             response = {"message": "the article with this id doesn't exist"}
             status_code = status.HTTP_404_NOT_FOUND
         result = {"response": response, "status": status_code}
-        # breakpoint()
-        # cache.set(key, result, timeout=None)
         return Response(result["response"], status=result["status"])
 
 
@@ -210,6 +210,9 @@ class NewArticleInsertView(APIView):
         if request.user.groups.filter(name="Authors").exists():
             publish_ready = request.data['publish_ready']
             article_id = request.data['id']
+            key = cache_key + "." + article_id
+            del_key(key)
+            print(key, "  deleted from cache")
             result = add_article(request, publish_ready, article_id)
             return Response(result, status=status.HTTP_201_CREATED)
         else:
@@ -236,11 +239,9 @@ class GetKnowledgeBaseView(APIView):
         key = cache_key+"."+"kb_bases"
         if key in cache:
             bases = cache.get(key)
-            # log_random("from cache")
         else:
             bases = KbKnowledgeBase.objects.filter(active=True).order_by('order')
             cache.set(key, bases, timeout=None)
-            # log_random("from db")
         result = self.KnowledgeBaseViewSerializer(bases, many=True)
         return Response({"bases": result.data}, status=status.HTTP_200_OK)
 
@@ -290,10 +291,8 @@ class GetKnowledgeCategory(APIView):
             try:
                 # breakpoint()
                 # if request.data["onlycourses"] == True:
-                #     print("yolo")
                 kb = KbKnowledgeBase.objects.get(id=kb_base)
                 if courses == "courses":
-                    # print("fetch courses only")
                     if moderator:
                         categories = KbCategory.objects.filter(course=True, parent_kb_base=kb).order_by('order')
                     else:
@@ -312,7 +311,6 @@ class GetKnowledgeCategory(APIView):
                                                                ).order_by('order')
             except ObjectDoesNotExist:
                 categories = []
-        # cache.set(key, categories, timeout=None)
         if request.user.groups.filter(name="Moderators"):
             result = self.KnowledgeCategoryModeratorViewSerializer(categories, many=True)
         else:
@@ -357,7 +355,7 @@ class SetCourseProgress(APIView):
         return Response({"progress_saved": result}, status=status.HTTP_200_OK)
 
 
-class GetKnowledgeCatgories(APIView):
+class GetKnowledgeCategories(APIView):
     class KnowledgeCategoryAllViewSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbCategory
@@ -365,7 +363,12 @@ class GetKnowledgeCatgories(APIView):
                       "section", "order", "get_parent_category", "get_parent_knowledgebase", "description")
 
     def get(self, request, kb_base, format=None):
-        result = get_categories_tree(kb_base, request)
+        key = cache_key+".branch."+kb_base
+        if has_key(key):
+            result = get_key(key)
+        else:
+            result = get_categories_tree(kb_base, request)
+            set_key(key, result)
         return Response(result, status=status.HTTP_200_OK)
 
 
@@ -388,14 +391,10 @@ class GetSearchResults(APIView):
         courses = KbCategory.objects.filter(course=True, label__icontains=query_keyword,
                                             active=True).order_by('-sys_updated_on')
         result_courses = self.KnowledgeCourseSerializer(courses, many=True)
-
-        # breakpoint()
         result = {
             'courses': result_courses.data,
             'articles': result_articles.data
         }
-        # articles = get_articles(query_keyword)
-        # courses = get_courses(query_keyword)
         return Response(result, status=status.HTTP_200_OK)
 
 
@@ -406,7 +405,20 @@ class GetCoursesForAddingArticle(APIView):
             fields = ('id', 'label', 'description', 'get_parent_knowledgebase')
 
     def get(self, request, format=None):
-        courses = KbCategory.objects.filter(course=True, active=True)
+        key = cache_key + "." + "path_to_add"
+        if request.user.groups.filter(name="Moderators").exists():
+            mod_key = key+"moderator"
+            if has_key(mod_key):
+                courses = get_key(mod_key)
+            else:
+                courses = KbCategory.objects.filter(course=True)
+                set_key(mod_key, courses)
+        else:
+            if has_key(key):
+                courses = get_key(key)
+            else:
+                courses = KbCategory.objects.filter(course=True, active=True)
+                set_key(key, courses)
         result = self.KnowledgeCourseSerializer(courses, many=True)
         return Response(result.data, status=status.HTTP_200_OK)
 
@@ -415,7 +427,6 @@ class AddArticleToCourse(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
-        # breakpoint()
         if request.user.groups.filter(name__in=["Moderators", "Authors"]).exists():
             add_article_to_course(request)
         else:
@@ -427,17 +438,20 @@ class AddPathOrBranch(APIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
-        # breakpoint()
+        key = cache_key + "." + "path_to_add"
+        mod_key = key+"moderator"
+        delete_many([key, mod_key])
+        key = cache_key + ".branch." + request.data['type']['kb_base']
+        if request.data['type']['add'] == 'branch':
+            del_key(key)
         if request.user.groups.filter(name="Moderators").exists():
             try:
                 if request.data["type"]["product"]:
                     edit_path_or_branch(request)
-                    # print("yellow")
             except KeyError:
                 add_path_or_branch(request)
         else:
             return Response("invalid request", status=status.HTTP_401_UNAUTHORIZED)
-        # breakpoint()
         return Response("", status=status.HTTP_201_CREATED)
 
 
@@ -445,7 +459,6 @@ class BuildPathViewSet(APIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
-        # breakpoint()
         response = build_path(request)
         delete_sections(request.data['deleteSections'])
         return Response(response["message"], status=response["status"])
@@ -455,7 +468,6 @@ class CourseOwner(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request, course, format=None):
-        # breakpoint()
         response = course_owner(course, request)
         return Response(response, status=response["status"])
 
@@ -485,11 +497,18 @@ class TagsViewSet(APIView):
     #     pass
     def get(self, request, format=None):
         # pass
-        tags = Tag.objects.all()
+        key = cache_key+"."+"tags_all"
+        if has_key(key):
+            tags = get_key(key)
+        else:
+            tags = Tag.objects.all()
+            set_key(key, tags)
         result = self.GetTagsSerializer(tags, many=True)
         return Response(result.data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
+        key = cache_key+"."+"tags_all"
+        del_key(key)
         tag = Tag()
         tag.label = request.data['label']
         tag.save()
