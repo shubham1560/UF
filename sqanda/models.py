@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from sys_user.models import SysUser
+from knowledge.models import KbKnowledge, KbKnowledgeBase, KbCategory
 
 
 # class Question(models.Model):
@@ -24,6 +25,9 @@ class Answer(models.Model):
 
 
 class Question(models.Model):
+    kb_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.SET_NULL, null=True, blank=True)
+    kb_category = models.ForeignKey(KbCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    kb_knowledge = models.ForeignKey(KbKnowledge, on_delete=models.SET_NULL, null=True, blank=True)
     accepted_answer = models.ForeignKey(Answer, on_delete=models.SET_NULL, null=True, blank=True,
                                         related_name='answer_accepted_for_question')
     active = models.BooleanField(default=True)
@@ -38,6 +42,42 @@ class Question(models.Model):
     sys_updated_on = models.DateTimeField(auto_now=True)
     views = models.IntegerField(default=0)
     votes = models.IntegerField(default=0)
+
+    def get_kb_base(self):
+        if self.kb_base:
+            return {
+                "label": self.kb_base.title,
+                "id": self.kb_base.id,
+            }
+        else:
+            return {}
+
+    def get_kb_category(self):
+        if self.kb_category:
+            return {
+                "label": self.kb_category.label,
+                "id": self.kb_category.id
+            }
+        else:
+            return {}
+
+    def get_kb_knowledge(self):
+        if self.kb_knowledge:
+            return {
+                "label": self.kb_knowledge.title,
+                "id": self.kb_knowledge.id
+            }
+        else:
+            return {}
+
+    def get_created_by(self):
+        if self.sys_created_by:
+            return {
+                'name': self.sys_created_by.first_name + " " + self.sys_created_by.last_name,
+                'id': self.sys_created_by.id_name
+            }
+        else:
+            return {}
 
 
 class Comment(models.Model):
