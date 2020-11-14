@@ -586,3 +586,14 @@ def extract_array_from_article_body_json(article_body):
             text_array.append(text['data']['text'])
     return text_array
 
+
+def add_order_to_courses(request):
+    # breakpoint()
+    for course in request.data:
+        try:
+            category = KbCategory.objects.get(id=course['id'])
+            category.order = course["order"]
+            category.save()
+        except ObjectDoesNotExist:
+            pass
+    # pass

@@ -11,7 +11,7 @@ from .services import get_all_articles, get_single_article, get_comments, get_pa
     if_bookmarked_and_found_useful_by_user, add_feedback, add_article, get_course_section_and_articles, \
     get_breadcrumb_category, set_progress_course_kbuse, get_categories_tree, get_courses, get_articles, \
     add_article_to_course, add_path_or_branch, edit_path_or_branch, build_path, course_owner, delete_sections, \
-    delete_article, get_profanity_matrix
+    delete_article, get_profanity_matrix, add_order_to_courses
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from services.cacheservice import del_key, get_key, set_key, has_key, delete_many
@@ -591,6 +591,13 @@ class GetArticlesInPath(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
+class OrderCourseCategory(APIView):
+
+    def post(self, request, format=None):
+        if request.user.is_staff:
+            add_order_to_courses(request)
+            return Response("working", status=status.HTTP_200_OK)
+        return Response("unauthorized", status=status.HTTP_401_UNAUTHORIZED)
 
 
 

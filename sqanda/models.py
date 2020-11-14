@@ -71,10 +71,19 @@ class Question(models.Model):
             return {}
 
     def get_created_by(self):
-        if self.sys_created_by:
+        if self.sys_created_by and self.sys_created_by.public and self.sys_created_by.is_active:
             return {
                 'name': self.sys_created_by.first_name + " " + self.sys_created_by.last_name,
                 'id': self.sys_created_by.id_name
+            }
+        else:
+            return {}
+
+    def get_updated_by(self):
+        if self.sys_updated_by and self.sys_updated_by.public and self.sys_updated_by.is_active:
+            return {
+                'name': self.sys_updated_by.first_name + " " + self.sys_updated_by.last_name,
+                'id': self.sys_updated_by.id_name
             }
         else:
             return {}

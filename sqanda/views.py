@@ -15,7 +15,7 @@ class QuestionViewSet(APIView):
         class Meta:
             model = Question
             fields = ('id', 'get_kb_base', 'get_kb_category', 'get_kb_knowledge', 'question', 'question_details',
-                      'get_created_by', )
+                      'get_created_by', 'get_updated_by', 'sys_created_on', 'sys_updated_on')
 
     def get(self, request, format=None):
         # breakpoint()
