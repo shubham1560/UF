@@ -1,5 +1,5 @@
 from django.urls import path, include
-# from .views import
+from .views import QuestionViewSet
 urlpatterns = [
-    # path("kb_knowledge/check_profanity/", CheckProfanity.as_view())
+    path("question/get", QuestionViewSet.as_view())
 ]

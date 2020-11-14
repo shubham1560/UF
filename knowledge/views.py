@@ -574,3 +574,23 @@ class CheckProfanity(APIView):
         # breakpoint()
         result = get_profanity_matrix(request)
         return Response(result, status=status.HTTP_200_OK)
+
+
+class GetArticlesInPath(APIView):
+    class KnowledgeArticleListSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbKnowledge
+            fields = ('id', 'title', 'featured_image_thumbnail', 'author', 'article_body', 'getAuthor')
+
+    # @log_request
+    def get(self, request, category, format=None):
+        path = KbCategory.objects.get(id=category)
+        articles = KbKnowledge.objects.filter(category=path, workflow='published', active=True)
+        result = self.KnowledgeArticleListSerializer(articles, many=True)
+        response = {'data': result.data, 'message': "ok"}
+        return Response(response, status=status.HTTP_200_OK)
+
+
+
+
+
