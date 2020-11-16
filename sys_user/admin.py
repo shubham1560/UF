@@ -24,7 +24,7 @@ class SysUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "password1", "password2", "profile", "id_name", 'about'),
+                "fields": ("username", "password1", "password2", "id_name", 'password_needs_reset'),
             },
         ),
     )
