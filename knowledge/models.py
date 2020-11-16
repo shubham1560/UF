@@ -138,7 +138,8 @@ class KbCategory(models.Model):
         # breakpoint()
         if article:
             return {
-                "first_article_id": article[0].id
+                "first_article_id": article[0].id,
+                "first_article_url": article[0].article_url
             }
         else:
             return {
@@ -361,6 +362,7 @@ class BookmarkUserArticle(models.Model):
                 'course_id': self.article.section.course.id or '',
                 'course_label': self.article.section.course.label or '',
                 'kb_base_label': self.article.knowledge_base.title or '',
+                'article_url': self.article.article_url or ''
                 # 'kb_base_id': self.article.knowledge_base.title or ''
 
             }
@@ -368,6 +370,8 @@ class BookmarkUserArticle(models.Model):
             return {
                 'id': self.article.id or '',
                 'title': self.article.title or '',
+                'article_url': self.article.article_url or ''
+
                 # 'description': self.article.description or '',
                 # 'author': self.article.getAuthor() or '',
                 # 'course_id': self.article.section.course.id or '',

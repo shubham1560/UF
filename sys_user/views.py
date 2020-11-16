@@ -129,7 +129,7 @@ class GetUserAuthoredArticles(APIView):
     class GetUserAuthoreArticlesSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledge
-            fields = ['id', 'title', 'sys_created_on', 'sys_updated_on', 'workflow']
+            fields = ['id', 'title', 'sys_created_on', 'sys_updated_on', 'workflow', 'article_url']
 
     def get(self, request, sort_by, state, format=None):
         # breakpoint()

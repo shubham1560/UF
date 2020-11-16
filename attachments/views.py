@@ -99,18 +99,18 @@ class AddLinkForVideo(APIView):
         url = get_the_link(request)
         arr_url_section = request.META['QUERY_STRING'].split('%23')
         arr_url_section[0] = arr_url_section[0].replace("/", "%2F")
-        article_id = arr_url_section[0].split('%2F')[-1]
+        article_id = arr_url_section[0].split('%2F')[-2]
         article = KbKnowledge.objects.get(id=article_id, workflow='published', active=True)
         result = get_the_url_link_data(request, article)
         section = "The whole article has been selected"
         if len(arr_url_section) == 2:
-            section = arr_url_section[1]
-
+            section = "Section selected: " + arr_url_section[1].replace("%2520", " ")
+        # breakpoint()
         response = {
             "success": 1,
             "meta": {
                 "result": result,
-                "title": article.title,
+                "title": "Title: " + article.title,
                 "site_name": "Sorted Tree",
                 "description": section,
                 "image": {

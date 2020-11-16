@@ -100,6 +100,7 @@ def get_user_activity(request, requested_tye, start, end):
                         "course_id": activity.article.section.course.id or '',
                         "course_name": activity.article.section.course.label or '',
                         "knowledge_base": activity.article.category.parent_kb_base.title or '',
+                        'article_url': activity.article.article_url or ''
                         # "thumbnail": activity.article.
                     }
                 else:

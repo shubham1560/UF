@@ -256,7 +256,7 @@ def add_article(request, publish_ready, article_id=0):
     try:
         # title = request.data['article']['blocks'][0]["data"]["text"]
         title = request.data['title']
-        uid = title.lower().replace(" ", "-") + "-" + binascii.hexlify(os.urandom(2)).decode()
+        uid = binascii.hexlify(os.urandom(3)).decode()
         if article_id == '':
             a = KbKnowledge()
             a.id = uid
@@ -275,7 +275,7 @@ def add_article(request, publish_ready, article_id=0):
             a.category, created = KbCategory.objects.get_or_create(id="testing", active=False)
         if not a.workflow:
             a.workflow = "draft"
-        a.article_url = title.lower().replace(" ", "-")+"-"+a.id
+        a.article_url = title.lower().replace(" ", "-")
         a.description = request.data['description']
         a.title = title
         a.article_body = request.data['body_data']
@@ -303,7 +303,7 @@ def get_course_section_and_articles(category, request):
             children = KnowledgeSection.objects.get(id=section['id']).related_articles.filter \
                 (workflow='published').values('id',
                                               'title', 'category', 'knowledge_base', 'section',
-                                              'order').order_by('order')
+                                              'order', 'article_url').order_by('order')
 
             for child in children:
                 for section in sections:

@@ -71,7 +71,8 @@ class KnowledgeArticleView(APIView):
                       "get_category",
                       "get_knowledge_base",
                       'sys_updated_on',
-                      'sys_created_by'
+                      'sys_created_by',
+                      'article_url'
                       )
 
     # @log_request
@@ -131,7 +132,7 @@ class GetBookmarkedArticleViewSet(APIView):
     class BookmarkedArticleListSerializer(serializers.ModelSerializer):
         class Meta:
             model = BookmarkUserArticle
-            fields = ('id', 'article', 'user', 'get_article')
+            fields = ('id', 'article', 'user', 'get_article',)
 
     # @log_request
     def get(self, request, start, end, format=None):
