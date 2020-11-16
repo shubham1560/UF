@@ -33,24 +33,24 @@ class AttachedImageViewSet(APIView):
             attachment.sys_created_by = request.user
             attachment.save()
             # if request.user.groups.filter(name="Moderators").exists():
-            result, status_code = check_image_url(str(attachment.compressed.url))
-            a = result
-            if status_code == 200 and a["output"]["nsfw_score"] > 0.8:
-                response = {
-                    "success": 1,
-                    "file": {
-                        "url": str("https://sortedtree-test.s3.amazonaws.com"
-                                   "/attachments/KbKnowledge/compress/nsfw_detection.png")
-                    }
+            # result, status_code = check_image_url(str(attachment.compressed.url))
+            # a = result
+            # if status_code == 200 and a["output"]["nsfw_score"] > 0.8:
+            #     response = {
+            #         "success": 1,
+            #         "file": {
+            #             "url": str("https://sortedtree-test.s3.amazonaws.com"
+            #                        "/attachments/KbKnowledge/compress/nsfw_detection.png")
+            #         }
+            #     }
+            # else:
+            response = \
+                {
+                     "success": 1,
+                     "file": {
+                         "url": str(attachment.compressed.url),
+                     }
                 }
-            else:
-                response = \
-                    {
-                         "success": 1,
-                         "file": {
-                             "url": str(attachment.compressed.url),
-                         }
-                    }
         else:
             return Response('Unauthorized', status=status.HTTP_401_UNAUTHORIZED)
         return Response(response, status=status.HTTP_201_CREATED)
