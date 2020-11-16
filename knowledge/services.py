@@ -398,10 +398,10 @@ def set_progress_course_kbuse(request):
         return False
 
 
-def get_categories_tree(kb_base, request):
-    moderator = False
-    if request.user.groups.filter(name="Moderators").exists():
-        moderator = True
+def get_categories_tree(kb_base, request, is_moderator):
+    moderator = is_moderator
+    # if request.user.groups.filter(name="Moderators").exists():
+    #     moderator = True
     if moderator:
         categories = KbKnowledgeBase.objects.get(id=kb_base).related_categories. \
             filter(course=False, section=False).values('id',

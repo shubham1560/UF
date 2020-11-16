@@ -363,11 +363,15 @@ class GetKnowledgeCategories(APIView):
                       "section", "order", "get_parent_category", "get_parent_knowledgebase", "description")
 
     def get(self, request, kb_base, format=None):
-        key = cache_key+".branch."+kb_base
+        key = cache_key+".branch."+kb_base+".normal"
+        moderator = False
+        if request.user.groups.filter(name="Moderators").exists():
+            moderator = True
+            key = cache_key+".branch."+kb_base+".moderator"
         if has_key(key):
             result = get_key(key)
         else:
-            result = get_categories_tree(kb_base, request)
+            result = get_categories_tree(kb_base, request, moderator)
             set_key(key, result)
         return Response(result, status=status.HTTP_200_OK)
 
@@ -442,8 +446,10 @@ class AddPathOrBranch(APIView):
         mod_key = key+"moderator"
         delete_many([key, mod_key])
         if request.data['type']['add'] == 'branch':
-            key = cache_key + ".branch." + request.data['type']['kb_base']
+            key = cache_key + ".branch." + request.data['type']['kb_base']+".normal"
             del_key(key)
+            key_m = cache_key + ".branch." + request.data['type']['kb_base'] + ".moderator"
+            del_key(key_m)
         if request.user.groups.filter(name="Moderators").exists():
             try:
                 if request.data["type"]["product"]:
