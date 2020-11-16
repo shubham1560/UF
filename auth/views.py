@@ -337,10 +337,14 @@ class ObtainAuthTokenViewSet(APIView):
                                            context={'request': request})
         user = authenticate(request=None,
                             username=request.data['username'], password=request.data['password'])
+        # breakpoint()
         if user:
             try:
                 token = Token.objects.get(user=user)
-                return Response({'token': token.key}, status=status.HTTP_200_OK)
+                password_reset = False
+                if user.password_needs_reset:
+                    password_reset = True
+                return Response({'token': token.key, 'password_needs_reset': password_reset}, status=status.HTTP_200_OK)
             except ObjectDoesNotExist:
                 pass
         else:
@@ -451,6 +455,7 @@ class ResetLoggedInUserPassword(APIView):
         if user:
             if user == request.user:
                 user.set_password(request.data['new_password'])
+                user.password_needs_reset = False
                 user.save()
             else:
                 return Response('Unauthorized user', status=status.HTTP_401_UNAUTHORIZED)

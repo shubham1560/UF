@@ -11,13 +11,10 @@ class SysUserAdmin(UserAdmin):
                     "is_active",
                     "is_staff",
                     'facebook_id',
-                    # "date_joined",
                     "user_type",
                     "public",
-                    "date_joined"
-                    # "profile",
-                    # "header_image",
-                    # "profile_pic"
+                    "date_joined",
+                    "password_needs_reset"
                     ]
     # sortable_by = ('-date_joined', )
     ordering = ('-date_joined',)

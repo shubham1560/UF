@@ -49,7 +49,7 @@ class AttachedImage(models.Model):
     real_image_size = models.CharField(max_length=20, blank=True, null=True)
     compressed_image_size = models.CharField(max_length=20, blank=True, null=True)
     # featured image going for the review from nsfw js
-    featured_image = models.BooleanField(default=False)
+    flagged_image = models.BooleanField(default=False)
     table = models.CharField(max_length=100, null=True, blank=True)
     table_id = models.CharField(max_length=50, null=True, blank=True)
     article = models.ForeignKey(KbKnowledge, blank=True, null=True, on_delete=models.CASCADE)

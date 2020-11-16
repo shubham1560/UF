@@ -7,16 +7,19 @@ from .models import AttachedImage
 from rest_framework.views import APIView, status
 from rest_framework import serializers
 from rest_framework.response import Response
-from .services import get_the_link, get_the_url_link_data
+from .services import get_the_link, get_the_url_link_data, check_image_url
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from services.cacheservice import clear_all
+import requests
+
 from django.core.cache import cache
 
 
 class AttachedImageViewSet(APIView):
     permission_classes = (IsAuthenticated,)
 
+    @log_request
     def post(self, request, format=None):
         if request.user.groups.filter(name="Authors").exists():
             # breakpoint()
@@ -29,13 +32,25 @@ class AttachedImageViewSet(APIView):
             attachment.table = "KbKnowledge"
             attachment.sys_created_by = request.user
             attachment.save()
-            # up_image = AttachedImage.objects.create(real_image=image)
-            response = \
-                {"success": 1,
-                 "file": {
-                     "url": str(attachment.compressed.url)
-                 }
-                 }
+            # if request.user.groups.filter(name="Moderators").exists():
+            result, status_code = check_image_url(str(attachment.compressed.url))
+            a = result
+            if status_code == 200 and a["output"]["nsfw_score"] > 0.8:
+                response = {
+                    "success": 1,
+                    "file": {
+                        "url": str("https://sortedtree-test.s3.amazonaws.com"
+                                   "/attachments/KbKnowledge/compress/nsfw_detection.png")
+                    }
+                }
+            else:
+                response = \
+                    {
+                         "success": 1,
+                         "file": {
+                             "url": str(attachment.compressed.url),
+                         }
+                    }
         else:
             return Response('Unauthorized', status=status.HTTP_401_UNAUTHORIZED)
         return Response(response, status=status.HTTP_201_CREATED)
@@ -60,6 +75,8 @@ class AttachedImageGenericViewSet(APIView):
             except KeyError:
                 pass
             attachment.save()
+            # check_image_url()
+
             response = \
                 {"success": 1,
                  "file": {
@@ -188,3 +205,11 @@ class ClearCache(APIView):
             clear_all()
             return Response({"detail": "Cache cleared successfully"}, status=status.HTTP_200_OK)
         return Response({"detail": 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class CheckImageOpenAI(APIView):
+
+    def post(self, request, format=None):
+        result = check_image_url(request.data['image'])
+        return Response(result, status=status.HTTP_200_OK)
+

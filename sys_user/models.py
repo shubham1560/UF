@@ -47,6 +47,8 @@ class SysUser(AbstractUser):
     twitter_profile_link = models.CharField(max_length=300, null=True, blank=True)
     external_website_link = models.CharField(max_length=300, null=True, blank=True)
     linkedin_profile = models.CharField(max_length=300, null=True, blank=True)
+    password_needs_reset = models.BooleanField(default=False)
+    is_trusted = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         # im = Image.open(self.featured_image).convert('RGB')
