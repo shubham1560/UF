@@ -484,10 +484,11 @@ def edit_path_or_branch(request):
         category.save()
 
         if not category.active:
-            KbUse.objects.filter(course=category).update(active=False)
-
-        if category.active:
-            KbUse.objects.filter(course=category).update(active=True)
+            KbUse.objects.filter(course=category).delete()
+            BookmarkUserArticle.objects.filter(course=category).delete()
+        #
+        # if category.active:
+        #     KbUse.objects.filter(course=category).update(active=True)
 
     except KeyError:
         pass

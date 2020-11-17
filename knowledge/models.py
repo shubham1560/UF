@@ -346,7 +346,12 @@ class BookmarkUserArticle(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
     article = models.ForeignKey(KbKnowledge, on_delete=models.CASCADE)
+    course = models.ForeignKey(KbCategory, on_delete=models.CASCADE, blank=True, null=True)
     user = models.ForeignKey(SysUser, on_delete=models.CASCADE, related_name='user_bookmark')
+
+    def save(self, *args, **kwargs):
+        self.course = self.article.category
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Bookmarks User Articles"
