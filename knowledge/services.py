@@ -433,9 +433,12 @@ def add_article_to_course(request):
     course_id = request.data['course_id']
     # breakpoint()
     try:
-        course = KbCategory.objects.get(id=course_id, course=True, active=True)
+        if request.user.groups.filter(name="Moderators").exists():
+            course = KbCategory.objects.get(id=course_id, course=True)
+        else:
+            course = KbCategory.objects.get(id=course_id, course=True, active=True)
         section, created = KnowledgeSection.objects.get_or_create(
-            label="Individual Articles",
+            label="Contributed Articles",
             course=course,
             order=100000
         )
@@ -503,7 +506,7 @@ def build_path(request):
                 except KeyError:
                     change_section = KnowledgeSection()
                 change_section.label = section["label"]
-                if section["label"] != "Individual Articles":
+                if section["label"] != "Contributed Articles":
                     change_section.order = section["order"]
                 change_section.course = course
                 change_section.save()
