@@ -72,51 +72,47 @@ def get_user_activity(request, requested_tye, start, end):
         # breakpoint()
         related_activities = [None]*len(activities)
         counter = 0
-        if len(activities) > 0:
-            for activity in activities:
-                related_activities[counter] = {
-                    "id": activity.id or '',
-                    "viewed": activity.viewed or '',
-                    "useful": activity.useful or '',
-                    "progress": activity.percentage_completed or '',
-                    "created_on": activity.sys_created_on or '',
-                }
-                if activity.course:
-                    if activity.course.active:
-                        related_activities[counter]["course"] = {
-                            "id": activity.course.id or '',
-                            "label": activity.course.label or '',
-                            "description": activity.course.description or '',
-                            "compressed_image": config("S3URL") + str(activity.course.compressed_image) or '',
-                            "knowledge_base": activity.course.parent_kb_base.title or '',
-                            # "parent_kb_base": activity.course.parent_kb_base,
-                        }
-                    else:
-                        related_activities = related_activities[1:]
-                        counter -= 1
+        for activity in activities:
+            related_activities[counter] = {
+                "id": activity.id or '',
+                "viewed": activity.viewed or '',
+                "useful": activity.useful or '',
+                "progress": activity.percentage_completed or '',
+                "created_on": activity.sys_created_on or '',
+            }
+            # if activity.course:
+            #     if activity.course.active:
+            #         related_activities[counter]["course"] = {
+            #             "id": activity.course.id or '',
+            #             "label": activity.course.label or '',
+            #             "description": activity.course.description or '',
+            #             "compressed_image": config("S3URL") + str(activity.course.compressed_image) or '',
+            #             "knowledge_base": activity.course.parent_kb_base.title or '',
+            #             # "parent_kb_base": activity.course.parent_kb_base,
+            #         }
+            #     else:
+            #         related_activities = related_activities[1:]
+            #         counter -= 1
 
-                if activity.article:
-                    if activity.article.active and activity.article.workflow == "published":
-                        related_activities[counter]["article"] = {
-                            "id": activity.article.id or '',
-                            "featured_image_thumbnail": config('S3URL')+str(activity.article.featured_image_thumbnail),
-                            "title": activity.article.title or '',
-                            "description": activity.article.description or '',
-                            "view_count": activity.article.view_count or '',
-                            "view_count_logged_in": activity.article.view_count_logged_in or '',
-                            "course_id": activity.article.section.course.id or '',
-                            "course_name": activity.article.section.course.label or '',
-                            "knowledge_base": activity.article.category.parent_kb_base.title or '',
-                            'article_url': activity.article.article_url or ''
-                            # "thumbnail": activity.article.
-                        }
-                    else:
-                        related_activities = related_activities[1:]
-                        counter -= 1
-                counter += 1
-            # breakpoint()
-        # print(related_activities)
-        # related_activities = []
+            if activity.article:
+                if activity.article.active and activity.article.workflow == "published":
+                    related_activities[counter]["article"] = {
+                        "id": activity.article.id or '',
+                        "featured_image_thumbnail": config('S3URL')+str(activity.article.featured_image_thumbnail),
+                        "title": activity.article.title or '',
+                        "description": activity.article.description or '',
+                        "view_count": activity.article.view_count or '',
+                        "view_count_logged_in": activity.article.view_count_logged_in or '',
+                        "course_id": activity.article.section.course.id or '',
+                        "course_name": activity.article.section.course.label or '',
+                        "knowledge_base": activity.article.category.parent_kb_base.title or '',
+                        'article_url': activity.article.article_url or ''
+                        # "thumbnail": activity.article.
+                    }
+                else:
+                    related_activities = related_activities[1:]
+                    counter -= 1
+            counter += 1
         return list(related_activities)
 
 

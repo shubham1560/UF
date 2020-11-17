@@ -213,3 +213,8 @@ class CheckImageOpenAI(APIView):
         result = check_image_url(request.data['image'])
         return Response(result, status=status.HTTP_200_OK)
 
+
+class DummyPostRequest(APIView):
+
+    def post(self, request, format=None):
+        return Response('action successfull', status=status.HTTP_201_CREATED)

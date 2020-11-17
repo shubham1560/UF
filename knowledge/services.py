@@ -180,12 +180,21 @@ def bookmark_the_article(user, article_id):
 
 def if_bookmarked_and_found_useful_by_user(user, article_id):
     article = KbKnowledge.objects.get(id=article_id)
-    exist = BookmarkUserArticle.objects.filter(user=user, article=article)
-    useful = KbUse.objects.get(article=article, user=user)
-    if exist.count() == 1:
-        return {"bookmarked": True, "found_useful": useful.useful}
-    else:
-        return {"bookmarked": False, "found_useful": useful.useful}
+    bookmarked = False
+    try:
+        exist = BookmarkUserArticle.objects.filter(user=user, article=article)
+        if exist.count() == 1:
+            bookmarked = True
+    except ObjectDoesNotExist:
+        bookmarked = False
+    try:
+        useful = KbUse.objects.get(article=article, user=user)
+    except ObjectDoesNotExist:
+        useful.useful = False
+    # if exist.count() == 1:
+    return {"bookmarked": bookmarked, "found_useful": useful.useful}
+    # else:
+    #     return {"bookmarked": False, "found_useful": useful.useful}
 
 
 def kb_use(request):
