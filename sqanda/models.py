@@ -10,6 +10,7 @@ from knowledge.models import KbKnowledge, KbKnowledgeBase, KbCategory
 
 
 class Answer(models.Model):
+    id = models.CharField(primary_key=True, max_length=32)
     accepted = models.BooleanField()
     accepted_by = models.ForeignKey(SysUser, on_delete=models.SET_NULL, null=True, blank=True)
     active = models.BooleanField(default=True)
@@ -25,6 +26,7 @@ class Answer(models.Model):
 
 
 class Question(models.Model):
+    id = models.CharField(primary_key=True, max_length=32)
     kb_base = models.ForeignKey(KbKnowledgeBase, on_delete=models.SET_NULL, null=True, blank=True)
     kb_category = models.ForeignKey(KbCategory, on_delete=models.SET_NULL, null=True, blank=True)
     kb_knowledge = models.ForeignKey(KbKnowledge, on_delete=models.SET_NULL, null=True, blank=True)
@@ -40,6 +42,7 @@ class Question(models.Model):
                                        related_name='question_updated_by')
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
+    question_url = models.TextField(blank=True, null=True)
     views = models.IntegerField(default=0)
     votes = models.IntegerField(default=0)
 

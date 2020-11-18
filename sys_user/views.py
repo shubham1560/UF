@@ -193,7 +193,7 @@ class GetPublicAuthorArticles(APIView):
     class GetUserAuthoreArticlesSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledge
-            fields = ['id', 'title', 'get_knowledge_base', 'get_category']
+            fields = ['id', 'title', 'get_knowledge_base', 'get_category', 'article_url']
 
     def get(self, request, id_name, sort_by, format=None):
         # breakpoint()
@@ -201,11 +201,9 @@ class GetPublicAuthorArticles(APIView):
             user = SysUser.objects.get(id_name=id_name, public=True, is_active=True)
         except ObjectDoesNotExist:
             return Response('User has deactivated his account', status=status.HTTP_404_NOT_FOUND)
-
         articles = KbKnowledge.objects.filter(author=user, active=True, workflow="published").order_by(sort_by)
         articles_count = KbKnowledge.objects.filter(author=request.user, active=True).count()
         articles_data = self.GetUserAuthoreArticlesSerializer(articles, many=True)
-        # breakpoint()
         response = {
             'articles': articles_data.data,
             'total_count': articles_count,
