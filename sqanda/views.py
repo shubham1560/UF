@@ -9,7 +9,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 
 from knowledge.models import KbKnowledgeBase, KbCategory, KbKnowledge
-from .models import Question
+from .models import Question, Comment
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
@@ -81,11 +81,18 @@ class GetQuestionAndAnswer(APIView):
             fields = ('id', 'get_kb_base', 'get_kb_category', 'get_kb_knowledge', 'question', 'question_details',
                       'get_created_by', 'get_updated_by', 'sys_created_on', 'sys_updated_on')
 
+    class CommentSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Comment
+            fields = ('id', 'comment', 'get_created_by', 'sys_created_on', 'sys_updated_on')
+
     def get(self, request, question_id, format=None):
         question = Question.objects.get(id=question_id)
+        comments = Comment.objects.filter(table_id=question.id, table_name="question")
+        comm = self.CommentSerializer(comments, many=True)
         # breakpoint()
         # question_details = json.loads(question.question_details)
         result = self.QuestionViewSerializer(question)
         # response = {"result": result.data, "question_detail": question_details}
-        return Response(result.data, status=status.HTTP_200_OK)
+        return Response({'question': result.data, 'comments': comm.data}, status=status.HTTP_200_OK)
 

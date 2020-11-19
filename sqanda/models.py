@@ -3,10 +3,18 @@ from django.db import models
 # Create your models here.
 from sys_user.models import SysUser
 from knowledge.models import KbKnowledge, KbKnowledgeBase, KbCategory
-
+from rest_framework import serializers
+import json
 
 # class Question(models.Model):
 #     pass
+
+#
+# class CommentSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = 'Comment'
+#         fields = ('id', 'comment', 'get_created_by')
 
 
 class Answer(models.Model):
@@ -91,6 +99,13 @@ class Question(models.Model):
         else:
             return {}
 
+    # def get_comments(self):
+    #     comments = Comment.objects.filter(table_id=self.id, table_name='question')
+    #     result = CommentSerializer(comments, many=True)
+    #     breakpoint()
+        # a = json.dumps({'participant_specific_donation': result.data})
+        # return a
+
 
 class Comment(models.Model):
     active = models.BooleanField(default=True)
@@ -103,6 +118,15 @@ class Comment(models.Model):
                                        related_name='comment_updated_by')
     sys_created_on = models.DateTimeField(auto_now_add=True)
     sys_updated_on = models.DateTimeField(auto_now=True)
+
+    def get_created_by(self):
+        if self.sys_created_by and self.sys_created_by.public and self.sys_created_by.is_active:
+            return {
+                'name': self.sys_created_by.first_name + " " + self.sys_created_by.last_name,
+                'id': self.sys_created_by.id_name
+            }
+        else:
+            return {}
 
 
 class Tag(models.Model):
