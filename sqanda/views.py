@@ -6,12 +6,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
 # Create your views here.
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from knowledge.models import KbKnowledgeBase, KbCategory, KbKnowledge
 from .models import Question, Comment
 from rest_framework import serializers, status
 from rest_framework.response import Response
+from .services import get_answers_question
 
 
 class QuestionViewSet(APIView):
@@ -88,11 +90,63 @@ class GetQuestionAndAnswer(APIView):
 
     def get(self, request, question_id, format=None):
         question = Question.objects.get(id=question_id)
-        comments = Comment.objects.filter(table_id=question.id, table_name="question")
+        comments = Comment.objects.filter(table_id=question.id, table_name="question").order_by('-sys_created_on')
         comm = self.CommentSerializer(comments, many=True)
+        answers = get_answers_question(question_id, request)
+        question_owner = False
+        if question.sys_created_by == request.user:
+            question_owner = True
         # breakpoint()
         # question_details = json.loads(question.question_details)
         result = self.QuestionViewSerializer(question)
         # response = {"result": result.data, "question_detail": question_details}
-        return Response({'question': result.data, 'comments': comm.data}, status=status.HTTP_200_OK)
+        return Response({'question': result.data, 'comments': comm.data, 'question_owner': question_owner,
+                         'answers': answers},
+                        status=status.HTTP_200_OK)
+
+
+class CommentViewSet(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    class CommentSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Comment
+            fields = ('id', 'comment', 'get_created_by', 'sys_created_on', 'sys_updated_on')
+
+    def post(self, request, format=None):
+        comment = Comment()
+        comment.table_id = request.data['table_id']
+        comment.table_name = request.data['table_name']
+        comment.comment = request.data['comment']
+        comment.sys_created_by = request.user
+        comment.save()
+        result = self.CommentSerializer(comment, many=False)
+        return Response(result.data, status=status.HTTP_201_CREATED)
+
+
+class EditorDataViewSet(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request, format=None):
+        table_id = request.data['table_id']
+        table_name = request.data['table_name']
+        editor_data = request.data['editor_data']
+        if table_name == 'question':
+            record = Question.objects.get(id=table_id)
+
+        if record.sys_created_by != request.user:
+            return Response('unauthorized! the question is not yours', status=status.HTTP_401_UNAUTHORIZED)
+        record.question_details = editor_data
+        record.save()
+        return Response('', status=status.HTTP_200_OK)
+
+
+class AnswersQuestion(APIView):
+
+    def get(self, request, question_id, format=None):
+        get_answers_question(question_id, request)
+        breakpoint()
+        pass
+
+
 
