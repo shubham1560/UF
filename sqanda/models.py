@@ -12,6 +12,7 @@ class Answer(models.Model):
     active = models.BooleanField(default=True)
     answer = models.TextField(null=True, blank=True)
     question = models.ForeignKey('Question', on_delete=models.CASCADE)
+    update_count = models.IntegerField(default=0, null=True, blank=True)
     sys_created_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='answer_created_by')
     sys_updated_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, null=True, blank=True,
@@ -29,6 +30,7 @@ class Question(models.Model):
     kb_knowledge = models.ForeignKey(KbKnowledge, on_delete=models.SET_NULL, null=True, blank=True)
     accepted_answer = models.ForeignKey(Answer, on_delete=models.SET_NULL, null=True, blank=True,
                                         related_name='answer_accepted_for_question')
+    update_count = models.IntegerField(default=0, null=True, blank=True)
     active = models.BooleanField(default=True)
     answer_count = models.IntegerField(default=0, null=True, blank=True)
     question = models.CharField(max_length=120, null=True, blank=True)

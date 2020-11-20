@@ -13,7 +13,8 @@ from knowledge.models import KbKnowledgeBase, KbCategory, KbKnowledge
 from .models import Question, Comment, Answer
 from rest_framework import serializers, status
 from rest_framework.response import Response
-from .services import get_answers_question
+from .services import get_answers_question, editor_service, get_questions_base_category, post_question_base_category, \
+    post_answer
 
 
 class QuestionViewSet(APIView):
@@ -24,56 +25,13 @@ class QuestionViewSet(APIView):
                       'get_created_by', 'get_updated_by', 'sys_created_on', 'sys_updated_on', 'question_url')
 
     def get(self, request, format=None):
-        kb_category = request.query_params.get('path')
-        kb_base = request.query_params.get('root')
-        kb_knowledge = request.query_params.get('article')
-        start = int(request.query_params.get('start'))
-        end = int(request.query_params.get('end'))
-        if kb_knowledge != 'null':
-            try:
-                kb_knowledge = KbKnowledge.objects.get(id=kb_knowledge)
-                questions = Question.objects.filter(kb_knowledge=kb_knowledge)[start:end]
-            except ObjectDoesNotExist:
-                questions = Question.objects.all()
-        elif kb_category != 'null':
-            try:
-                kb_category = KbCategory.objects.get(id=kb_category)
-                questions = Question.objects.filter(kb_category=kb_category)[start:end]
-            except ObjectDoesNotExist:
-                questions = Question.objects.all()
-
-        elif kb_base != 'null':
-            try:
-                kb_base = KbKnowledgeBase.objects.get(id=kb_base)
-                questions = Question.objects.filter(kb_base=kb_base)[start:end]
-            except ObjectDoesNotExist:
-                questions = Question.objects.all()[start:end]
-        else:
-            questions = Question.objects.all()[start:end]
+        questions = get_questions_base_category(request)
         result = self.QuestionViewSerializer(questions, many=True)
         return Response(result.data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
-        # breakpoint()
-        if request.user.is_anonymous:
-            return Response('', status=status.HTTP_401_UNAUTHORIZED)
-        else:
-            question = Question()
-            question.question = request.data['question']
-            question.question_details = request.data['description']
-            try:
-                question.kb_category = KbCategory.objects.get(id=request.data['path'])
-            except ObjectDoesNotExist:
-                pass
-            try:
-                question.kb_base = KbKnowledgeBase.objects.get(id=request.data['root'])
-            except ObjectDoesNotExist:
-                pass
-            question.sys_created_by = request.user
-            question.id = binascii.hexlify(os.urandom(3)).decode()
-            question.question_url = request.data['question'].lower().replace(" ", "-")
-            question.save()
-            return Response('', status=status.HTTP_201_CREATED)
+        response = post_question_base_category(request)
+        return Response(response["message"], status=response["status"])
 
 
 class GetQuestionAndAnswer(APIView):
@@ -81,7 +39,7 @@ class GetQuestionAndAnswer(APIView):
         class Meta:
             model = Question
             fields = ('id', 'get_kb_base', 'get_kb_category', 'get_kb_knowledge', 'question', 'question_details',
-                      'get_created_by', 'get_updated_by', 'sys_created_on', 'sys_updated_on')
+                      'get_created_by', 'get_updated_by', 'sys_created_on', 'sys_updated_on', 'update_count')
 
     class CommentSerializer(serializers.ModelSerializer):
         class Meta:
@@ -96,8 +54,6 @@ class GetQuestionAndAnswer(APIView):
         question_owner = False
         if question.sys_created_by == request.user:
             question_owner = True
-        # breakpoint()
-        # question_details = json.loads(question.question_details)
         result = self.QuestionViewSerializer(question)
         # response = {"result": result.data, "question_detail": question_details}
         return Response({'question': result.data, 'comments': comm.data, 'question_owner': question_owner,
@@ -128,48 +84,16 @@ class EditorDataViewSet(APIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
-        table_id = request.data['table_id']
-        table_name = request.data['table_name']
-        editor_data = request.data['editor_data']
-        if table_name == 'question':
-            record = Question.objects.get(id=table_id)
-            record.question_details = editor_data
-        elif table_name == 'answer':
-            record = Answer.objects.get(id=table_id)
-            record.answer = editor_data
-        if record.sys_created_by != request.user:
-            return Response('unauthorized! the question is not yours', status=status.HTTP_401_UNAUTHORIZED)
-        record.save()
-        return Response('', status=status.HTTP_200_OK)
+        response = editor_service(request)
+        return Response(response['message'], status=response['status'])
 
 
 class AnswersQuestion(APIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
-        try:
-            question = Question.objects.get(id=request.data['question'])
-        except ObjectDoesNotExist:
-            return Response("", status=status.HTTP_404_NOT_FOUND)
-        # breakpoint()
-        answer = Answer()
-        answer.id = binascii.hexlify(os.urandom(3)).decode()
-        answer.answer = request.data['description']
-        answer.sys_created_by = request.user
-        answer.question = question
-        answer.save()
-        response = {
-            "owner": True,
-            "answer": request.data['description'],
-            "sys_created_by": {
-                "name": request.user.first_name + " " + request.user.last_name,
-                "id": request.user.id_name,
-            },
-            'comments': [
-
-            ]
-        }
-        return Response(response, status=status.HTTP_201_CREATED)
+        response = post_answer(request)
+        return Response(response["message"], status=response["status"])
 
 
 
