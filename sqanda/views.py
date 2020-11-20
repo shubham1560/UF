@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from knowledge.models import KbKnowledgeBase, KbCategory, KbKnowledge
-from .models import Question, Comment
+from .models import Question, Comment, Answer
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from .services import get_answers_question
@@ -142,11 +142,32 @@ class EditorDataViewSet(APIView):
 
 
 class AnswersQuestion(APIView):
+    permission_classes = (IsAuthenticated, )
 
-    def get(self, request, question_id, format=None):
-        get_answers_question(question_id, request)
-        breakpoint()
-        pass
+    def post(self, request, format=None):
+        try:
+            question = Question.objects.get(id=request.data['question'])
+        except ObjectDoesNotExist:
+            return Response("", status=status.HTTP_404_NOT_FOUND)
+        # breakpoint()
+        answer = Answer()
+        answer.id = binascii.hexlify(os.urandom(3)).decode()
+        answer.answer = request.data['description']
+        answer.sys_created_by = request.user
+        answer.question = question
+        answer.save()
+        response = {
+            "owner": True,
+            "answer": request.data['description'],
+            "sys_created_by": {
+                "name": request.user.first_name + " " + request.user.last_name,
+                "id": request.user.id_name,
+            },
+            'comments': [
+
+            ]
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
 
 
 

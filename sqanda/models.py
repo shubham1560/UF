@@ -3,23 +3,11 @@ from django.db import models
 # Create your models here.
 from sys_user.models import SysUser
 from knowledge.models import KbKnowledge, KbKnowledgeBase, KbCategory
-from rest_framework import serializers
-import json
-
-# class Question(models.Model):
-#     pass
-
-#
-# class CommentSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = 'Comment'
-#         fields = ('id', 'comment', 'get_created_by')
 
 
 class Answer(models.Model):
     id = models.CharField(primary_key=True, max_length=32)
-    accepted = models.BooleanField()
+    accepted = models.BooleanField(default=False)
     accepted_by = models.ForeignKey(SysUser, on_delete=models.SET_NULL, null=True, blank=True)
     active = models.BooleanField(default=True)
     answer = models.TextField(null=True, blank=True)
@@ -28,8 +16,9 @@ class Answer(models.Model):
                                        related_name='answer_created_by')
     sys_updated_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='answer_updated_by')
-    sys_created_on = models.DateTimeField(auto_now_add=True)
-    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    sys_updated_on = models.DateTimeField(auto_now=True, null=True, blank=True)
     votes = models.IntegerField(default=0, null=True, blank=True)
 
 
@@ -48,8 +37,8 @@ class Question(models.Model):
                                        related_name='question_created_by')
     sys_updated_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='question_updated_by')
-    sys_created_on = models.DateTimeField(auto_now_add=True)
-    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    sys_updated_on = models.DateTimeField(auto_now=True, null=True, blank=True)
     question_url = models.TextField(blank=True, null=True)
     views = models.IntegerField(default=0)
     votes = models.IntegerField(default=0)
@@ -116,8 +105,8 @@ class Comment(models.Model):
                                        related_name='comment_created_by')
     sys_updated_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='comment_updated_by')
-    sys_created_on = models.DateTimeField(auto_now_add=True)
-    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    sys_updated_on = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def get_created_by(self):
         if self.sys_created_by and self.sys_created_by.public and self.sys_created_by.is_active:
@@ -135,8 +124,8 @@ class Tag(models.Model):
                                        related_name='tag_created_by')
     sys_updated_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='tag_updated_by')
-    sys_created_on = models.DateTimeField(auto_now_add=True)
-    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    sys_updated_on = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 
 class ManyToManyTaggedObjects(models.Model):
@@ -147,8 +136,8 @@ class ManyToManyTaggedObjects(models.Model):
                                        related_name='m2m_tag_created_by')
     sys_updated_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='m2m_tag_updated_by')
-    sys_created_on = models.DateTimeField(auto_now_add=True)
-    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    sys_updated_on = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 
 class Vote(models.Model):
@@ -160,5 +149,5 @@ class Vote(models.Model):
                                        related_name='vote_created_by')
     sys_updated_by = models.ForeignKey(SysUser, on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='vote_updated_by')
-    sys_created_on = models.DateTimeField(auto_now_add=True)
-    sys_updated_on = models.DateTimeField(auto_now=True)
+    sys_created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    sys_updated_on = models.DateTimeField(auto_now=True, null=True, blank=True)

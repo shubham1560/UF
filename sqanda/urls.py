@@ -6,6 +6,6 @@ urlpatterns = [
     path("question/<str:question_id>/", GetQuestionAndAnswer.as_view()),
     path('comment/', CommentViewSet.as_view()),
     path('editor/', EditorDataViewSet.as_view()),
-    path('answer/question_id/', AnswersQuestion.as_view())
+    path('answer/', AnswersQuestion.as_view())
 
 ]
