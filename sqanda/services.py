@@ -16,6 +16,7 @@ def get_answers_question(question_id, request):
             sys_created_by = {
             }
         ans = {
+            "id": answer.id,
             "owner": False,
             "answer": answer.answer,
             "sys_created_by":
@@ -39,6 +40,7 @@ def get_answers_question(question_id, request):
                 sys_created_by = {
                 }
             comm = {
+                "id": comment.id,
                 "owner": False,
                 "sys_created_by":
                     sys_created_by

@@ -133,10 +133,12 @@ class EditorDataViewSet(APIView):
         editor_data = request.data['editor_data']
         if table_name == 'question':
             record = Question.objects.get(id=table_id)
-
+            record.question_details = editor_data
+        elif table_name == 'answer':
+            record = Answer.objects.get(id=table_id)
+            record.answer = editor_data
         if record.sys_created_by != request.user:
             return Response('unauthorized! the question is not yours', status=status.HTTP_401_UNAUTHORIZED)
-        record.question_details = editor_data
         record.save()
         return Response('', status=status.HTTP_200_OK)
 
