@@ -14,7 +14,7 @@ from .models import Question, Comment, Answer
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from .services import get_answers_question, editor_service, get_questions_base_category, post_question_base_category, \
-    post_answer
+    post_answer, post_comment
 
 
 class QuestionViewSet(APIView):
@@ -55,7 +55,6 @@ class GetQuestionAndAnswer(APIView):
         if question.sys_created_by == request.user:
             question_owner = True
         result = self.QuestionViewSerializer(question)
-        # response = {"result": result.data, "question_detail": question_details}
         return Response({'question': result.data, 'comments': comm.data, 'question_owner': question_owner,
                          'answers': answers},
                         status=status.HTTP_200_OK)
@@ -70,12 +69,7 @@ class CommentViewSet(APIView):
             fields = ('id', 'comment', 'get_created_by', 'sys_created_on', 'sys_updated_on')
 
     def post(self, request, format=None):
-        comment = Comment()
-        comment.table_id = request.data['table_id']
-        comment.table_name = request.data['table_name']
-        comment.comment = request.data['comment']
-        comment.sys_created_by = request.user
-        comment.save()
+        comment = post_comment(request)
         result = self.CommentSerializer(comment, many=False)
         return Response(result.data, status=status.HTTP_201_CREATED)
 

@@ -175,3 +175,13 @@ def post_answer(request):
     }
     response = {"message": response, "status": status.HTTP_201_CREATED}
     return response
+
+
+def post_comment(request):
+    comment = Comment()
+    comment.table_id = request.data['table_id']
+    comment.table_name = request.data['table_name']
+    comment.comment = request.data['comment']
+    comment.sys_created_by = request.user
+    comment.save()
+    return comment
