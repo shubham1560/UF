@@ -7,7 +7,7 @@ from decouple import config
 
 def main():
     if config('LIVE') == '0':
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.prod')
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.dev')
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uFraudApi.settings.finalsetup')
     try:

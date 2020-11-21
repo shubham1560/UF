@@ -300,10 +300,12 @@ def add_article(request, publish_ready, article_id=0):
 
 def get_course_section_and_articles(category, request):
     anonymous = request.user.is_anonymous
+    root = ''
     if not anonymous:
         views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
     try:
-        course = KbCategory.objects.get(id=category)
+        course = KbCategory.objects.select_related('parent_kb_base').get(id=category)
+        root = course.parent_kb_base.id
         sections = course.related_sections.all().values('id', 'label', 'order').order_by('order')
         results = list(sections)
         for result in results:
@@ -325,7 +327,7 @@ def get_course_section_and_articles(category, request):
                         section["articles"].append(child)
     except ObjectDoesNotExist:
         return False
-    return sections, {"label": course.label, "description": course.description}
+    return sections, {"label": course.label, "description": course.description, 'root': root}
 
     # Previously Working code
 
