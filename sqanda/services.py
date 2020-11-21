@@ -17,24 +17,24 @@ def get_questions_base_category(request):
     if kb_knowledge != 'null':
         try:
             kb_knowledge = KbKnowledge.objects.get(id=kb_knowledge)
-            questions = Question.objects.filter(kb_knowledge=kb_knowledge)[start:end]
+            questions = Question.objects.filter(kb_knowledge=kb_knowledge).order_by('-sys_updated_on')[start:end]
         except ObjectDoesNotExist:
             questions = Question.objects.all()
     elif kb_category != 'null':
         try:
             kb_category = KbCategory.objects.get(id=kb_category)
-            questions = Question.objects.filter(kb_category=kb_category)[start:end]
+            questions = Question.objects.filter(kb_category=kb_category).order_by('-sys_updated_on')[start:end]
         except ObjectDoesNotExist:
             questions = Question.objects.all()
 
     elif kb_base != 'null':
         try:
             kb_base = KbKnowledgeBase.objects.get(id=kb_base)
-            questions = Question.objects.filter(kb_base=kb_base)[start:end]
+            questions = Question.objects.filter(kb_base=kb_base).order_by('-sys_updated_on')[start:end]
         except ObjectDoesNotExist:
             questions = Question.objects.all()[start:end]
     else:
-        questions = Question.objects.all()[start:end]
+        questions = Question.objects.all().order_by('-sys_updated_on')[start:end]
     return questions
 
 
@@ -58,7 +58,8 @@ def post_question_base_category(request):
         question.id = binascii.hexlify(os.urandom(3)).decode()
         question.question_url = request.data['question'].lower().replace(" ", "-")
         question.save()
-        response = {"message": '', "status": status.HTTP_201_CREATED}
+        question_detail = {"question_id": question.id, "question_title": question.question_url}
+        response = {"message": question_detail, "status": status.HTTP_201_CREATED}
     return response
 
 
@@ -169,6 +170,7 @@ def post_answer(request):
             "name": request.user.first_name + " " + request.user.last_name,
             "id": request.user.id_name,
         },
+        "sys_created_on": answer.sys_updated_on,
         'comments': [
 
         ]
