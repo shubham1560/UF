@@ -47,11 +47,17 @@ def post_question_base_category(request):
         question.question = request.data['question']
         question.question_details = request.data['description']
         try:
-            question.kb_category = KbCategory.objects.get(id=request.data['path'])
+            kb_category = KbCategory.objects.get(id=request.data['path'])
+            kb_category.question_count += 1
+            kb_category.save()
+            question.kb_category = kb_category
         except ObjectDoesNotExist:
             pass
         try:
-            question.kb_base = KbKnowledgeBase.objects.get(id=request.data['root'])
+            kb_base = KbKnowledgeBase.objects.get(id=request.data['root'])
+            kb_base.question_count += 1
+            kb_base.save()
+            question.kb_base = kb_base
         except ObjectDoesNotExist:
             pass
         question.sys_created_by = request.user
@@ -153,6 +159,8 @@ def editor_service(request):
 def post_answer(request):
     try:
         question = Question.objects.get(id=request.data['question'])
+        question.answer_count += 1
+        question.save()
     except ObjectDoesNotExist:
         response = {"message": "", 'status': status.HTTP_404_NOT_FOUND}
         return response

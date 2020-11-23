@@ -189,10 +189,11 @@ def if_bookmarked_and_found_useful_by_user(user, article_id):
         bookmarked = False
     try:
         useful = KbUse.objects.get(article=article, user=user)
+        useful = useful.useful
     except ObjectDoesNotExist:
-        useful.useful = False
+        useful = False
     # if exist.count() == 1:
-    return {"bookmarked": bookmarked, "found_useful": useful.useful}
+    return {"bookmarked": bookmarked, "found_useful": useful}
     # else:
     #     return {"bookmarked": False, "found_useful": useful.useful}
 
@@ -305,6 +306,7 @@ def get_course_section_and_articles(category, request):
         views = KbUse.objects.filter(user=request.user).values("viewed", "useful", "article")
     try:
         course = KbCategory.objects.select_related('parent_kb_base').get(id=category)
+        question_count = course.question_count
         root = course.parent_kb_base.id
         sections = course.related_sections.all().values('id', 'label', 'order').order_by('order')
         results = list(sections)
@@ -327,7 +329,8 @@ def get_course_section_and_articles(category, request):
                         section["articles"].append(child)
     except ObjectDoesNotExist:
         return False
-    return sections, {"label": course.label, "description": course.description, 'root': root}
+    return sections, {"label": course.label, "description": course.description, 'root': root,
+                      'question_count': question_count}
 
     # Previously Working code
 

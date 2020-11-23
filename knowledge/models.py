@@ -54,6 +54,7 @@ class KbKnowledgeBase(models.Model):
     active = models.BooleanField(default=True)
     description = models.CharField(max_length=1000)
     title = models.CharField(max_length=100)
+    question_count = models.IntegerField(default=0, null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
     real_image = models.ImageField(upload_to="knowledge_base/real_images/", null=True, blank=True)
     compressed_image = models.ImageField(upload_to="knowledge_base/compressed_images/", null=True, blank=True)
@@ -82,6 +83,7 @@ class KbCategory(models.Model):
     label = models.CharField(max_length=100)
     parent_kb_base = models.ForeignKey(KbKnowledgeBase, blank=True, null=True, on_delete=models.CASCADE,
                                        related_name="related_categories")
+    question_count = models.IntegerField(default=0, null=True, blank=True)
     parent_category = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE,
                                         related_name="parent_of_category")
     description = models.TextField(null=True, blank=True)

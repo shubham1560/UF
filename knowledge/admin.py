@@ -43,7 +43,7 @@ class KbKnowledgeAdmin(admin.ModelAdmin):
 
 class KbKnowledgeBaseAdmin(admin.ModelAdmin):
     model = KbKnowledgeBase
-    list_display = ['id', 'title', 'active', 'sys_created_on', 'sys_updated_by']
+    list_display = ['id', 'title', 'active', 'question_count', 'sys_created_on', 'sys_updated_by']
     exclude = ['sys_created_by', 'sys_updated_by']
     empty_value_display = '-empty-'
     list_filter = ('active', 'sys_created_on')
@@ -69,9 +69,10 @@ class KbCategoryAdmin(admin.ModelAdmin):
                     'label',
                     'active',
                     'course',
+                    'question_count',
                     'parent_kb_base',
                     'parent_category',
-                    'sys_created_by',
+                    # 'sys_created_by',
                     'sys_created_on',
                     'sys_updated_on'
                     # 'section'
