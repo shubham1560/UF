@@ -160,6 +160,7 @@ def post_answer(request):
     try:
         question = Question.objects.get(id=request.data['question'])
         question.answer_count += 1
+        question.sys_updated_by = request.user
         question.save()
     except ObjectDoesNotExist:
         response = {"message": "", 'status': status.HTTP_404_NOT_FOUND}
