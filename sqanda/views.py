@@ -23,7 +23,7 @@ class QuestionViewSet(APIView):
             model = Question
             fields = ('id', 'get_kb_base', 'get_kb_category', 'get_kb_knowledge', 'question', 'question_details',
                       'get_created_by', 'get_updated_by', 'sys_created_on', 'sys_updated_on', 'question_url',
-                      'update_count')
+                      'update_count', 'accepted_answer', 'answer_count')
 
     def get(self, request, format=None):
         questions = get_questions_base_category(request)

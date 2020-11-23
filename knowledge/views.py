@@ -233,7 +233,7 @@ class GetKnowledgeBaseView(APIView):
     class KnowledgeBaseViewSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledgeBase
-            fields = ('id', 'description', 'title', 'real_image', 'compressed_image', 'order')
+            fields = ('id', 'description', 'title', 'real_image', 'compressed_image', 'order', 'question_count')
 
     # @log_request
     def get(self, request, format=None):
@@ -253,14 +253,14 @@ class GetKnowledgeCategory(APIView):
             model = KbCategory
             fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image', "course",
                       "section", "order", "get_parent_category", "get_parent_knowledgebase", "description",
-                      'get_created_by', "active", 'get_first_article')
+                      'get_created_by', "active", 'get_first_article', 'question_count')
 
     class KnowledgeCategoryViewSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbCategory
             fields = ('id', 'label', 'parent_kb_base', 'parent_category', 'real_image', 'compressed_image', "course",
                       "section", "order", "get_parent_category", "get_parent_knowledgebase", "get_first_article",
-                      "description")
+                      "description", 'question_count')
 
     def get(self, request, kb_base, kb_category, courses, format=None):
         if request.user.groups.filter(name="Moderators").exists():
