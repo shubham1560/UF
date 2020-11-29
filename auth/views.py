@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
-
+from django.contrib.auth.models import Group
 from emails.services import send_confirmation_mail
 from sys_user.models import SysUser
 from rest_framework.authtoken.models import Token
@@ -158,6 +158,10 @@ class CreateGoogleUserViewSet(APIView):
             user.id_name = data['email'].split('@')[0]
             user.save()
             new_user = True
+            my_group = Group.objects.get(name='Authors')
+            user.groups.add(my_group)
+            # my_group.user_set.add(user)
+
         token, created = Token.objects.get_or_create(user=user)
         response = {'username': user.username, 'token': str(token), 'new_user': new_user}
         return Response(response, status=status.HTTP_201_CREATED)
@@ -172,7 +176,7 @@ class FacebookUserViewSet(APIView):
             graph = facebook.GraphAPI(access_token=access_token)
             user_info = graph.get_object(id='me',
                                          fields='first_name, middle_name, last_name,email, picture.type(large)')
-            print(user_info)
+            # print(user_info)
         except facebook.GraphAPIError:
             return JsonResponse({'error': 'Invalid data'}, safe=False)
         try:

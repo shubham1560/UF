@@ -3,6 +3,7 @@ from rest_framework.authtoken.models import Token
 from emails.services import send_confirmation_mail, send_password_reset_link
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
+from django.contrib.auth.models import Group
 from logs.services import log_random
 
 
@@ -39,6 +40,8 @@ def create_root_user(**validated_data) -> SysUser:
                                            is_active=False,
                                            user_type="RU",
                                            id_name='@'+validated_data['username'].split('@')[0])
+        my_group = Group.objects.get(name='Authors')
+        user.groups.add(my_group)
         token = Token.objects.create(user=user)
         try:
             send_confirmation_mail(username=user.first_name, email=validated_data['username'], token=str(token))
