@@ -331,14 +331,16 @@ class GetBreadCrumbView(APIView):
 
     def get(self, request, categoryId, format=None):
         key = cache_key+"."+"crumb"+categoryId
+        knowledge_base = ''
         if key in cache:
             result = cache.get(key)
         else:
             category = KbCategory.objects.get(id=categoryId)
+            knowledge_base = category.parent_kb_base.id
             result = get_breadcrumb_category(category)
             cache.set(key, result, timeout=None)
-        return Response({"labels": result["crumb_label"], "id": result["crumb_id"], "desc": result["crumb_desc"]},
-                        status=status.HTTP_200_OK)
+        return Response({"labels": result["crumb_label"], "id": result["crumb_id"], "desc": result["crumb_desc"],
+                        "kb_base": knowledge_base}, status=status.HTTP_200_OK)
 
 
 class SetCourseProgress(APIView):
@@ -485,6 +487,9 @@ class DeleteArticleId(APIView):
         # breakpoint()
         if request.user.groups.filter(name="Authors").exists():
             article_id = request.data['article_id']
+            key = cache_key + "." + article_id
+            del_key(key)
+            # print(key, "  deleted from cache")
             response = delete_article(article_id, request)
         else:
             return Response('', status=status.HTTP_401_UNAUTHORIZED)
@@ -604,6 +609,8 @@ class OrderCourseCategory(APIView):
             add_order_to_courses(request)
             return Response("working", status=status.HTTP_200_OK)
         return Response("unauthorized", status=status.HTTP_401_UNAUTHORIZED)
+
+
 
 
 
