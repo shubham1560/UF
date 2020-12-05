@@ -331,16 +331,15 @@ class GetBreadCrumbView(APIView):
 
     def get(self, request, categoryId, format=None):
         key = cache_key+"."+"crumb"+categoryId
-        knowledge_base = ''
         if key in cache:
             result = cache.get(key)
         else:
             category = KbCategory.objects.get(id=categoryId)
-            knowledge_base = category.parent_kb_base.id
             result = get_breadcrumb_category(category)
+            result["kb_base"] = category.parent_kb_base.id
             cache.set(key, result, timeout=None)
         return Response({"labels": result["crumb_label"], "id": result["crumb_id"], "desc": result["crumb_desc"],
-                        "kb_base": knowledge_base}, status=status.HTTP_200_OK)
+                        "kb_base": result["kb_base"]}, status=status.HTTP_200_OK)
 
 
 class SetCourseProgress(APIView):
