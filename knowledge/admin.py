@@ -72,7 +72,7 @@ class KbCategoryAdmin(admin.ModelAdmin):
                     'question_count',
                     'parent_kb_base',
                     'parent_category',
-                    # 'sys_created_by',
+                    'sys_created_by',
                     'sys_created_on',
                     'sys_updated_on'
                     # 'section'
