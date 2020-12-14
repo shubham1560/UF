@@ -271,14 +271,19 @@ def add_article(request, publish_ready, article_id=0):
             a = KbKnowledge()
             a.id = uid
             a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing", active=False)
+            if created:
+                a.sys_created_by = request.user
+                a.sys_updated_by = request.user
+            else:
+                a.sys_updated_by = request.user
             a.category, created = KbCategory.objects.get_or_create(id="testing", active=False)
         else:
             try:
                 a = KbKnowledge.objects.get(id=article_id)
             except ObjectDoesNotExist:
                 return '1'
-            if a.sys_created_by != request.user:
-                return
+            if a.author != request.user:
+                return "Not the author"
         if not a.knowledge_base:
             a.knowledge_base, created = KbKnowledgeBase.objects.get_or_create(id="testing", active=False)
         if not a.category:
@@ -290,7 +295,6 @@ def add_article(request, publish_ready, article_id=0):
         a.title = title
         a.article_body = request.data['body_data']
         a.author = request.user
-        a.sys_created_by = request.user
         if publish_ready:
             a.workflow = 'review'
         a.save()
