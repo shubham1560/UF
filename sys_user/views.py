@@ -203,7 +203,7 @@ class GetPublicAuthorArticles(APIView):
         except ObjectDoesNotExist:
             return Response('User has deactivated his account', status=status.HTTP_404_NOT_FOUND)
         articles = KbKnowledge.objects.filter(author=user, active=True, workflow="published").order_by(sort_by)
-        articles_count = KbKnowledge.objects.filter(author=request.user, active=True).count()
+        articles_count = KbKnowledge.objects.filter(author=user, active=True).count()
         articles_data = self.GetUserAuthoreArticlesSerializer(articles, many=True)
         response = {
             'articles': articles_data.data,
