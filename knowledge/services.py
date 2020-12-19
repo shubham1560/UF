@@ -290,7 +290,7 @@ def add_article(request, publish_ready, article_id=0):
             a.category, created = KbCategory.objects.get_or_create(id="testing", active=False)
         if not a.workflow:
             a.workflow = "draft"
-        a.article_url = title.lower().replace(" ", "-")
+        a.article_url = title.lower().replace(" ", "-").replace("(", '-').replace(')', '')
         a.description = request.data['description']
         a.title = title
         a.article_body = request.data['body_data']
