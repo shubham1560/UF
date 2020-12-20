@@ -75,9 +75,10 @@ class KbCategoryAdmin(admin.ModelAdmin):
                     'sys_created_by',
                     'sys_created_on',
                     'sys_updated_on'
+
                     # 'section'
                     ]
-    exclude = ['sys_created_by', 'sys_updated_by']
+    exclude = ['sys_updated_by']
 
     empty_value_display = '-empty-'
     list_filter = ('course', 'active', 'parent_kb_base', 'parent_category')

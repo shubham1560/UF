@@ -1,5 +1,7 @@
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
+from django.db.models import Q
+
 from sys_user.models import SysUser
 from io import BytesIO
 from PIL import Image
@@ -96,7 +98,8 @@ class KbCategory(models.Model):
     sys_updated_on = models.DateTimeField(auto_now=True, null=True, blank=True)
     sys_created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     sys_created_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
-                                       related_name='category_created_by', limit_choices_to={'is_staff': True})
+                                       related_name='category_created_by',
+                                       limit_choices_to=Q(groups__name='Root Admin'))
     sys_updated_by = models.ForeignKey(SysUser, blank=True, null=True, on_delete=models.CASCADE,
                                        related_name='category_updated_by', limit_choices_to={'is_staff': True})
 
@@ -132,7 +135,9 @@ class KbCategory(models.Model):
     def get_created_by(self):
         if self.sys_created_by:
             return {
-                "author": self.sys_created_by.email
+                # "author": self.sys_created_by.email,
+                "id": self.sys_created_by.id_name,
+                "name": self.sys_created_by.first_name + " " + self.sys_created_by.last_name
             }
 
     def get_first_article(self):

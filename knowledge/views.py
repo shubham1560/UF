@@ -453,7 +453,9 @@ class AddPathOrBranch(APIView):
             del_key(key)
             key_m = cache_key + ".branch." + request.data['type']['kb_base'] + ".moderator"
             del_key(key_m)
-        if request.user.groups.filter(name="Moderators").exists():
+        # breakpoint()
+        if request.user.groups.filter(name="Moderators").exists() and \
+                request.user.id_name == request.data["type"]["product"]["get_created_by"]["id"]:
             try:
                 if request.data["type"]["product"]:
                     edit_path_or_branch(request)
