@@ -1,4 +1,6 @@
 from rest_framework.permissions import IsAuthenticated
+
+from sys_user.models import SysUser
 from .models import KbKnowledge, BookmarkUserArticle, KbFeedback, KbKnowledgeBase, KbCategory, Tag, ArticleTag
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -454,13 +456,22 @@ class AddPathOrBranch(APIView):
             key_m = cache_key + ".branch." + request.data['type']['kb_base'] + ".moderator"
             del_key(key_m)
         # breakpoint()
-        if request.user.groups.filter(name="Moderators").exists() and \
-                request.user.id_name == request.data["type"]["product"]["get_created_by"]["id"]:
-            try:
-                if request.data["type"]["product"]:
-                    edit_path_or_branch(request)
-            except KeyError:
-                add_path_or_branch(request)
+        if request.user.groups.filter(name="Moderators").exists():
+            if request.data["action"] == 'edit':
+                if request.user.id_name == request.data["type"]["product"]["get_created_by"]["id"]:
+                    try:
+                        if request.data["type"]["product"]:
+                            edit_path_or_branch(request)
+                    except KeyError:
+                        add_path_or_branch(request)
+                else:
+                    return Response('', status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                try:
+                    if request.data["type"]["product"]:
+                        edit_path_or_branch(request)
+                except KeyError:
+                    add_path_or_branch(request)
         else:
             return Response("invalid request", status=status.HTTP_401_UNAUTHORIZED)
         return Response("", status=status.HTTP_201_CREATED)
@@ -613,6 +624,21 @@ class OrderCourseCategory(APIView):
             return Response("working", status=status.HTTP_200_OK)
         return Response("unauthorized", status=status.HTTP_401_UNAUTHORIZED)
 
+
+class ChangeModerator(APIView):
+
+    def post(self, request, format=None):
+        if request.user.groups.filter(name="Root Admin").exists():
+            # breakpoint()
+            try:
+                course = KbCategory.objects.get(id=request.data['course']['id'])
+                course.sys_created_by = SysUser.objects.get(email=request.data['user']['email'])
+                course.save()
+            except ObjectDoesNotExist:
+                return Response('', status=status.HTTP_404_NOT_FOUND)
+            return Response('', status=status.HTTP_200_OK)
+        else:
+            return Response('', status=status.HTTP_401_UNAUTHORIZED)
 
 
 

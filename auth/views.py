@@ -466,3 +466,20 @@ class ResetLoggedInUserPassword(APIView):
             return Response('Password updated', status=status.HTTP_201_CREATED)
         else:
             return Response('Incorrect password', status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetModeratorsToAssign(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    class ModeratorSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = SysUser
+            fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image', 'email')
+
+    def get(self, request, format=None):
+        if request.user.groups.filter(name="Root Admin").exists():
+            users = SysUser.objects.filter(groups__name='Moderators')
+            result = self.ModeratorSerializer(users, many=True)
+            return Response(result.data, status=status.HTTP_200_OK)
+        else:
+            return Response('', status=status.HTTP_401_UNAUTHORIZED)
