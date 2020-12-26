@@ -479,9 +479,17 @@ class GetModeratorsToAssign(APIView):
     permission_classes = (IsAuthenticated,)
 
     class ModeratorSerializer(serializers.ModelSerializer):
+
+        class GroupSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Group
+                fields = ('name',)
+
+        groups = GroupSerializer(many=True)
+
         class Meta:
             model = SysUser
-            fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image', 'email')
+            fields = ('id_name', 'first_name', 'last_name', 'profile_pic', 'profile', 'header_image', 'email', 'groups')
 
     def get(self, request, format=None):
         if request.user.groups.filter(name="Root Admin").exists():
