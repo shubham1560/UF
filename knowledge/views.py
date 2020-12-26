@@ -295,8 +295,6 @@ class GetKnowledgeCategory(APIView):
         # pass
         else:
             try:
-                # breakpoint()
-                # if request.data["onlycourses"] == True:
                 kb = KbKnowledgeBase.objects.get(id=kb_base)
                 if courses == "courses":
                     if root_admin:

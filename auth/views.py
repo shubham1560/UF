@@ -36,9 +36,16 @@ class UserListViewSet(APIView):
     permission_classes = (IsAuthenticated,)
 
     class UserListSerializer(serializers.ModelSerializer):
+        class GroupSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Group
+                fields = ('name',)
+
+        groups = GroupSerializer(many=True)
+
         class Meta:
             model = SysUser
-            fields = ('first_name', 'last_name', 'email', 'username')
+            fields = ('first_name', 'last_name', 'email', 'username', 'groups')
 
     @log_request
     def get(self, request, format=None):
