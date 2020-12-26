@@ -38,7 +38,6 @@ def nest_categories(categories, moderator):
     queue = []
     final = []
     len_fin = 0
-    # breakpoint()
     for category in categories:
         category["children"] = []
         if moderator:
@@ -46,7 +45,9 @@ def nest_categories(categories, moderator):
         else:
             courses = KbCategory.objects.filter(parent_category=category['id'], active=True, course=True).count()
         category["course_count"] = courses
+        category["course_init"] = courses
         if category["parent_category"] is None:
+            category["level"] = 0
             queue.append(category)
             len_fin += 1
     while queue:
@@ -54,7 +55,10 @@ def nest_categories(categories, moderator):
         final.append(s)
         for category in categories:
             if category["parent_category"] == s['id']:
+                category["level"] = final[-1]["level"] + 1
                 final[-1]["children"].append(category)
+
+                # final[-1]["course_count"] += category["course_count"]
                 queue.append(category)
     final = final[:len_fin]
     return final

@@ -265,10 +265,14 @@ class GetKnowledgeCategory(APIView):
                       "description", 'question_count')
 
     def get(self, request, kb_base, kb_category, courses, format=None):
+        root_admin = False
         if request.user.groups.filter(name="Moderators").exists():
             moderator = True
         else:
             moderator = False
+        if request.user.groups.filter(name="Root Admin").exists():
+            root_admin = True
+
         # breakpoint()
         # If courses is true, then all the courses in the database is sent in response
         # key = cache_key+"."+kb_base+"."+kb_category
@@ -295,8 +299,12 @@ class GetKnowledgeCategory(APIView):
                 # if request.data["onlycourses"] == True:
                 kb = KbKnowledgeBase.objects.get(id=kb_base)
                 if courses == "courses":
-                    if moderator:
+                    if root_admin:
                         categories = KbCategory.objects.filter(course=True, parent_kb_base=kb).order_by('order')
+                    elif moderator:
+                        categories = KbCategory.objects.filter(Q(active=True) | Q(sys_created_by=request.user),
+                                                               course=True, parent_kb_base=kb,
+                                                               ).order_by('order')
                     else:
                         categories = KbCategory.objects.filter(course=True, parent_kb_base=kb,
                                                                active=True).order_by('order')
