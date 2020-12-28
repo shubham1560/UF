@@ -498,3 +498,33 @@ class GetModeratorsToAssign(APIView):
             return Response(result.data, status=status.HTTP_200_OK)
         else:
             return Response('', status=status.HTTP_401_UNAUTHORIZED)
+
+
+class GetUserGroups(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    class GroupSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Group
+            fields = ('name',)
+
+    def get(self, request, format=None):
+        groups = Group.objects.all()
+        if request.user.is_staff:
+            result = self.GroupSerializer(groups, many=True)
+            return Response(result.data, status=status.HTTP_200_OK)
+        return Response('', status=status.HTTP_401_UNAUTHORIZED)
+
+    def post(self, request, format=None):
+        user = SysUser.objects.get(first_name=request.data['user']['first_name'],
+                                   last_name=request.data['user']['last_name'],
+                                   username=request.data['user']['username'],
+                                   email=request.data['user']['email']
+                                   )
+        if request.user.is_staff:
+            user.groups.clear()
+            for group in request.data['groupArray']:
+                my_group = Group.objects.get(name=group)
+                my_group.user_set.add(user)
+            return Response('', status=status.HTTP_200_OK)
+        return Response('', status=status.HTTP_401_UNAUTHORIZED)

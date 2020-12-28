@@ -1,13 +1,14 @@
+# from services.profanityservice import profanity_array
+import binascii
+import os
+
+from decouple import config
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import F
 from rest_framework import status
 
 from .models import KbKnowledge, KbFeedback, m2m_knowledge_feedback_likes, BookmarkUserArticle, \
     KbUse, KbKnowledgeBase, KbCategory, KnowledgeSection
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from sys_user.models import SysUser
-from django.db.models import F
-from decouple import config
-# from services.profanityservice import profanity_array
-import binascii, os
 
 
 def nest_comment(comments):
@@ -57,8 +58,6 @@ def nest_categories(categories, moderator):
             if category["parent_category"] == s['id']:
                 category["level"] = final[-1]["level"] + 1
                 final[-1]["children"].append(category)
-
-                # final[-1]["course_count"] += category["course_count"]
                 queue.append(category)
     final = final[:len_fin]
     return final

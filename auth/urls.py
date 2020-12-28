@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views import UserViewSet, UserListViewSet, CreateUserViewSet, CreateGoogleUserViewSet, ActivateAccountViewSet, \
     UserPasswordResetViewSet, UserPasswordResetLinkViewSet, ObtainAuthTokenViewSet, \
     UserTokenValidViewSet, GetUserDetailFromTokenViewSet, FacebookUserViewSet, SendActivationLinkAgain, \
-    ResetLoggedInUserPassword, GetUserTokenImpersonation, GetModeratorsToAssign
+    ResetLoggedInUserPassword, GetUserTokenImpersonation, GetModeratorsToAssign, GetUserGroups
 
 urlpatterns = [
     path('get_token/', ObtainAuthTokenViewSet.as_view()),
@@ -20,4 +20,5 @@ urlpatterns = [
     path('sys_user/reset_password_logged_in/', ResetLoggedInUserPassword.as_view()),
     path('get_impersonation_token/', GetUserTokenImpersonation.as_view()),
     path('sys_user/moderators/', GetModeratorsToAssign.as_view()),
+    path('sys_user/groups/user/', GetUserGroups.as_view())
 ]
