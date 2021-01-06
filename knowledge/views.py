@@ -651,11 +651,11 @@ class GetArticleAnalysis(APIView):
     class KnowledgeArticleListSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbUse
-            fields = ('id', 'useful', 'viewed', 'feedback', 'get_user')
+            fields = ('id', 'useful', 'viewed', 'feedback', 'get_user', 'sys_created_on')
 
     def get(self, request, article_id, format=None):
         kb_article = KbKnowledge.objects.get(id=article_id)
-        kb_use_article = KbUse.objects.filter(article=kb_article)
+        kb_use_article = KbUse.objects.filter(article=kb_article).order_by("-sys_created_on")
         result = self.KnowledgeArticleListSerializer(kb_use_article, many=True)
         return Response(result.data, status=status.HTTP_200_OK)
 
