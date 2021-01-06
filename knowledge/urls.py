@@ -9,7 +9,7 @@ from .views import KnowledgeArticleListView, KnowledgeArticleView,\
     GetKnowledgeBaseView, GetKnowledgeCategory, GetCourseSectionAndArticles, \
     GetBreadCrumbView, SetCourseProgress, GetKnowledgeCategories, GetSearchResults, GetCoursesForAddingArticle, \
     AddArticleToCourse, AddPathOrBranch, BuildPathViewSet, CourseOwner, DeleteArticleId, TagsViewSet, \
-    ArticleTags, CheckProfanity, GetArticlesInPath, OrderCourseCategory, ChangeModerator
+    ArticleTags, CheckProfanity, GetArticlesInPath, OrderCourseCategory, ChangeModerator, GetArticleAnalysis
 
 urlpatterns = [
     path('kb_knowledge/article/', NewArticleInsertView.as_view()),
@@ -43,5 +43,6 @@ urlpatterns = [
     path("kb_knowledge/check_profanity/", CheckProfanity.as_view()),
     path('kb_knowledge/<str:category>/get/', GetArticlesInPath.as_view()),
     path('kb_category/order/', OrderCourseCategory.as_view()),
-    path('kb_category/moderator/change/', ChangeModerator.as_view())
+    path('kb_category/moderator/change/', ChangeModerator.as_view()),
+    path('kb_use/<str:article_id>/', GetArticleAnalysis.as_view())
 ]

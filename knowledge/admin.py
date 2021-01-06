@@ -105,7 +105,7 @@ class KbFeedBackAdmin(admin.ModelAdmin):
 
 class KbUseAdmin(admin.ModelAdmin):
     model = KbUse
-    list_display = ['id', 'active', 'article', 'course', 'user', 'percentage_completed',  'useful', 'viewed']
+    list_display = ['id', 'active', 'article', 'feedback', 'course', 'user', 'percentage_completed',  'useful', 'viewed']
 
 
 class KbFeedbackLikesAdmin(admin.ModelAdmin):

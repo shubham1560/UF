@@ -334,6 +334,17 @@ class KbUse(models.Model):
         verbose_name_plural = "Knowledge Uses"
         unique_together = ['article', 'user', 'course']
 
+    def get_user(self):
+        if self.user.public:
+            return {
+                'first_name': self.user.first_name or '',
+                "id": self.user.id_name or '',
+                'last_name': self.user.last_name or '',
+                'header_image': config('S3URL') + str(self.user.header_image) or '',
+                'google_pic': self.user.profile_pic or '',
+                # 'about': self.user.about or '',
+            }
+
 
 class m2m_knowledge_feedback_likes(models.Model):
     sys_created_on = models.DateTimeField(auto_now_add=True)

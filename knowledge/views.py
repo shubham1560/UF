@@ -1,7 +1,7 @@
 from rest_framework.permissions import IsAuthenticated
 
 from sys_user.models import SysUser
-from .models import KbKnowledge, BookmarkUserArticle, KbFeedback, KbKnowledgeBase, KbCategory, Tag, ArticleTag
+from .models import KbKnowledge, BookmarkUserArticle, KbFeedback, KbKnowledgeBase, KbCategory, Tag, ArticleTag, KbUse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -646,6 +646,18 @@ class ChangeModerator(APIView):
         else:
             return Response('', status=status.HTTP_401_UNAUTHORIZED)
 
+
+class GetArticleAnalysis(APIView):
+    class KnowledgeArticleListSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = KbUse
+            fields = ('id', 'useful', 'viewed', 'feedback', 'get_user')
+
+    def get(self, request, article_id, format=None):
+        kb_article = KbKnowledge.objects.get(id=article_id)
+        kb_use_article = KbUse.objects.filter(article=kb_article)
+        result = self.KnowledgeArticleListSerializer(kb_use_article, many=True)
+        return Response(result.data, status=status.HTTP_200_OK)
 
 
 
