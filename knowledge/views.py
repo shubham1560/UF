@@ -391,7 +391,7 @@ class GetSearchResults(APIView):
     class KnowledgeArticlesSerializer(serializers.ModelSerializer):
         class Meta:
             model = KbKnowledge
-            fields = ('title', 'id', 'category', 'get_category', 'description')
+            fields = ('title', 'id', 'category', 'get_category', 'description', 'article_url')
 
     class KnowledgeCourseSerializer(serializers.ModelSerializer):
         class Meta:
