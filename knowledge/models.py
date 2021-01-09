@@ -141,7 +141,7 @@ class KbCategory(models.Model):
             }
 
     def get_first_article(self):
-        article = KbKnowledge.objects.filter(category=self).order_by('order')[0:1]
+        article = KbKnowledge.objects.filter(category=self, workflow='published').order_by('order')[0:1]
         # breakpoint()
         if article:
             return {
@@ -150,7 +150,7 @@ class KbCategory(models.Model):
             }
         else:
             return {
-                "first_article_id" : ''
+                "first_article_id": ''
             }
 
     def save(self, *args, **kwargs):
