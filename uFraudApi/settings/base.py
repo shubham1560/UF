@@ -62,9 +62,11 @@ CORS_ORIGIN_WHITELIST = [
     "https://uf-front.web.app",
     "https://uf-front.firebaseapp.com",
     "https://sortedtree.com",
-    "https://takeatrail.com/",
-    "http://takeatrail.com/",
+    "https://takeatrail.com",
+    "http://takeatrail.com",
 ]
+
+DEBUG = True
 
 CORS_ALLOW_HEADERS = [
     'authorization',
